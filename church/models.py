@@ -15,7 +15,6 @@ class ServicesIndexPage(Page):
     ]
 
 
-
 class BulletinItemBlock(blocks.StructBlock):
     title = blocks.CharBlock()
     date = blocks.DateBlock(required=False)
@@ -36,6 +35,29 @@ class BulletinSectionBlock(blocks.StructBlock):
         template = "blocks/bulletin_section.html"
 
 
+class WorshipSongBlock(blocks.StructBlock):
+    title = blocks.CharBlock()
+    lyrics = blocks.RichTextBlock()
+
+    class Meta:
+        template = "blocks/worship_song.html"
+
+
+class WorshipSectionBlock(blocks.StructBlock):
+    worship_songs = blocks.ListBlock(WorshipSongBlock, label="Worship song")
+
+    class Meta:
+        template = "blocks/worship_section.html"
+
+
+class AnnouncementsSectionBlock(blocks.StructBlock):
+    pass
+
+
+class SermonSectionBlock(blocks.StructBlock):
+    pass
+
+
 class ServicePage(Page):
     date = models.DateField("Service date")
 
@@ -43,22 +65,18 @@ class ServicePage(Page):
         ('bulletin_section', BulletinSectionBlock(name="Bulletin Section")),
     ])
 
-    # Worship fields
-    # worship_songs = # defined in ServicePageWorshipSong
-
-    # Sermon fields
-    # message_name = ...
-    # slide_show = ...
-    # verses = ... # custom Bible verse loader/picker
+    service = wtfields.StreamField([
+        ('worship_section', WorshipSectionBlock(name="Worship Section")),
+        ('announcements_section', AnnouncementsSectionBlock(name="Announcement Section")),
+        ('sermon_section', SermonSectionBlock(name="Sermon Section")),
+        # TODO
+        # - polls/voting?
+        # - feedback
+        # - discussion
+    ])
 
     content_panels = Page.content_panels + [
         FieldPanel("date"),
         StreamFieldPanel("bulletin"),
+        StreamFieldPanel("service"),
     ]
-
-
-# class ServicePageWorshipSong(Orderable):
-#     page = ParentalKey(ServicePage, on_delete=models.CASCADE, related_name="worship_songs")
-#     title = models.CharField(max_length=250)
-#     lyrics = wtfields.RichTextField(blank=True)
-
