@@ -15,6 +15,7 @@ class ServicesIndexPage(Page):
     ]
 
 
+
 class BulletinItemBlock(blocks.StructBlock):
     title = blocks.CharBlock()
     date = blocks.DateBlock(required=False)
@@ -27,21 +28,20 @@ class BulletinItemBlock(blocks.StructBlock):
         template = "blocks/bulletin_item.html"
 
 
+class BulletinSectionBlock(blocks.StructBlock):
+    title = blocks.CharBlock()
+    items = blocks.ListBlock(BulletinItemBlock, label="Bulletin item")
+
+    class Meta:
+        template = "blocks/bulletin_section.html"
+
 
 class ServicePage(Page):
     date = models.DateField("Service date")
 
-    # body = wtfields.StreamField([
-    #     ("bulletin_items", blocks.ListBlock(BulletinItemBlock, label="Bulletin item")),
-    # ])
-
-    # Bulletin fields
-    # bulletin_kids = wtfields.RichTextField(blank=True)
-    # bulletin_library = wtfields.RichTextField(blank=True)
-    # bulletin_offering = wtfields.RichTextField(blank=True)
-    # bulletin_volunteer_sched = wtfields.RichTextField(blank=True)
-    # bulletin_mens = wtfields.RichTextField(blank=True)
-    # bulletin_craft = wtfields.RichTextField(blank=True)
+    bulletin = wtfields.StreamField([
+        ('bulletin_section', BulletinSectionBlock(name="Bulletin Section")),
+    ])
 
     # Worship fields
     # worship_songs = # defined in ServicePageWorshipSong
@@ -52,31 +52,9 @@ class ServicePage(Page):
     # verses = ... # custom Bible verse loader/picker
 
     content_panels = Page.content_panels + [
-        InlinePanel("bulletin_items", label="Bulletin items"),
         FieldPanel("date"),
-        # StreamFieldPanel("body"),
-        # InlinePanel("bulletin_items", label="Bulletin items"),
+        StreamFieldPanel("bulletin"),
     ]
-
-
-class ServicePageBulletinItem(Orderable):
-    page = ParentalKey(ServicePage, on_delete=models.CASCADE, related_name="bulletin_items")
-    title = models.CharField(max_length=250)
-    date = models.DateField("Item date")
-    contact_name = models.CharField(max_length=250)
-    contact_email = models.EmailField()
-    contact_phone = models.CharField(max_length=20)
-    body = wtfields.RichTextField(blank=True)
-
-    panels = [
-        FieldPanel("title"),
-        FieldPanel("date"),
-        FieldPanel("contact_name"),
-        FieldPanel("contact_email"),
-        FieldPanel("contact_phone"),
-        FieldPanel("body"),
-    ]
-
 
 
 # class ServicePageWorshipSong(Orderable):
