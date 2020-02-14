@@ -1,7 +1,11 @@
 #crossroads-logo {
-  width: 200px;
+  width: 150px;
 }
 
 .dropdown-item:not(:first-child) {
   margin-top: 10px;
+}
+
+body {
+  font-family: Lato;
 }

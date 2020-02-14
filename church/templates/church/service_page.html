@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% load wagtailcore_tags %}
+
+{% block body_class %}template-blogpage{% endblock %}
+
+{% block content %}
+    <h1>{{ page.title }}</h1>
+    <p class="meta">{{ page.date }}</p>
+
+    <h2>Today at Crossroads</h2>
+    {% for item in page.bulletin_items.all %}
+      <h3>{{ item.title }}</h3>
+      <p class="meta">{{ item.date }}</p>
+      {% if item.contact_name %}
+        <p>Contact {{ item.contact_name }}
+        {% if item.contact_email or item.contact_phone %}
+        at {{ item.contact_email }}
+        {% if item.contact_email and item.contact_phone %}
+        or
+        {% endif %}
+        {{ item.contact_phone }}
+        {% endif %}
+        for more detail.
+        </p>
+      {% endif %}
+    {% endfor %}
+{% endblock %}

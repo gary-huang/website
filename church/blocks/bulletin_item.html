@@ -1,0 +1,14 @@
+<h3>{{ value.title }}</h3>
+<p class="meta">{{ value.date }}</p>
+{% if value.contact_name %}
+  <p>Contact {{ value.contact_name }}
+  {% if value.contact_email or value.contact_phone %}
+  at {{ value.contact_email }}
+  {% if value.contact_email and value.contact_phone %}
+  or
+  {% endif %}
+  {{ value.contact_phone }}
+  {% endif %}
+  for more detail.
+  </p>
+{% endif %}
