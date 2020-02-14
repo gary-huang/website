@@ -1,3 +1,7 @@
+#crossroads-logo {
+  width: 200px;
+}
+
 .dropdown-item:not(:first-child) {
   margin-top: 10px;
 }
