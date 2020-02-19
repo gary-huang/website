@@ -1,4 +1,23 @@
+<h2>Worship</h2>
+<div class="accordion">
 {% for song in value.worship_songs %}
-  {{ song.title }}
-  {{ song.lyrics }}
+  <div class="card">
+
+    <div class="card-header">
+      <h3 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ i }}">
+        {{ song.title }}
+        </button>
+      </h3>
+    </div>
+
+
+    <div id="collapse{{ i }}"
+    <div class="card-body">
+      <p class="card-text">
+        {{ song.lyrics }}
+      </p>
+    </div>
+  </div>
 {% endfor %}
+</div>
