@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.conf.urls import include, url
+from django.contrib.auth import views as auth_views
 from django.contrib import admin
 
 from wagtail.admin import urls as wagtailadmin_urls
@@ -16,6 +17,8 @@ urlpatterns = [
 
     url(r'^search/$', search_views.search, name='search'),
 
+    url(r'^login/$', auth_views.LoginView.as_view(template_name='admin/login.html'), name='login'),
+    url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
 ]
 
 
