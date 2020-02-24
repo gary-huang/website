@@ -10,8 +10,12 @@
     <div class="intro">{{ page.intro|richtext }}</div>
 
     {% for post in page.get_children %}
-      <h2><a href="{% pageurl post %}">{{ post.specific.date }}</a></h2>
-      {{ post.specific.title }}
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title"><a href="{% pageurl post %}">{{ post.specific.date }}</a></h2>
+        <h3 class="card-title">{{ post.specific.title }}</h3>
+      </div>
+    </div>
     {% endfor %}
 
 {% endblock %}

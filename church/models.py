@@ -5,6 +5,41 @@ from modelcluster.fields import ParentalKey
 from wagtail.core.models import Page, Orderable
 from wagtail.core import fields as wtfields, blocks
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
+from wagtailmedia.blocks import AbstractMediaChooserBlock
+from wagtailmedia.edit_handlers import MediaChooserPanel
+
+
+class ServiceMediaBlock(AbstractMediaChooserBlock):
+    # def render_basic(self, value, context=None):
+    #     if not value:
+    #         return ''
+
+    #     if value.type == 'video':
+    #         player_code = '''
+    #         <div>
+    #             <video width="320" height="240" controls>
+    #                 {0}
+    #                 Your browser does not support the video tag.
+    #             </video>
+    #         </div>
+    #         '''
+    #     else:
+    #         player_code = '''
+    #         <div>
+    #             <audio controls>
+    #                 {0}
+    #                 Your browser does not support the audio element.
+    #             </audio>
+    #         </div>
+    #         '''
+
+    #     return format_html(player_code, format_html_join(
+    #         '\n', "<source{0}>",
+    #         [[flatatt(s)] for s in value.sources]
+    #     ))
+
+    class Meta:
+        template = "blocks/service_media_block.html"
 
 
 class ServicesIndexPage(Page):
@@ -61,6 +96,10 @@ class SermonSectionBlock(blocks.StructBlock):
 class ServicePage(Page):
     date = models.DateField("Service date")
 
+    mediasec = wtfields.StreamField([
+        ('media', ServiceMediaBlock(icon="media")),
+    ])
+
     bulletin = wtfields.StreamField([
         ('bulletin_section', BulletinSectionBlock(name="Bulletin Section")),
     ])
@@ -77,6 +116,7 @@ class ServicePage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("date"),
+        StreamFieldPanel("mediasec"),
         StreamFieldPanel("bulletin"),
         StreamFieldPanel("service"),
     ]

@@ -1,6 +1,5 @@
 {% load wagtailcore_tags %}
 
-<h3 style="color: #116b36">{{ value.title }}</h3>
 <div class="card-columns">
   {% for item in value.items %}
     {% include_block item %}

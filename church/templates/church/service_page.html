@@ -3,21 +3,29 @@
 {% load wagtailcore_tags %}
 
 {% block content %}
-    <h1>{{ page.title }}</h1>
-    <p class="meta">{{ page.date }}</p>
+<h1>{{ page.title }}</h1>
+<p class="meta">{{ page.date }}</p>
+
+<nav class="navbar fixed-bottom navbar-light bg-light">
+  {% for section in page.mediasec %}
+    {{ section }}
+  {% endfor %}
+</nav>
 
 {% if request.user.is_authenticated %}
-    <h2>Bulletin</h2>
-    {% for section in page.bulletin %}
-      {{ section }}
-    {% endfor %}
+  <h2>Bulletin</h2>
+  {% for section in page.bulletin %}
+    {{ section }}
+  <h2>Prayer</h2>
+  {% endfor %}
 {% endif %}
 
-    {% for section in page.service %}
-      {{ section }}
-    {% endfor %}
+
+{% for section in page.service %}
+    {{ section }}
+{% endfor %}
 
 {% if request.user.is_authenticated %}
-    <h2>Discussion</h2>
+  <h2>Discussion</h2>
 {% endif %}
 {% endblock %}

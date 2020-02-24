@@ -1,0 +1,17 @@
+{% if value.type == "video" %}
+<div>
+  <video width="320" height="240" controls>
+    {0}
+    Your browser does not support the video tag.
+  </video>
+</div>
+{% else %}
+<div>
+  <audio controls>
+    {% for s in value.sources %}
+      <source src="{{s.src}}" type="{{s.type}}"/>
+    {% endfor %}
+    Your browser does not support the audio element.
+  </audio>
+</div>
+{% endif %}
