@@ -20,7 +20,7 @@
         {# Global stylesheets #}
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-4.3.1.min.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/crossroads.css' %}">
-
+        <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
         {% block extra_css %}
             {# Override this in templates to add extra stylesheets #}
         {% endblock %}
@@ -89,10 +89,8 @@
           </div>
         </nav>
 
-        <div class="container">
         {% block content %}
         {% endblock %}
-        </div>
 
         {# Global javascript #}
         <script type="text/javascript" src="{% static 'js/crossroads.js' %}"></script>

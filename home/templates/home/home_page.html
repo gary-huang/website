@@ -4,15 +4,30 @@
 {% block body_class %}template-homepage{% endblock %}
 
 {% block extra_css %}
+<style>
+.jumbotron {
+  background-image: url({% static 'img/church.jpg' %});
+  background-size: cover;
+  background-position: right;
+  padding: 7em;
+}
+.banner-title {
+  color: #ffca08;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.banner-img {
+  max-height: 200px;
+}
+</style>
 {% endblock extra_css %}
 
 {% block content %}
 <div class="jumbotron">
-  <h1 class="display-5">Welcome to Crossroads!</h1>
-  <p class="lead">Learning to love God, each other and all people.</p>
-  <hr class="my-4">
-  <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-  <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+  <div class="d-flex flex-column justify-content-sm-center">
+    <h1 class="display-5 align-self-center banner-title">welcome to</h1>
+    <img class="align-self-center banner-img img-fluid" style="width:25em; background: white;" src="{% static 'img/crossroads.png' %}"></img>
+  </div>
 </div>
 
   <div class="container marketing">
@@ -20,17 +35,17 @@
     <!-- Three columns of text below the carousel -->
     <div class="row">
       <div class="col-lg-4">
-        <h2>This week</h2>
-        <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna.</p>
+        <h2>join us</h2>
+        <p>We meet every Sunday, 10:30am at Bolton C. Falby Public School.</p>
         <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
       </div><!-- /.col-lg-4 -->
       <div class="col-lg-4">
-        <h2>Our Vision</h2>
+        <h2>our vision</h2>
         <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh.</p>
         <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
       </div><!-- /.col-lg-4 -->
       <div class="col-lg-4">
-        <h2>Community</h2>
+        <h2>community</h2>
         <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
         <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
       </div><!-- /.col-lg-4 -->
@@ -42,11 +57,14 @@
     <hr class="featurette-divider">
 
     <div class="row featurette">
-      <div class="col-md-7">
-        <h2 class="featurette-heading">First featurette heading. <span class="text-muted">It’ll blow your mind.</span></h2>
-        <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
-      </div>
       <div class="col-md-5">
+        <h2 class="featurette-heading">get to know us<span class="text-muted"></span></h2>
+        <p class="lead">Watch our introduction video to learn a little bit about who we are and what we do.</p>
+      </div>
+      <div class="col-md-7">
+        <div class="embed-responsive embed-responsive-16by9">
+          <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/piRaZIOkJ4k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
       </div>
     </div>
 
