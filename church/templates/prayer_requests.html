@@ -1,12 +1,21 @@
 <div class="card-columns">
 {% for pr in prayer_requests %}
-<div class="card">
-  <div class="card-body">
-    <p class="card-text">{{ pr.value }}</p>
-    <footer class="blockquote-footer text-right">
-      <small class="text-muted">{{ pr.user }}</small>
-    </footer>
+  <div class="card">
+      <div class="float-right">
+        <div class="dropdown d-inline-block">
+          <i class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          </i>
+          <div class="dropdown-menu" aria-labelledby="pr{{forloop.counter}}dropdown">
+            <a class="dropdown-item" href="#">Delete</a>
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <p class="card-text">{{ pr.value }}</p>
+      <footer class="blockquote-footer text-right">
+        <small class="text-muted">{{ pr.user }}</small>
+      </footer>
+    </div>
   </div>
-</div>
 {% endfor %}
 </div>

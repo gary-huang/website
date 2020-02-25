@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 from django.db import models
 
 from modelcluster.fields import ParentalKey
@@ -12,44 +13,26 @@ from wagtailmedia.edit_handlers import MediaChooserPanel
 
 class PrayerRequestForm(forms.Form):
     VISIBILITY_CHOICES = [
-        ("1", "No one (only you)"),
-        ("2", "Crossroads members"),
-        ("3", "Public"),
+        ("1", "Only you"),
+        ("2", "Only Crossroads members"),
+        ("3", "Only Crossroads prayer team members"),
+        ("4", "Anyone"),
     ]
-    submitter_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Author visibility (who can see your name)", initial="No one (only you)")
-    post_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Post visibility (who can see your request)", initial="Crossroads members")
-    prayer_request = forms.CharField(label="Prayer request", widget=forms.Textarea)
+    body = forms.CharField(label="Prayer request", max_length=8192, widget=forms.Textarea)
+    post_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Who can see your submission", initial="2")
+    user_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Who can see your name", initial="1")
+
+
+class PrayerRequest(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_visibility = models.IntegerField()
+    post_visibility = models.IntegerField()
+    body = models.CharField(max_length=8192)
 
 
 class ServiceMediaBlock(AbstractMediaChooserBlock):
-    # def render_basic(self, value, context=None):
-    #     if not value:
-    #         return ''
-
-    #     if value.type == 'video':
-    #         player_code = '''
-    #         <div>
-    #             <video width="320" height="240" controls>
-    #                 {0}
-    #                 Your browser does not support the video tag.
-    #             </video>
-    #         </div>
-    #         '''
-    #     else:
-    #         player_code = '''
-    #         <div>
-    #             <audio controls>
-    #                 {0}
-    #                 Your browser does not support the audio element.
-    #             </audio>
-    #         </div>
-    #         '''
-
-    #     return format_html(player_code, format_html_join(
-    #         '\n', "<source{0}>",
-    #         [[flatatt(s)] for s in value.sources]
-    #     ))
-
     class Meta:
         template = "blocks/service_media_block.html"
 
