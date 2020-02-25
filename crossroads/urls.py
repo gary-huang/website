@@ -7,7 +7,9 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
+from church import views as church_views
 from search import views as search_views
+
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
@@ -16,6 +18,8 @@ urlpatterns = [
     url(r'^documents/', include(wagtaildocs_urls)),
 
     url(r'^search/$', search_views.search, name='search'),
+
+    url(r'^submit-prayer-request/$', church_views.submit_prayer_form, name='submit-prayer-request'),
 
     url(r'^login/$', auth_views.LoginView.as_view(template_name='admin/login.html'), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),

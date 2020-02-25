@@ -1,0 +1,12 @@
+{% load filters %}
+
+<form action="/submit-prayer-request/" method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    {% for field in form %}
+      {{ field.label_tag}}
+      {{ field|addclass:"form-control" }}
+    {% endfor %}
+    <input class="form-control" type="submit" value="Submit">
+  </div>
+</form>

@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 
 from modelcluster.fields import ParentalKey
@@ -7,6 +8,17 @@ from wagtail.core import fields as wtfields, blocks
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.edit_handlers import MediaChooserPanel
+
+
+class PrayerRequestForm(forms.Form):
+    VISIBILITY_CHOICES = [
+        ("1", "No one (only you)"),
+        ("2", "Crossroads members"),
+        ("3", "Public"),
+    ]
+    submitter_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Author visibility (who can see your name)", initial="No one (only you)")
+    post_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Post visibility (who can see your request)", initial="Crossroads members")
+    prayer_request = forms.CharField(label="Prayer request", widget=forms.Textarea)
 
 
 class ServiceMediaBlock(AbstractMediaChooserBlock):

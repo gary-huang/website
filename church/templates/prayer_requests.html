@@ -1,0 +1,12 @@
+<div class="card-columns">
+{% for pr in prayer_requests %}
+<div class="card">
+  <div class="card-body">
+    <p class="card-text">{{ pr.value }}</p>
+    <footer class="blockquote-footer text-right">
+      <small class="text-muted">{{ pr.user }}</small>
+    </footer>
+  </div>
+</div>
+{% endfor %}
+</div>
