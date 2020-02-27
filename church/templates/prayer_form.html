@@ -1,6 +1,6 @@
 {% load filters %}
 
-<form action="/submit-prayer-request/" method="post">
+<form action="{% url 'create-prayer-request' %}" method="post">
   {% csrf_token %}
   <div class="form-group">
     {% for field in form %}
