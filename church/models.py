@@ -85,7 +85,17 @@ class AnnouncementsSectionBlock(blocks.StructBlock):
 
 
 class SermonSectionBlock(blocks.StructBlock):
-    pass
+    title = blocks.CharBlock()
+    speaker = blocks.CharBlock()
+    slides_url = blocks.CharBlock()
+
+    class Meta:
+        template = "blocks/sermon_section.html"
+
+
+class DiscussionSectionBlock(blocks.StructBlock):
+    class Meta:
+        template = "blocks/discussion_section.html"
 
 
 class ServicePage(Page):

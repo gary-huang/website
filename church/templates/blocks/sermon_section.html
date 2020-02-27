@@ -1,0 +1,8 @@
+<h2>Sermon</h2>
+<h3>{{ value.title }}</h3>
+{% if value.slides_url %}
+  <div class="embed-responsive embed-responsive-16by9">
+    <iframe class="embed-responsive-item" src="{{ value.slides_url }}" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true">
+    </iframe>
+  </div>
+{% endif %}
