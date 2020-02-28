@@ -10,9 +10,15 @@
       {{ field.type }}
     {% endfor %}
     {% endcomment %}
-    {{ form.body.label_tag}}{{ form.body|addclass:"form-control input-sm" }}
-    {{ form.post_visibility.label_tag}}{{ form.post_visibility|addclass:"form-control" }}
-    {{ form.user_visibility.label_tag}}{{ form.user_visibility|addclass:"form-control" }}
+    {{ form.body.label_tag}}{{ form.body|addclass:"form-control" }}
+    <div class="form-row">
+      <div class="col-md-4 mb-2">
+        {{ form.post_visibility.label_tag}}{{ form.post_visibility|addclass:"form-control" }}
+      </div>
+      <div class="col-md-4 mb-2">
+        {{ form.user_visibility.label_tag}}{{ form.user_visibility|addclass:"form-control" }}
+      </div>
+    </div>
     <input class="form-control btn btn-primary" type="submit" value="Submit">
   </div>
 </form>

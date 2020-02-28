@@ -8,5 +8,6 @@ class Comment(models.Model):
     parent = models.ForeignKey("Comment", on_delete=models.SET_NULL, null=True, related_name="children")
     author = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
     body = models.CharField(max_length=16384)
-    # reactions?
 
+    thread_id = models.CharField(max_length=128)
+    # reactions?

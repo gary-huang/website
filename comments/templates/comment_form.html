@@ -1,0 +1,17 @@
+{% load filters %}
+
+{% if parent_id %}
+<form action="{% url 'create-comment' thread_id parent_id %}" method="post">
+{% else %}
+<form action="{% url 'create-comment' thread_id %}" method="post">
+{% endif %}
+  {% csrf_token %}
+  <div class="form-row">
+    <div class="col-md-4 mb-2">
+      {{ form.body.label_tag}}{{ form.body|addclass:"form-control" }}
+    </div>
+    <div class="col-md-4 mb-2">
+      <input class="form-control btn btn-primary" type="submit" value="Post">
+    </div>
+  </div>
+</form>
