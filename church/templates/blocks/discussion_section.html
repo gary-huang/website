@@ -1,1 +1,9 @@
-<h2>Discussion:</h2>
+{% load wagtailcore_tags %}
+{% load comments %}
+
+{% if user.is_authenticated %}
+  <h2>Discussion {{value.id}}</h2>
+  {% for item in value.items %}
+    {% include_block item %}
+  {% endfor %}
+{% endif %}

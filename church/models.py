@@ -41,8 +41,42 @@ class ServicesIndexPage(Page):
     intro = wtfields.RichTextField(blank=True)
 
     content_panels = Page.content_panels + [
-        FieldPanel('intro', classname="full")
+        FieldPanel("intro", classname="full")
     ]
+
+
+class IDListBlock(blocks.ListBlock):
+    """Adds an ID to list items. Similarly to what's done
+    for structblock children.
+    """
+
+    def get_prep_value(self, value):
+        r = super().get_prep_value(value)
+        print(r)
+        for i in r:
+            if "id" not in i:
+                import uuid
+                i["id"] = uuid.uuid4()
+        return r
+
+
+class IDStructBlock(blocks.StructBlock):
+    """
+    """
+    def to_python(self, value):
+        # print(value)
+        print(self.child_blocks)
+        self.child_blocks["id"] = blocks.CharBlock(required=False)
+        r = super().to_python(value)
+        if "id" in value:
+            r["id"] = value["id"]
+        return r
+
+    def get_prep_value(self, value):
+        print(self, value)
+        # TODO: generate an ID here
+        return super().get_prep_value(value)
+
 
 
 class BulletinItemBlock(blocks.StructBlock):
@@ -88,14 +122,36 @@ class SermonSectionBlock(blocks.StructBlock):
     title = blocks.CharBlock()
     speaker = blocks.CharBlock()
     slides_url = blocks.CharBlock()
+    # should be a stream of
+    # - polls
+    # - discussion
 
     class Meta:
         template = "blocks/sermon_section.html"
 
 
-class DiscussionSectionBlock(blocks.StructBlock):
+class DiscussionItemBlock(IDStructBlock):
+    title = blocks.CharBlock()
+
+    class Meta:
+        template = "blocks/discussion_item_section.html"
+
+    def get_context(self, value, parent_context=None):
+        ctx = super().get_context(value, parent_context=parent_context)
+        ctx['item'] = self
+        return ctx
+    # day?
+
+
+class DiscussionSectionBlock(IDStructBlock):
+    items = IDListBlock(DiscussionItemBlock, label="Discussion item")
+
     class Meta:
         template = "blocks/discussion_section.html"
+
+    def get_context(self, value, parent_context=None):
+        ctx = super().get_context(value, parent_context=parent_context)
+        return ctx
 
 
 class ServicePage(Page):
@@ -113,6 +169,7 @@ class ServicePage(Page):
         ('worship_section', WorshipSectionBlock(name="Worship Section")),
         ('announcements_section', AnnouncementsSectionBlock(name="Announcement Section")),
         ('sermon_section', SermonSectionBlock(name="Sermon Section")),
+        ('discussion_section', DiscussionSectionBlock(name="Discussion Section")),
         # TODO
         # - polls/voting?
         # - feedback

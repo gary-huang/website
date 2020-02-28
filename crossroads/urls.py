@@ -20,7 +20,8 @@ urlpatterns = [
 
     url(r'^search/$', search_views.search, name='search'),
 
-    url(r'^prayer-request/create$', church_views.submit_prayer_form, name='create-prayer-request'),
+    path('comments/', include('comments.urls')),
+    path('prayer-request/create', church_views.submit_prayer_form, name='create-prayer-request'),
     path('prayer-request/delete/<str:id>', church_views.delete_prayer_request, name='delete-prayer-request'),
 
     url(r'^login/$', auth_views.LoginView.as_view(template_name='admin/login.html'), name='login'),
