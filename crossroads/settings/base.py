@@ -93,10 +93,9 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = "church.User"
 
-# Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -152,8 +151,10 @@ MEDIA_URL = '/media/'
 
 
 # Wagtail settings
-
 WAGTAIL_SITE_NAME = "crossroads"
+WAGTAIL_USER_EDIT_FORM = 'church.forms.UserEditForm'
+WAGTAIL_USER_CREATION_FORM = 'church.forms.UserCreationForm'
+WAGTAIL_USER_CUSTOM_FIELDS = []
 
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash

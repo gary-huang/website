@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from modelcluster.fields import ParentalKey
@@ -11,22 +11,25 @@ from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.edit_handlers import MediaChooserPanel
 
 
+class User(AbstractUser):
+    pass
+
+
 class PrayerRequestForm(forms.Form):
     VISIBILITY_CHOICES = [
         ("1", "Only you"),
         ("2", "Only Crossroads members"),
         ("3", "Only Crossroads prayer team members"),
-        ("4", "Anyone"),
     ]
-    body = forms.CharField(label="Prayer request", max_length=8192, widget=forms.Textarea)
+    body = forms.CharField(label="Prayer request", max_length=8192, widget=forms.Textarea(attrs={ "rows": 3 }))
     post_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Who can see your submission", initial="2")
     user_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Who can see your name", initial="1")
 
 
 class PrayerRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey("church.User", on_delete=models.CASCADE)
     user_visibility = models.IntegerField()
     post_visibility = models.IntegerField()
     body = models.CharField(max_length=8192)
@@ -64,8 +67,6 @@ class IDStructBlock(blocks.StructBlock):
     """
     """
     def to_python(self, value):
-        # print(value)
-        print(self.child_blocks)
         self.child_blocks["id"] = blocks.CharBlock(required=False)
         r = super().to_python(value)
         if "id" in value:
@@ -73,10 +74,8 @@ class IDStructBlock(blocks.StructBlock):
         return r
 
     def get_prep_value(self, value):
-        print(self, value)
         # TODO: generate an ID here
         return super().get_prep_value(value)
-
 
 
 class BulletinItemBlock(blocks.StructBlock):
@@ -158,7 +157,7 @@ class ServicePage(Page):
     date = models.DateField("Service date")
 
     mediasec = wtfields.StreamField([
-        ('media', ServiceMediaBlock(icon="media")),
+        ('media', ServiceMediaBlock(icon="media", required=False)),
     ])
 
     bulletin = wtfields.StreamField([
