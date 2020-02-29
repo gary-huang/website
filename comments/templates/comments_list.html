@@ -25,17 +25,22 @@
 {% for el in html %}
   {% if el != "end" %}
 <div id="comment{{el.pk}}" class="media">
-  <div class="panel-collapse in" id="collapseComment{{el.pk}}">
-    <div class="media-body">
-      <button class="btn btn-default btn-xs" type="button" data-toggle="collapse" data-target="#collapseComment{{el.pk}}" aria-expanded="true" aria-controls="collapseExample">
+  <div class="media-body">
+    <div class="muted">
+      <a href="#collapseComment{{el.pk}}" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseComment{{el.pk}}">
         {% octicon "dash" %}
-    </button>
-    <span class="label label-info"></span> {{ el.author }} {{ el.created_at }}
-      <p>{{el.body}}</p>
+      </a>
+      <a class="m-1">{{el.author}}</a>
+      <span class="text-muted m-1">{{ el.created_at }}</span>
+    </div>
+    <div class="panel-collapse collapse show" id="collapseComment{{el.pk}}">
+      <p class="ml-3">{{el.body}}</p>
       <div class="comment-meta">
-        <span><a href="#">delete</a></span>
+        {% if user == el.author %}
+          <span><a href="{% url 'delete-comment' el.pk %}" class="ml-3">delete</a></span>
+        {% endif %}
         <span>
-          <a role="button" data-toggle="collapse" href="#replyComment{{el.pk}}" aria-expanded="false" aria-controls="collapseExample">reply</a>
+          <a href="#replyComment{{el.pk}}" class="m-2" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">reply</a>
         </span>
         <div class="collapse" id="replyComment{{el.pk}}">
           <form action="{% url 'create-comment' thread_id el.pk %}" method="post">

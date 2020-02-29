@@ -33,7 +33,8 @@ def render_comments_list_for(context, thread_id):
     return {
         "html": html,
         "thread_id": thread_id,
-        "form": form
+        "form": form,
+        "user": context["user"],
     }
 
 
