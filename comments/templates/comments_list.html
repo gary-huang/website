@@ -1,8 +1,10 @@
 {% load filters %}
+{% load octicons %}
 <style>
 .media {
   border-left: 1px dotted #000;
   border-bottom: 1px dotted #000;
+  border-top: 1px dotted #000;
   margin-bottom: 5px;
   padding-left: 10px;
 }
@@ -21,25 +23,14 @@
 </form>
 
 {% for el in html %}
-  {% if el == "in" %}
+  {% if el != "end" %}
 <div id="comment{{el.pk}}" class="media">
-  {% comment %}
-  <div class="media-heading">
-    <button class="btn btn-default btn-xs" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseExample">
-      <span class="glyphicon glyphicon-minus" aria-hidden="true">
-      </span>
-    </button>
-    <span class="label label-info">12314</span> terminator 12 hours ago
-  </div>
-  {% endcomment %}
-
-  <div class="panel-collapse in" id="collapseOne">
+  <div class="panel-collapse in" id="collapseComment{{el.pk}}">
     <div class="media-body">
-  {% elif el == "out" %}
-    </div>
-  </div>
-</div>
-  {% else %}
+      <button class="btn btn-default btn-xs" type="button" data-toggle="collapse" data-target="#collapseComment{{el.pk}}" aria-expanded="true" aria-controls="collapseExample">
+        {% octicon "dash" %}
+    </button>
+    <span class="label label-info"></span> {{ el.author }} {{ el.created_at }}
       <p>{{el.body}}</p>
       <div class="comment-meta">
         <span><a href="#">delete</a></span>
@@ -56,5 +47,9 @@
           </form>
         </div>
       </div>
+  {% else %}
+    </div>
+  </div>
+</div>
   {% endif %}
 {% endfor %}

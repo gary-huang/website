@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'church',
     'comments',
 
+    'octicons',
+
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.embeds',

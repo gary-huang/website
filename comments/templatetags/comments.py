@@ -16,23 +16,18 @@ def render_comments_list_for(context, thread_id):
     html = []
     last_indent = None
     while len(parents):
-        p, indent = parents.pop(0)
-        if last_indent is not None:
-            if last_indent < indent:
-                for _ in range(last_indent, indent): html.append("in")
-            elif last_indent > indent:
-                for _ in range(indent, last_indent): html.append("out")
+        p = parents.pop(0)
+        if p == "end":
+            html.append("end")
+            continue
 
+        p, indent = p
         html.append((p, indent))
         last_indent = indent
-        parents = [(c, indent + 1) for c in p.children.order_by("created_at")] + parents
-
-    # django templates don't support counting loops
-    if html:
-        last_indent = html[-1][1]
-        for i in range(0, last_indent): html.append("out")
+        parents = [(c, indent + 1) for c in p.children.order_by("created_at")] + ["end"] + parents
 
     html = [p[0] if isinstance(p, tuple) else p for p in html]
+    print(html)
     form = forms.CommentForm()
     comments = mods.Comment.objects.filter(thread_id="id").order_by("created_at")
     return {

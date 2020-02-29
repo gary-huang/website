@@ -1,3 +1,4 @@
 django>=3.0,<3.1
+django-octicons==1.0.2
 wagtail>=2.8,<2.9
 wagtailmedia>=0.5,<0.6
