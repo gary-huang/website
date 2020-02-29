@@ -1,5 +1,5 @@
 {% load comments %}
 
 <h3>{{ value.title }}</h3>
-{# {% render_comments_list_for value.id %} #}
-{% render_comments_list_for "asdf" %}
+{{ value.content }}
+{% render_comments_list_for value.id %}

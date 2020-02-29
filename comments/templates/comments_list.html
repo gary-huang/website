@@ -16,8 +16,8 @@
 
 <form action="{% url 'create-comment' thread_id %}" method="post">
   {% csrf_token %}
-  <div class="form-row">
-    {{ form.body.label_tag}}{{ form.body|addclass:"form-control" }}
+  <div class="form-group">
+    {{ form.body|addclass:"form-control mb-2" }}
     <input class="form-control btn btn-primary" type="submit" value="Post">
   </div>
 </form>
@@ -36,17 +36,19 @@
     <div class="panel-collapse collapse show" id="collapseComment{{el.pk}}">
       <p class="ml-3">{{el.body}}</p>
       <div class="comment-meta">
-        {% if user == el.author %}
-          <span><a href="{% url 'delete-comment' el.pk %}" class="ml-3">delete</a></span>
-        {% endif %}
-        <span>
-          <a href="#replyComment{{el.pk}}" class="m-2" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">reply</a>
-        </span>
+        <div class="mb-1">
+          {% if user == el.author %}
+            <span><a href="{% url 'delete-comment' el.pk %}" class="ml-3">delete</a></span>
+          {% endif %}
+          <span>
+            <a href="#replyComment{{el.pk}}" class="m-2" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="collapseExample">reply</a>
+          </span>
+        </div>
         <div class="collapse" id="replyComment{{el.pk}}">
           <form action="{% url 'create-comment' thread_id el.pk %}" method="post">
             {% csrf_token %}
             <div class="form-row">
-              {{ form.body.label_tag}}{{ form.body|addclass:"form-control" }}
+              {{ form.body|addclass:"form-control" }}
               <input class="form-control btn btn-primary" type="submit" value="Post">
             </div>
           </form>

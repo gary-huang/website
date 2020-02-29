@@ -55,7 +55,6 @@ class IDListBlock(blocks.ListBlock):
 
     def get_prep_value(self, value):
         r = super().get_prep_value(value)
-        print(r)
         for i in r:
             if "id" not in i:
                 import uuid
@@ -74,8 +73,9 @@ class IDStructBlock(blocks.StructBlock):
         return r
 
     def get_prep_value(self, value):
-        # TODO: generate an ID here
-        return super().get_prep_value(value)
+        # TODO: generate an ID here?
+        r = super().get_prep_value(value)
+        return r
 
 
 class BulletinItemBlock(blocks.StructBlock):
@@ -131,6 +131,7 @@ class SermonSectionBlock(blocks.StructBlock):
 
 class DiscussionItemBlock(IDStructBlock):
     title = blocks.CharBlock()
+    content = blocks.RichTextBlock(required=False)
 
     class Meta:
         template = "blocks/discussion_item_section.html"
@@ -143,6 +144,7 @@ class DiscussionItemBlock(IDStructBlock):
 
 
 class DiscussionSectionBlock(IDStructBlock):
+    title = blocks.CharBlock(required=False, default="Discussion")
     items = IDListBlock(DiscussionItemBlock, label="Discussion item")
 
     class Meta:

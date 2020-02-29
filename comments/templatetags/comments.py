@@ -27,7 +27,6 @@ def render_comments_list_for(context, thread_id):
         parents = [(c, indent + 1) for c in p.children.order_by("created_at")] + ["end"] + parents
 
     html = [p[0] if isinstance(p, tuple) else p for p in html]
-    print(html)
     form = forms.CommentForm()
     comments = mods.Comment.objects.filter(thread_id="id").order_by("created_at")
     return {
