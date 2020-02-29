@@ -21,7 +21,10 @@ class PrayerRequestForm(forms.Form):
         ("2", "Only Crossroads members"),
         ("3", "Only Crossroads prayer team members"),
     ]
-    body = forms.CharField(label="Prayer request", max_length=8192, widget=forms.Textarea(attrs={ "rows": 3 }))
+    body = forms.CharField(label="Prayer request", max_length=8192, widget=forms.Textarea(attrs={
+        "rows": 3,
+        "placeholder": "your prayer request or praise report"
+    }))
     post_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Who can see your submission", initial="2")
     user_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Who can see your name", initial="1")
 

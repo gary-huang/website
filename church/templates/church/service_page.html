@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load prayer_tags %}
 {% load wagtailcore_tags %}
+{% load octicons %}
 
 {% block content %}
 <div class="container" style="margin-bottom: 70px">
@@ -14,17 +15,19 @@
 </nav>
 
 {% if request.user.is_authenticated %}
-  <h2>Bulletin</h2>
   {% for section in page.bulletin %}
     {{ section }}
+  {% endfor %}
   <hr/>
   <h2 id="prayer-requests">Prayer</h2>
-  <h3>Requests & Praise</h3>
   {% prayer_requests %}
-  <h3>Submit</h3>
-  {% prayer_request_form %}
+  <a href="#collapsePrayerForm" data-toggle="collapse" role="button" aria-controls="collapsePrayerForm" class="" style="color: black;">
+    <h3>Add a prayer request / praise report<span class="float-right">{% octicon "plus" width=25 height=25 %}</span></h3>
+  </a>
+  <div id="collapsePrayerForm" class="panel-collapse collapse">
+    {% prayer_request_form %}
+  </div>
   <hr/>
-  {% endfor %}
 {% endif %}
 
 {% for section in page.service %}

@@ -5,11 +5,16 @@
 
 {% block extra_css %}
 <style>
+.parallax {
+  background-attachment: fixed;
+}
 .jumbotron {
   background-image: url({% static 'img/church.jpg' %});
   background-size: cover;
   background-position: right;
-  padding: 7em;
+  background-position-y: -10px;
+  min-height: 650px;
+  /*background-position-x: -400px;*/
 }
 .banner-title {
   color: #ffca08;
@@ -28,12 +33,11 @@
 {% block content %}
 <div class="jumbotron">
   <div class="d-flex flex-column justify-content-sm-center">
-    <h1 class="display-5 align-self-center banner-title">welcome to</h1>
-    <img class="align-self-center banner-img img-fluid" style="width:25em; background: white;" src="{% static 'img/crossroads.png' %}"></img>
+    <h1 class="display-5 align-self-center banner-title rellax" data-rellax-speed="-4" data-rellax-mobile-speed="-1">crossroads</h1>
   </div>
 </div>
 
-  <div class="mr-3 ml-3 marketing">
+  <div class="mr-3 ml-3 marketing rellax" data-rellax-speed="1">
 
     <!-- Three columns of text below the carousel -->
     <div class="row">
@@ -79,7 +83,7 @@
         <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
       </div>
       <div class="col-md-7 order-md-1">
-        <img class="featurette-image img-fluid mx-auto" src="{% static 'img/prayer.jpg' %}"></img>
+        <img class="featurette-image img-fluid mx-auto parallax" src="{% static 'img/prayer.jpg' %}"></img>
       </div>
     </div>
 
