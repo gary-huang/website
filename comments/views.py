@@ -74,7 +74,7 @@ def view_thread(request, thread_id):
 
     html = [p[0] if isinstance(p, tuple) else p for p in html]
     form = forms.CommentForm()
-    return shortcuts.render(request, "comments_list.html", { "form": form, "thread_id": thread_id, "html": html })
+    return shortcuts.render(request, "raw_comments_list.html", { "form": form, "thread_id": thread_id, "html": html })
 
 
 @authenticated

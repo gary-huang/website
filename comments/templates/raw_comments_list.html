@@ -1,0 +1,11 @@
+<ul>
+{% for el in html %}
+  {% if el == "in" %}
+    <ul>
+  {% elif el == "out" %}
+    </ul>
+  {% else %}
+  <li>{{ el.body }} | {{ el.author }} ({{ el.created_at }})</li>
+  {% endif %}
+{% endfor %}
+</ul>

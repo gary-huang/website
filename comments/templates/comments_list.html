@@ -1,11 +1,60 @@
-<ul>
+{% load filters %}
+<style>
+.media {
+  border-left: 1px dotted #000;
+  border-bottom: 1px dotted #000;
+  margin-bottom: 5px;
+  padding-left: 10px;
+}
+.comment-meta {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 5px;
+}
+</style>
+
+<form action="{% url 'create-comment' thread_id %}" method="post">
+  {% csrf_token %}
+  <div class="form-row">
+    {{ form.body.label_tag}}{{ form.body|addclass:"form-control" }}
+    <input class="form-control btn btn-primary" type="submit" value="Post">
+  </div>
+</form>
+
 {% for el in html %}
   {% if el == "in" %}
-    <ul>
+<div id="comment{{el.pk}}" class="media">
+  {% comment %}
+  <div class="media-heading">
+    <button class="btn btn-default btn-xs" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseExample">
+      <span class="glyphicon glyphicon-minus" aria-hidden="true">
+      </span>
+    </button>
+    <span class="label label-info">12314</span> terminator 12 hours ago
+  </div>
+  {% endcomment %}
+
+  <div class="panel-collapse in" id="collapseOne">
+    <div class="media-body">
   {% elif el == "out" %}
-    </ul>
+    </div>
+  </div>
+</div>
   {% else %}
-  <li>{{ el.body }} | {{ el.author }} ({{ el.created_at }})</li>
+      <p>{{el.body}}</p>
+      <div class="comment-meta">
+        <span><a href="#">delete</a></span>
+        <span>
+          <a role="button" data-toggle="collapse" href="#replyComment{{el.pk}}" aria-expanded="false" aria-controls="collapseExample">reply</a>
+        </span>
+        <div class="collapse" id="replyComment{{el.pk}}">
+          <form action="{% url 'create-comment' thread_id el.pk %}" method="post">
+            {% csrf_token %}
+            <div class="form-row">
+              {{ form.body.label_tag}}{{ form.body|addclass:"form-control" }}
+              <input class="form-control btn btn-primary" type="submit" value="Post">
+            </div>
+          </form>
+        </div>
+      </div>
   {% endif %}
 {% endfor %}
-</ul>
