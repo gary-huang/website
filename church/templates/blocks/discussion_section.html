@@ -1,9 +1,9 @@
 {% load wagtailcore_tags %}
 {% load comments %}
 
-{% if user.is_authenticated %}
+<section>
   <h2>{{value.title}}</h2>
   {% for item in value.items %}
     {% include_block item %}
   {% endfor %}
-{% endif %}
+</section>

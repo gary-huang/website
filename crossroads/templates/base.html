@@ -21,6 +21,7 @@
         <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-4.3.1.min.css' %}">
         <link rel="stylesheet" type="text/css" href="{% static 'css/crossroads.css' %}">
         <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+        <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans|Poppins&display=swap" rel="stylesheet"> 
         {% block extra_css %}
             {# Override this in templates to add extra stylesheets #}
         {% endblock %}
@@ -46,17 +47,17 @@
               <li class="nav-item dropdown active">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About us</a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="#">Our beliefs</a>
-                  <a class="dropdown-item" href="#">Sunday gatherings</a>
-                  <a class="dropdown-item" href="#">Church calendar</a>
-                  <a class="dropdown-item" href="#">Personal stories</a>
-                  <a class="dropdown-item" href="#">Become a Christian</a>
-                  <a class="dropdown-item" href="#">Become a member</a>
+                  <a class="dropdown-item" href="/our-beliefs">Our beliefs</a>
+                  <a class="dropdown-item" href="/sunday-gatherings">Sunday gatherings</a>
+                  <a class="dropdown-item" href="/personal-stories">Personal stories</a>
                 </div>
               </li>
               <li class="nav-item dropdown active">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Resources</a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="#">Church calendar</a>
+                  <a class="dropdown-item" href="#">Become a member</a>
+                  <a class="dropdown-item" href="#">Become a Christian</a>
                   <a class="dropdown-item" href="#">Blog</a>
                   <a class="dropdown-item" href="#">Devotional reading</a>
                 </div>
@@ -97,12 +98,12 @@
         <script type="text/javascript" src="{% static 'js/jquery-3.3.1.slim.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/popper-1.14.7.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap-4.3.1.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/rellax.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/universal-parallax.min.js' %}"></script>
         <script>
-          var rellax = new Rellax(".rellax");
-          $('[data-toggle="collapse"]').on('click', function() {
-            // TODO: icon toggling
-          });
+          new universalParallax().init();
+          // $('[data-toggle="collapse"]').on('click', function() {
+          //   // TODO: icon toggling
+          // });
         </script>
 
         {% block extra_js %}

@@ -186,3 +186,30 @@ class ServicePage(Page):
         StreamFieldPanel("bulletin"),
         StreamFieldPanel("service"),
     ]
+
+
+# class FeaturetteBlock(blocks.StructBlock):
+#     pass
+# 
+# 
+# class ContentPage(Page):
+#     content = wtfields.StreamField([
+#         ("featurette", FeaturetteBlock(name="Featurettes")),
+#     ])
+# 
+#     content_panels = Page.content_panels + [
+#         StreamFieldPanel("content"),
+#     ]
+
+
+class OurBeliefsPage(Page):
+    pass
+
+
+class SundayGatheringsPage(Page):
+    pass
+
+
+class PersonalStoriesPage(Page):
+    pass
+

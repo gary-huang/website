@@ -6,7 +6,20 @@
   margin-top: 10px;
 }
 
+h1, h2, h3, h4 {
+  font-family: 'IBM Plex Sans';
+}
+
 body {
-  font-family: Lato !important;
+  font-family: 'Poppins';
   font-weight: 400;
+}
+
+.featurette-center, .f-center {
+  align-self: center;
+  padding-bottom: 2em;
+}
+
+.featurette-divider {
+  margin: 3rem 0;
 }
