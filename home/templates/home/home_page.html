@@ -64,7 +64,6 @@
     <h1 class="display-5 align-self-center banner-title">Church</h1>
   </div>
 </section>
-<div class="container">
 
   <div class="mr-3 ml-3 marketing">
 
@@ -87,15 +86,27 @@
       </div><!-- /.col-lg-4 -->
     </div><!-- /.row -->
 
-
     <!-- START THE FEATURETTES -->
 
     <hr class="featurette-divider">
 
     <div class="row featurette">
+      <div class="banner parallax" data-parallax-image="{% static 'img/prayer.jpg' %}"></div>
+      <div class="row featurette" style="margin-top: 20em; margin-bottom: 20em; background: white; height: 19em; opacity: 0.9">
+      <div class="col-md-7 order-md-2" style="align-self: center; padding: 0em 3em;">
+        <p class="lead">Here at Crossroads Church, our calling is to help you and your loved ones Connect with Christ in Community, live like Jesus, and feel His Love. Our calling is to help you find yours in Christ.</p>
+      </div>
+      <div class="col-md-5 order-md-1 f-center" style="text-align: center; background: white;">
+        <h2 class="featurette-heading">How we live<span class="text-muted"></span></h2>
+      </div>
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
       <div class="col-md-5 f-center">
-        <h2 class="featurette-heading">Get to know us<span class="text-muted"></span></h2>
-        <p class="lead">Watch our introduction video to learn a little bit about who we are and what we do.</p>
+        <h2 class="featurette-heading f-center" style="text-align: center">Get to know us<span class="text-muted"></span></h2>
       </div>
       <div class="col-md-7">
         <div class="embed-responsive embed-responsive-16by9">
@@ -107,24 +118,14 @@
     <hr class="featurette-divider">
 
     <div class="row featurette">
-      <div class="col-md-5 order-md-2 f-center">
-        <h2 class="featurette-heading">What we do<span class="text-muted"></span></h2>
-        <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+      <div class="banner parallax" data-parallax-image="{% static 'img/newlife.jpg' %}"></div>
+      <div class="row featurette" style="margin-top: 20em; margin-bottom: 20em; background: white; height: 20em; opacity: 0.9">
+      <div class="col-md-7 order-md-1" style="align-self: center; padding: 0em 3em; background: white;">
+        <p class="lead">We are ordinary people who struggle and live, just like you. We are still learning what it means to be like Jesus, and we find it hard to do. We make mistakes. We have moral struggles. But we are determined to change. We want to admit our sins and struggles, and we want to do something about them, with God’s help.</p>
       </div>
-      <div class="col-md-7 order-md-1">
-        <img class="featurette-image img-fluid mx-auto" src="{% static 'img/prayer.jpg' %}"></img>
+      <div class="col-md-5 order-md-2 f-center" style="text-align: center; background: white;">
+        <h2 class="featurette-heading">How we live<span class="text-muted"></span></h2>
       </div>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-5 f-center">
-        <h2 class="featurette-heading">Our mission<span class="text-muted"></span></h2>
-        <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
-      </div>
-      <div class="col-md-7">
-        <img class="featurette-image img-fluid mx-auto" src="{% static 'img/newlife.jpg' %}"></img>
       </div>
     </div>
 
@@ -133,7 +134,5 @@
     <!-- /END THE FEATURETTES -->
 
   </div><!-- /.container -->
-
-</div>
 
 {% endblock content %}
