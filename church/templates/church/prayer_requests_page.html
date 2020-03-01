@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% load prayer_tags %}
+
+{% block extra_css %}
+<style>
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="container">
+  <h1>Prayer requests</h1>
+  {% if request.user.is_authenticated %}
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Church</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">You</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Prayer jar</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent" style="margin-top: 2em;">
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+      <div class="container">
+        {% prayer_requests %}
+        {% prayer_request_form %}
+      </div>
+    </div>
+    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+      <div class="container">
+        {% user_prayer_requests request.user %}
+        {% prayer_request_form %}
+      </div>
+    </div>
+    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+      <div class="container">
+        {% prayer_requests %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p class="lead">
+    Jesus said to His followers, “freely you have received, freely give!” As we discover what it means that God loves us, we are compelled to share that love with others… those who know and those we do not. If God so loved the world (John 3:16), how can we do less.
+  </p>
+  <p class="lead">
+    We offer several opportunities to share the love of Jesus with others. We also want to share His love with you by praying for you. Please send us your prayer requests so that we can pray for you.
+  </p>
+    {% public_prayer_request_form %}
+  {% endif %}
+</div>
+{% endblock %}

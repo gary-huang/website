@@ -6,17 +6,17 @@ $ docker-compose up -d --build server
 
 # TODO/brainstorming
 ## priority
-- [ ] figure out navigation
-- [ ] info pages
+- [ ] rest of info pages
 - [ ] prayer requests page
 - [ ] site footer
+- [ ] bible verse widget
+- [ ] bootstrap scrollspy for service page navbar
 - [ ] production docker config
-
 
 ## stretch
 - [ ] alternate comment background colours
 - [ ] find out how volunteer schedules are managed
-- [ ] collapsible service sections
+- [x] collapsible service sections
 - [ ] when service is "active" (during/before)
 - [x] when audio/video is available after service post player at the top (or should be sticky to page)
 - [ ] all sections collapse when service is over

@@ -213,3 +213,6 @@ class SundayGatheringsPage(Page):
 class PersonalStoriesPage(Page):
     pass
 
+
+class PrayerRequestsPage(Page):
+    pass

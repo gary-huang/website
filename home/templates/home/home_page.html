@@ -65,6 +65,7 @@
   </div>
 </section>
 
+<div class="container">
   <div class="mr-3 ml-3 marketing">
 
     <!-- Three columns of text below the carousel -->
@@ -72,7 +73,7 @@
       <div class="col-lg-4">
         <h2>Join us</h2>
         <p class="lead">We meet every Sunday, 10:30am at Bolton C. Falby Public School.</p>
-        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+        <p><a class="btn btn-secondary" href="#" role="button">View directions &raquo;</a></p>
       </div><!-- /.col-lg-4 -->
       <div class="col-lg-4">
         <h2>Our calling</h2>
@@ -81,11 +82,12 @@
       </div><!-- /.col-lg-4 -->
       <div class="col-lg-4">
         <h2>Services</h2>
-        <p class="lead">We support and run our services digitally just as we do in real life. Click below to view this week's service.</p>
-        <p><a class="btn btn-secondary" href="{% pageurl current_service_page %}" role="button">View details &raquo;</a></p>
+        <p class="lead">We support and run our services digitally just as we do in real life. Click below to view this week's service: <b>{{ current_service_page.title }}</b>.</p>
+        <p><a class="btn btn-secondary" href="{% pageurl current_service_page %}" role="button">View service &raquo;</a></p>
       </div><!-- /.col-lg-4 -->
     </div><!-- /.row -->
-
+</div>
+</div>
     <!-- START THE FEATURETTES -->
 
     <hr class="featurette-divider">
@@ -124,7 +126,7 @@
         <p class="lead">We are ordinary people who struggle and live, just like you. We are still learning what it means to be like Jesus, and we find it hard to do. We make mistakes. We have moral struggles. But we are determined to change. We want to admit our sins and struggles, and we want to do something about them, with God’s help.</p>
       </div>
       <div class="col-md-5 order-md-2 f-center" style="text-align: center; background: white;">
-        <h2 class="featurette-heading">How we live<span class="text-muted"></span></h2>
+        <h2 class="featurette-heading">Who we are<span class="text-muted"></span></h2>
       </div>
       </div>
     </div>
