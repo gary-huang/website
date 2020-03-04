@@ -14,9 +14,11 @@ class PrayerRequest(models.Model):
         ("member", "Only Crossroads members"),
         ("prayer_team", "Only Crossroads prayer team members"),
     ]
+    STATE_ACTIVE = "ACT"
+    STATE_ANSWERED = "ANS"
     STATE_CHOICES = [
-        ("ACT", "Active"),
-        ("ANS", "Answered"),
+        (STATE_ACTIVE, "Active"),
+        (STATE_ANSWERED, "Answered"),
     ]
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -24,7 +26,7 @@ class PrayerRequest(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
     provided_name = models.CharField(max_length=64, default="")
     body = models.CharField(max_length=16384)
-    state = models.CharField(max_length=3, choices=STATE_CHOICES, default="ACT")
+    state = models.CharField(max_length=3, choices=STATE_CHOICES, default=STATE_ACTIVE)
 
     @classmethod
     def for_user(cls, user):

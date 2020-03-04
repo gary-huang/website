@@ -23,7 +23,18 @@ def prayer_requests(context):
     if not user.is_authenticated:
         raise exceptions.PermissionDenied("")
 
-    context["prayer_requests"] = models.PrayerRequest.crossroads_requests_for_user(user)
+    context["prayer_requests"] = models.PrayerRequest.crossroads_requests_for_user(user).filter(state=models.PrayerRequest.STATE_ACTIVE)
+    return context
+
+
+@register.inclusion_tag("prayer_requests.html", takes_context=True)
+def answered_prayer_requests(context):
+    user = context.request.user
+
+    if not user.is_authenticated:
+        raise exceptions.PermissionDenied("")
+
+    context["prayer_requests"] = models.PrayerRequest.crossroads_requests_for_user(user).filter(state=models.PrayerRequest.STATE_ANSWERED)
     return context
 
 
@@ -35,12 +46,3 @@ def prayer_request_form():
 @register.inclusion_tag("public_prayer_form.html")
 def public_prayer_request_form():
     return { "form": forms.PrayerRequestForm() }
-
-
-@viewtils.authenticated
-def delete_prayer_request(request, id):
-    preq = models.PrayerRequest.objects.get(pk=id)
-    if preq.user != request.user:
-        raise exceptions.PermissionDenied("")
-    preq.delete()
-    return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")

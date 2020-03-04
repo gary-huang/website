@@ -18,10 +18,10 @@
           </div>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pr{{forloop.counter}}dropdown">
               <a class="dropdown-item" href="">Add to next Sunday</a>
-              <a class="dropdown-item" href="">Move to prayer jar</a>
+              <a class="dropdown-item" href="{% url 'move-to-jar-prayer-request' pr_id=pr.pk %}">Move to prayer jar</a>
             {% if pr.author == request.user %}
             <a class="dropdown-item" href="{% url 'edit-prayer-request' pr_id=pr.pk %}?redirect={{request.path}}">Edit</a>
-              <a class="dropdown-item" href="{% url 'delete-prayer-request' id=pr.pk %}">Delete</a>
+              <a class="dropdown-item" href="{% url 'delete-prayer-request' pr_id=pr.pk %}">Delete</a>
             {% endif %}
           </div>
         </div>

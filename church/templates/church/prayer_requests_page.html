@@ -13,33 +13,33 @@
   {% if request.user.is_authenticated %}
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
-      <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Crossroads</a>
+      <a class="nav-link active" id="crossroads-tab" data-toggle="tab" href="#crossroads" role="tab" aria-controls="crossroads" aria-selected="true">Crossroads</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">You</a>
+      <a class="nav-link" id="you-tab" data-toggle="tab" href="#you" role="tab" aria-controls="you" aria-selected="false">You</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Prayer jar 🍯</a>
+      <a class="nav-link" id="jar-tab" data-toggle="tab" href="#jar" role="tab" aria-controls="jar" aria-selected="false">Prayer jar 🍯</a>
     </li>
   </ul>
   <div class="tab-content" id="myTabContent" style="margin-top: 2em;">
-    <div class="tab-pane show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+    <div class="tab-pane show active" id="crossroads" role="tabpanel" aria-labelledby="crossroads-tab">
       <div class="container">
         {% prayer_requests %}
         <hr class="mb-5 mt-5"/>
         {% prayer_request_form %}
       </div>
     </div>
-    <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+    <div class="tab-pane" id="you" role="tabpanel" aria-labelledby="you-tab">
       <div class="container">
         {% user_prayer_requests request.user %}
         <hr class="mb-5 mt-5"/>
         {% prayer_request_form %}
       </div>
     </div>
-    <div class="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+    <div class="tab-pane" id="jar" role="tabpanel" aria-labelledby="jar-tab">
       <div class="container">
-        {% prayer_requests %}
+        {% answered_prayer_requests %}
       </div>
     </div>
   </div>

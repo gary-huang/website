@@ -5,8 +5,8 @@ from utils import views as viewtils
 
 
 @viewtils.authenticated
-def delete_prayer_request(request, id):
-    pr = models.PrayerRequest.objects.get(pk=id)
+def delete_prayer_request(request, pr_id):
+    pr = models.PrayerRequest.objects.get(pk=pr_id)
     if pr.author != request.user:
         raise exceptions.PermissionDenied("")
     pr.delete()
@@ -65,3 +65,15 @@ def prayer_request_react(request, pr_id, emoji):
         return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
     react = models.PrayerRequestReact.objects.create(item=pr, type=emoji, user=request.user)
     return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
+
+
+@viewtils.authenticated
+def prayer_request_move_to_jar(request, pr_id):
+    pr = models.PrayerRequest.objects.get(pk=pr_id)
+
+    if pr.author != request.user:
+        raise exceptions.PermissionDenied("")
+
+    pr.state = models.PrayerRequest.STATE_ANSWERED
+    pr.save()
+    return http.HttpResponseRedirect(request.META.get("HTTP_REFERER"))
