@@ -10,4 +10,3 @@ class Comment(models.Model):
     body = models.CharField(max_length=16384)
 
     thread_id = models.CharField(max_length=128)
-    # reactions?

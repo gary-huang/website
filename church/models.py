@@ -15,29 +15,6 @@ class User(AbstractUser):
     pass
 
 
-class PrayerRequestForm(forms.Form):
-    VISIBILITY_CHOICES = [
-        ("1", "Only you"),
-        ("2", "Only Crossroads members"),
-        ("3", "Only Crossroads prayer team members"),
-    ]
-    body = forms.CharField(label="Prayer request", max_length=8192, widget=forms.Textarea(attrs={
-        "rows": 3,
-        "placeholder": "your prayer request or praise report"
-    }))
-    post_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Who can see your submission", initial="2")
-    user_visibility = forms.ChoiceField(choices=VISIBILITY_CHOICES, label="Who can see your name", initial="1")
-
-
-class PrayerRequest(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey("church.User", on_delete=models.CASCADE)
-    user_visibility = models.IntegerField()
-    post_visibility = models.IntegerField()
-    body = models.CharField(max_length=8192)
-
-
 class ServiceMediaBlock(AbstractMediaChooserBlock):
     class Meta:
         template = "blocks/service_media_block.html"

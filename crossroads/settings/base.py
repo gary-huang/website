@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'search',
     'church',
     'comments',
+    'prayer',
 
     'octicons',
 

@@ -1,0 +1,53 @@
+<style>
+.emoji-btn {
+  padding: 0px !important;
+}
+.active-emoji {
+}
+.inactive-emoji {
+  filter: grayscale(100%);
+}
+</style>
+
+<div id="prayer-requests" class="card-columns">
+{% for pr in prayer_requests %}
+  <div class="card">
+      <div class="float-right">
+        <div class="dropdown float-right d-inline-block" style="margin-right: 5px; margin-top: 5px; cursor: pointer; width: 20px;">
+          <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="">
+          </div>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pr{{forloop.counter}}dropdown">
+              <a class="dropdown-item" href="">Add to next Sunday</a>
+              <a class="dropdown-item" href="">Move to prayer jar</a>
+            {% if pr.author == request.user %}
+              <a class="dropdown-item" href="{% url 'delete-prayer-request' id=pr.pk %}">Edit</a>
+              <a class="dropdown-item" href="{% url 'delete-prayer-request' id=pr.pk %}">Delete</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    <div class="card-body">
+      <p class="card-text">{{ pr.body }}</p>
+      <footer class="">
+        <a class="btn emoji-btn" role="button" href="{% url 'prayer-request-react' pr_id=pr.pk emoji='🙏' %}">
+        {% if pr.prayer_react_count %}
+          <span class="mr-2">🙏 {{ pr.prayer_react_count }}</span>
+        {% else %}
+          <span class="mr-2 inactive-emoji">🙏</span>
+        {% endif %}
+        </a>
+        <a class="btn emoji-btn" role="button" href="{% url 'prayer-request-react' pr_id=pr.pk emoji='🙌' %}">
+        {% if pr.praise_react_count %}
+        <span class="">🙌 {{ pr.praise_react_count }}</span>
+        {% else %}
+        <span class="inactive-emoji">🙌</span>
+        {% endif %}
+        </a>
+      {% if pr.provided_name %}
+        <small class="text-muted float-right">-- {{ pr.provided_name }}</small>
+      {% endif %}
+      </footer>
+    </div>
+  </div>
+{% endfor %}
+</div>

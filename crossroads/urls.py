@@ -14,19 +14,14 @@ from search import views as search_views
 
 urlpatterns = [
     url(r'^django-admin/', admin.site.urls),
-
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
-
     url(r'^search/$', search_views.search, name='search'),
 
     path('comments/', include('comments.urls')),
-    # TODO: create prayer app
-    path('prayer-request/create', church_views.submit_prayer_form, name='create-prayer-request'),
-    path('prayer-request/delete/<str:id>', church_views.delete_prayer_request, name='delete-prayer-request'),
+    path('prayer/', include('prayer.urls')),
     # TODO: create profile app?
     path('profile/', church_views.profile, name='profile'),
-
     url(r'^login/$', auth_views.LoginView.as_view(template_name='admin/login.html'), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
 ]

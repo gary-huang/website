@@ -1,0 +1,50 @@
+from django.conf import settings
+from django.db import models
+
+
+class PrayerRequestReact(models.Model):
+    item = models.ForeignKey("PrayerRequest", related_name="reacts", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="reacts", on_delete=models.CASCADE)
+    type = models.CharField(max_length=16)
+
+
+class PrayerRequest(models.Model):
+    BODY_VISIBILITY_CHOICES = [
+        ("", "Only you"),
+        ("member", "Only Crossroads members"),
+        ("prayer_team", "Only Crossroads prayer team members"),
+    ]
+    STATE_CHOICES = [
+        ("ACT", "Active"),
+        ("ANS", "Answered"),
+    ]
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    body_visibility = models.CharField(max_length=32, choices=BODY_VISIBILITY_CHOICES, default="")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
+    provided_name = models.CharField(max_length=64, default="")
+    body = models.CharField(max_length=16384)
+    state = models.CharField(max_length=3, choices=STATE_CHOICES, default="ACT")
+
+    @classmethod
+    def for_user(cls, user):
+        prayer_requests = cls.objects.filter(author=user)
+        return prayer_requests
+
+    @classmethod
+    def crossroads_requests_for_user(cls, user):
+        groups = [g.name for g in user.groups.all()]
+        prayer_requests = cls.objects.filter(models.Q(body_visibility__in=groups) | models.Q(author=user))
+        return prayer_requests
+
+    def react_count(self, emoji):
+        return len(PrayerRequestReact.objects.filter(type=emoji, item=self))
+
+    @property
+    def prayer_react_count(self):
+        return len(PrayerRequestReact.objects.filter(type="🙏", item=self))
+
+    @property
+    def praise_react_count(self):
+        return len(PrayerRequestReact.objects.filter(type="🙌", item=self))
+

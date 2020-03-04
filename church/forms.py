@@ -1,6 +1,6 @@
 from django import forms
 
-from wagtail.users import wtforms
+from wagtail.users import forms as wtforms
 
 
 class UserEditForm(wtforms.UserEditForm):
