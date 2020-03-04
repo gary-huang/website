@@ -1,7 +1,13 @@
 from django import forms
 
+from prayer import models
 
-class PrayerRequestForm(forms.Form):
+
+class PrayerRequestForm(forms.ModelForm):
+    class Meta:
+        model = models.PrayerRequest
+        fields = ["body_visibility", "provided_name", "body"]
+
     VISIBILITY_CHOICES = [
         ("", "Only you"),
         ("member", "Only Crossroads members"),

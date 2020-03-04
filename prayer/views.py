@@ -13,7 +13,7 @@ def delete_prayer_request(request, id):
     return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
 
 
-def submit_prayer_form(request):
+def submit_prayer_form(request, pr_id=None):
     if not request.user.is_authenticated:
         raise exceptions.PermissionDenied("")
 
@@ -21,18 +21,38 @@ def submit_prayer_form(request):
         form = forms.PrayerRequestForm(request.POST)
 
         if form.is_valid():
-            models.PrayerRequest.objects.create(
-                author=request.user,
-                body_visibility=form.cleaned_data["body_visibility"],
-                body=form.cleaned_data["body"],
-                provided_name=form.cleaned_data["provided_name"],
-            )
-            return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
-
+            if pr_id:
+                pr = models.PrayerRequest.objects.filter(pk=pr_id).update(
+                    body_visibility=form.cleaned_data["body_visibility"],
+                    body=form.cleaned_data["body"],
+                    provided_name=form.cleaned_data["provided_name"],
+                )
+                redirect = request.META.get("redirect", request.POST.get("next", "/"))
+                return http.HttpResponseRedirect(redirect)
+            else:
+                models.PrayerRequest.objects.create(
+                    author=request.user,
+                    body_visibility=form.cleaned_data["body_visibility"],
+                    body=form.cleaned_data["body"],
+                    provided_name=form.cleaned_data["provided_name"],
+                )
+                return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
+        else:
+            raise NotImplementedError("Form validation failures")
     else:
-        form = forms.PrayerRequestForm()
+        if pr_id:
+            # Edit form
+            pr = models.PrayerRequest.objects.get(id=pr_id)
+            form = forms.PrayerRequestForm(instance=pr)
+        else:
+            # New form
+            form = forms.PrayerRequestForm()
 
-    return shortcuts.render(request, "prayer_form.html", { "form": form })
+        return shortcuts.render(request, "prayer_form.html", {
+            "form": form,
+            "pr_id": pr_id,
+            "redirect": request.GET.get("redirect", "/"),
+        })
 
 
 @viewtils.authenticated

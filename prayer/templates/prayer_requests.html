@@ -20,7 +20,7 @@
               <a class="dropdown-item" href="">Add to next Sunday</a>
               <a class="dropdown-item" href="">Move to prayer jar</a>
             {% if pr.author == request.user %}
-              <a class="dropdown-item" href="{% url 'delete-prayer-request' id=pr.pk %}">Edit</a>
+            <a class="dropdown-item" href="{% url 'edit-prayer-request' pr_id=pr.pk %}?redirect={{request.path}}">Edit</a>
               <a class="dropdown-item" href="{% url 'delete-prayer-request' id=pr.pk %}">Delete</a>
             {% endif %}
           </div>
@@ -31,16 +31,16 @@
       <footer class="">
         <a class="btn emoji-btn" role="button" href="{% url 'prayer-request-react' pr_id=pr.pk emoji='🙏' %}">
         {% if pr.prayer_react_count %}
-          <span class="mr-2">🙏 {{ pr.prayer_react_count }}</span>
+          <span class="">🙏 &nbsp;{{ pr.prayer_react_count }}</span>
         {% else %}
-          <span class="mr-2 inactive-emoji">🙏</span>
+          <span class="inactive-emoji">🙏</span>
         {% endif %}
         </a>
         <a class="btn emoji-btn" role="button" href="{% url 'prayer-request-react' pr_id=pr.pk emoji='🙌' %}">
         {% if pr.praise_react_count %}
-        <span class="">🙌 {{ pr.praise_react_count }}</span>
+        <span class="ml-2">🙌 &nbsp;{{ pr.praise_react_count }}</span>
         {% else %}
-        <span class="inactive-emoji">🙌</span>
+        <span class="ml-2 inactive-emoji">🙌</span>
         {% endif %}
         </a>
       {% if pr.provided_name %}

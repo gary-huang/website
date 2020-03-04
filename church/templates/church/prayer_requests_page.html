@@ -23,21 +23,21 @@
     </li>
   </ul>
   <div class="tab-content" id="myTabContent" style="margin-top: 2em;">
-    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+    <div class="tab-pane show active" id="home" role="tabpanel" aria-labelledby="home-tab">
       <div class="container">
         {% prayer_requests %}
         <hr class="mb-5 mt-5"/>
         {% prayer_request_form %}
       </div>
     </div>
-    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+    <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
       <div class="container">
         {% user_prayer_requests request.user %}
         <hr class="mb-5 mt-5"/>
         {% prayer_request_form %}
       </div>
     </div>
-    <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+    <div class="tab-pane" id="contact" role="tabpanel" aria-labelledby="contact-tab">
       <div class="container">
         {% prayer_requests %}
       </div>

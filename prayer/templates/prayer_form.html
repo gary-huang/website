@@ -1,6 +1,11 @@
-{% load filters %}
+{% load filters static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-4.3.1.min.css' %}">
 
-<form action="{% url 'create-prayer-request' %}" method="post">
+{% if pr_id %}
+<form action="{% url 'edit-prayer-request' pr_id %}" method="post">
+{% else %}
+<form action="{% url 'edit-prayer-request' %}" method="post">
+{% endif %}
   {% csrf_token %}
   <div class="form-group">
     {{ form.body|addclass:"form-control" }}
@@ -12,6 +17,7 @@
         {{ form.provided_name.label_tag }}{{ form.provided_name|addclass:"form-control" }}
       </div>
     </div>
+    <input type="hidden" name="next" value="{{ redirect }}">
     <input class="form-control btn btn-primary" type="submit" value="Submit">
   </div>
 </form>
