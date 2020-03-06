@@ -10,6 +10,8 @@ from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPane
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.edit_handlers import MediaChooserPanel
 
+from prayer import models as pr_models
+
 
 class User(AbstractUser):
     pass
@@ -163,6 +165,21 @@ class ServicePage(Page):
         StreamFieldPanel("bulletin"),
         StreamFieldPanel("service"),
     ]
+
+    prayer_requests = models.ManyToManyField(pr_models.PrayerRequest, related_name="services_pages")
+
+    @classmethod
+    def current_service_page(cls):
+        return cls.objects.all().order_by("date").first()
+
+    def add_prayer_request(self, pr):
+        self.prayer_requests.add(pr)
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context["self"] = self
+        context["prs"] = self.prayer_requests.all()
+        return context
 
 
 # class FeaturetteBlock(blocks.StructBlock):

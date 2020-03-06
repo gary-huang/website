@@ -1,3 +1,4 @@
+from django.core import exceptions
 from django.conf import settings
 from django.db import models
 
@@ -50,4 +51,13 @@ class PrayerRequest(models.Model):
     @property
     def praise_react_count(self):
         return len(PrayerRequestReact.objects.filter(type="🙌", item=self))
+
+    @classmethod
+    def get_for_user(cls, pr_id, user):
+        # Only returns the PR for pr_id if user owns it
+        # else raises permission denied
+        pr = cls.objects.get(pk=pr_id)
+        if pr.author != user:
+            raise exceptions.PermissionDenied("")
+        return pr
 

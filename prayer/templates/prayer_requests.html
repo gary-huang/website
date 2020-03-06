@@ -17,11 +17,15 @@
           <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="">
           </div>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pr{{forloop.counter}}dropdown">
-              <a class="dropdown-item" href="">Add to next Sunday</a>
+            {% if service_page %}
+              <a class="dropdown-item" href="{% url 'rm-pr-from-service' pr_id=pr.pk sp_id=self.pk %}">Remove from service</a>
+            {% else %}
+              <a class="dropdown-item" href="{% url 'add-pr-to-next-service' pr_id=pr.pk %}">Add to next service</a>
+            {% endif %}
             {% if pr.state == pr.STATE_ACTIVE %}
-              <a class="dropdown-item" href="{% url 'move-to-jar-prayer-request' pr_id=pr.pk %}">Move to prayer jar</a>
+              <a class="dropdown-item" href="{% url 'mv-to-jar-prayer-request' pr_id=pr.pk %}">Move to prayer jar</a>
             {% elif pr.state == pr.STATE_ANSWERED %}
-              <a class="dropdown-item" href="{% url 'remove-from-jar-prayer-request' pr_id=pr.pk %}">Remove from jar</a>
+              <a class="dropdown-item" href="{% url 'rm-from-jar-prayer-request' pr_id=pr.pk %}">Remove from jar</a>
             {% endif %}
             {% if pr.author == request.user %}
             <a class="dropdown-item" href="{% url 'edit-prayer-request' pr_id=pr.pk %}?redirect={{request.path}}">Edit</a>

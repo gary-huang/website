@@ -17,13 +17,17 @@ def user_prayer_requests(context, req_user):
 
 
 @register.inclusion_tag("prayer_requests.html", takes_context=True)
-def prayer_requests(context):
+def prayer_requests(context, prayer_requests=None, service_page=None):
     user = context.request.user
 
     if not user.is_authenticated:
         raise exceptions.PermissionDenied("")
 
-    context["prayer_requests"] = models.PrayerRequest.crossroads_requests_for_user(user).filter(state=models.PrayerRequest.STATE_ACTIVE)
+    if prayer_requests is None:
+        prayer_requests = models.PrayerRequest.crossroads_requests_for_user(user).filter(state=models.PrayerRequest.STATE_ACTIVE)
+
+    context["prayer_requests"] = prayer_requests
+    context["service_page"] = service_page
     return context
 
 

@@ -17,7 +17,7 @@ class PrayerRequestForm(forms.ModelForm):
         "rows": 3,
         "placeholder": "Your prayer request or praise report",
     }))
-    note = forms.CharField(label="Prayer note", max_length=8192, widget=forms.Textarea(attrs={
+    note = forms.CharField(label="Prayer note", required=False, max_length=8192, widget=forms.Textarea(attrs={
         "rows": 3,
         "placeholder": "Any follow-up information about the prayer request",
     }))

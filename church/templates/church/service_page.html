@@ -20,7 +20,7 @@
   {% endfor %}
   <hr/>
   <h2 id="prayer-requests">Prayer</h2>
-  {% prayer_requests %}
+  {% prayer_requests prayer_requests=prs service_page=self.pk %}
   <a href="#collapsePrayerForm" data-toggle="collapse" role="button" aria-controls="collapsePrayerForm" class="" style="color: black;">
     <h3>Add a prayer item<span class="float-right">{% octicon "plus" width=25 height=25 %}</span></h3>
   </a>
