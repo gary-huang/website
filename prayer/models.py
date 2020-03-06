@@ -26,6 +26,7 @@ class PrayerRequest(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
     provided_name = models.CharField(max_length=64, default="")
     body = models.CharField(max_length=16384)
+    note = models.CharField(max_length=16384, default="")  # additional comments or resolution of the prayer
     state = models.CharField(max_length=3, choices=STATE_CHOICES, default=STATE_ACTIVE)
 
     @classmethod

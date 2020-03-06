@@ -26,6 +26,7 @@ def submit_prayer_form(request, pr_id=None):
                     body_visibility=form.cleaned_data["body_visibility"],
                     body=form.cleaned_data["body"],
                     provided_name=form.cleaned_data["provided_name"],
+                    note=form.cleaned_data["note"],
                 )
                 redirect = request.META.get("redirect", request.POST.get("next", "/"))
                 return http.HttpResponseRedirect(redirect)
@@ -35,6 +36,7 @@ def submit_prayer_form(request, pr_id=None):
                     body_visibility=form.cleaned_data["body_visibility"],
                     body=form.cleaned_data["body"],
                     provided_name=form.cleaned_data["provided_name"],
+                    note=form.cleaned_data["note"],
                 )
                 return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
         else:
@@ -46,10 +48,12 @@ def submit_prayer_form(request, pr_id=None):
             form = forms.PrayerRequestForm(instance=pr)
         else:
             # New form
+            pr = None
             form = forms.PrayerRequestForm()
 
         return shortcuts.render(request, "prayer_form.html", {
             "form": form,
+            "pr": pr,
             "pr_id": pr_id,
             "redirect": request.GET.get("redirect", "/"),
         })
@@ -75,5 +79,17 @@ def prayer_request_move_to_jar(request, pr_id):
         raise exceptions.PermissionDenied("")
 
     pr.state = models.PrayerRequest.STATE_ANSWERED
+    pr.save()
+    return http.HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+
+@viewtils.authenticated
+def prayer_request_remove_from_jar(request, pr_id):
+    pr = models.PrayerRequest.objects.get(pk=pr_id)
+
+    if pr.author != request.user:
+        raise exceptions.PermissionDenied("")
+
+    pr.state = models.PrayerRequest.STATE_ACTIVE
     pr.save()
     return http.HttpResponseRedirect(request.META.get("HTTP_REFERER"))
