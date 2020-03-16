@@ -16,6 +16,11 @@ def profile(request):
     })
 
 
+def prayer_requests_page(request):
+    return shortcuts.render(request, "church/prayer_requests_page.html", {
+    })
+
+
 @viewtils.authenticated
 def add_pr_to_next_service(request, pr_id):
     pr = pr_models.PrayerRequest.get_for_user(pr_id, request.user)

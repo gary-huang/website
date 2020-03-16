@@ -18,7 +18,7 @@
       </div>
     </div>
     <input type="hidden" name="next" value="{{ redirect }}">
-    {% if pr.state == pr.STATE_ANSWERED %}
+    {% if pr and pr.state == pr.STATE_ANSWERED %}
       {{ form.note|addclass:"form-control" }}
     {% endif %}
     <input class="form-control btn btn-primary" type="submit" value="Submit">

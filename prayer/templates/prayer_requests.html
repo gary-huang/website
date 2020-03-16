@@ -25,7 +25,7 @@
             {% if pr.state == pr.STATE_ACTIVE %}
               <a class="dropdown-item" href="{% url 'mv-to-jar-prayer-request' pr_id=pr.pk %}">Move to prayer jar</a>
             {% elif pr.state == pr.STATE_ANSWERED %}
-              <a class="dropdown-item" href="{% url 'rm-from-jar-prayer-request' pr_id=pr.pk %}">Remove from jar</a>
+              <a class="dropdown-item" href="{% url 'rm-from-jar-prayer-request' pr_id=pr.pk %}">Remove from prayer jar</a>
             {% endif %}
             {% if pr.author == request.user %}
             <a class="dropdown-item" href="{% url 'edit-prayer-request' pr_id=pr.pk %}?redirect={{request.path}}">Edit</a>

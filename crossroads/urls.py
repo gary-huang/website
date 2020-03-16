@@ -8,7 +8,7 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-from church import views as church_views
+from church import views
 from search import views as search_views
 
 
@@ -21,8 +21,9 @@ urlpatterns = [
     path('church/', include('church.urls')),
     path('comments/', include('comments.urls')),
     path('prayer/', include('prayer.urls')),
+    path('prayer-requests/', views.prayer_requests_page, name='prayer_requests_page'),
     # TODO: create profile app?
-    path('profile/', church_views.profile, name='profile'),
+    path('profile/', views.profile, name='profile'),
     url(r'^login/$', auth_views.LoginView.as_view(template_name='admin/login.html'), name='login'),
     url(r'^logout/$', auth_views.LogoutView.as_view(), name='logout'),
 ]
