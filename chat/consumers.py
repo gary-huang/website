@@ -29,7 +29,6 @@ class ChatConsumer(WebsocketConsumer):
         }))
 
 
-
     def disconnect(self, close_code):
         # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
@@ -41,20 +40,20 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         body = text_data_json['body']
         author = text_data_json.get('author')
+        kind = text_data_json['kind']
 
         if not author or not body:
             return
 
         # Save the message
-        self.chat.add_message(body=body, author=author)
+        msg = self.chat.add_message(body=body, author=author, kind=kind)
 
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
             self.chat_group_name,
             {
-                'type': 'chat_message',
-                'body': body,
-                'author': author,
+                'type': "chat_message",
+                **msg.__json__()
             }
         )
 
@@ -63,6 +62,8 @@ class ChatConsumer(WebsocketConsumer):
         # Send message to WebSocket
         self.send(text_data=json.dumps({
             'type': event['type'],
+            'kind': event['kind'],
             'body': event['body'],
             'author': event['author'],
+            'created_at': event['created_at'],
         }))

@@ -1,0 +1,67 @@
+<textarea id="chat-log-{{chat_id}}" class="form-control" rows="10" readonly></textarea>
+{{ chat_id|json_script:"chat-id" }}
+<script>
+    const chatId = JSON.parse(document.getElementById('chat-id').textContent);
+
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/chat/'
+        + chatId
+        + '/'
+    );
+
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        const log = document.querySelector('#chat-log-{{chat_id}}');
+
+        if (data.type === "chat_message") {
+            log.value += ('\n' + data.author + ': ' + data.body);
+        }
+        else if (data.type === "chat_init") {
+            for (var i = 0; i < data.msgs.length; ++i) {
+                if (i > 0) {
+                    log.value += '\n';
+                }
+                log.value += (data.msgs[i].author + ': ' + data.msgs[i].body);
+            }
+        }
+
+        // scroll the textarea to the bottom
+        log.scrollTop = log.scrollHeight + 10;
+    };
+
+    chatSocket.onclose = function (e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input-{{chat_id}}').onkeyup = function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit-{{chat_id}}').click();
+        }
+    };
+
+    document.querySelector('#chat-author-input-{{chat_id}}').onkeyup = function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#username-btn').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function (e) {
+        const messageInputDom = document.querySelector('#chat-message-input-{{chat_id}}');
+        const authorInputDom = document.querySelector('#chat-author-input-{{chat_id}}');
+        const body = messageInputDom.value;
+        const author = authorInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'body': body,
+            'author': author,
+        }));
+        messageInputDom.value = '';
+    };
+
+    document.querySelector('#username-btn').onclick = function (e) {
+        document.querySelector('#message-form').style.display = "";
+        document.querySelector('#username-form').style.display = "none";
+        document.querySelector('#chat-message-input-{{chat_id}}').focus();
+    };
+</script>

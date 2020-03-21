@@ -1,9 +1,16 @@
-<form class="needs-validation" novalidate>
-    <div class="form-group">
-        <textarea id="chat-log-{{chat_id}}" class="form-control" rows="10" readonly></textarea>
+<form class="">
+    <div class="form-row">
+        <div class="col-md-6">
+            <label for="chat-message-input-{{chat_id}}">Chat</label>
+            <textarea id="chat-log-{{chat_id}}" class="form-control" rows="10" readonly></textarea>
+        </div>
+        <div class="col-md-6">
+            <label for="chat-log-pr-{{chat_id}}">Prayer Requests/Praise</label>
+            <textarea id="chat-log-pr-{{chat_id}}" class="form-control" rows="10" readonly></textarea>
+        </div>
     </div>
     <div id="username-form" class="form-group">
-        <label for="chat-message-input-{{chat_id}}">Username</label>
+        <label for="chat-message-input-{{chat_id}}">Enter a username</label>
         <input id="chat-author-input-{{chat_id}}" class="form-control" type="text" required>
         <br>
         <button id="username-btn" class="btn btn-primary" type="button">
@@ -12,11 +19,14 @@
     </div>
 
     <div id="message-form" class="form-group" style="display:none">
-        <label for="chat-message-input-{{chat_id}}">Message</label>
+        <label for="chat-message-input-{{chat_id}}">Chat</label>
         <input id="chat-message-input-{{chat_id}}" class="form-control" type="text">
         <br>
         <button id="chat-message-submit-{{chat_id}}" class="btn btn-primary" type="button">
             Send
+        </button>
+        <button id="chat-message-submit-pr-{{chat_id}}" class="btn btn-warning" type="button">
+            Send as prayer request/praise
         </button>
     </div>
 </form>
@@ -35,11 +45,18 @@
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         const log = document.querySelector('#chat-log-{{chat_id}}');
+        const logpr = document.querySelector('#chat-log-pr-{{chat_id}}');
 
         if (data.type === "chat_message") {
-            log.value += ('\n' + data.author + ': ' + data.body);
+            if (data.kind == "chat") {
+                log.value += ('\n' + data.author + ': ' + data.body);
+            }
+            else if (data.kind == "pr") {
+                logpr.value += ('\n' + data.author + ': ' + data.body);
+            }
         }
         else if (data.type === "chat_init") {
+            console.log(data)
             for (var i = 0; i < data.msgs.length; ++i) {
                 if (i > 0) {
                     log.value += '\n';
@@ -49,7 +66,8 @@
         }
 
         // scroll the textarea to the bottom
-        log.scrollTop = log.scrollHeight + 10;
+        log.scrollTop = log.scrollHeight;
+        logpr.scrollTop = logpr.scrollHeight;
     };
 
     chatSocket.onclose = function (e) {
@@ -68,16 +86,26 @@
         }
     };
 
-    document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function (e) {
+    function sendMessage(kind) {
         const messageInputDom = document.querySelector('#chat-message-input-{{chat_id}}');
         const authorInputDom = document.querySelector('#chat-author-input-{{chat_id}}');
         const body = messageInputDom.value;
         const author = authorInputDom.value;
         chatSocket.send(JSON.stringify({
+            'kind': kind,
             'body': body,
-            'author': author,
+            'author': author
         }));
         messageInputDom.value = '';
+    };
+
+    document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function (e) {
+        sendMessage("chat");
+    };
+
+
+    document.querySelector('#chat-message-submit-pr-{{chat_id}}').onclick = function (e) {
+        sendMessage("pr");
     };
 
     document.querySelector('#username-btn').onclick = function (e) {
