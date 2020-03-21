@@ -37,16 +37,19 @@
         const log = document.querySelector('#chat-log-{{chat_id}}');
 
         if (data.type === "chat_message") {
-            log.value += (data.author + ': ' + data.body + '\n');
+            log.value += ('\n' + data.author + ': ' + data.body);
         }
         else if (data.type === "chat_init") {
             for (var i = 0; i < data.msgs.length; ++i) {
-                log.value += (data.msgs[i].author + ': ' + data.msgs[i].body + '\n');
+                if (i > 0) {
+                    log.value += '\n';
+                }
+                log.value += (data.msgs[i].author + ': ' + data.msgs[i].body);
             }
         }
 
         // scroll the textarea to the bottom
-        log.scrollTop = log.scrollHeight;
+        log.scrollTop = log.scrollHeight + 10;
     };
 
     chatSocket.onclose = function (e) {

@@ -42,7 +42,7 @@ class ChatConsumer(WebsocketConsumer):
         body = text_data_json['body']
         author = text_data_json.get('author')
 
-        if not author:
+        if not author or not body:
             return
 
         # Save the message
