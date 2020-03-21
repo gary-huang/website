@@ -1,25 +1,39 @@
 import json
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+
+from chat import models
 
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = f'chat_{self.room_name}'
+        self.chat_id = self.scope['url_route']['kwargs']['chat_id']
+        self.chat_group_name = f'chat_{self.chat_id}'
+        self.chat, _ = models.Chat.objects.get_or_create(
+            chat_id=self.chat_id,
+            )
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name,
+            self.chat_group_name,
             self.channel_name
         )
 
         self.accept()
 
+        # Send initial chat data
+        self.send(text_data=json.dumps({
+            'type': 'chat_init',
+            'msgs': self.chat.messages_json(),
+        }))
+
+
+
     def disconnect(self, close_code):
         # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name,
+            self.chat_group_name,
             self.channel_name
         )
 
@@ -31,9 +45,12 @@ class ChatConsumer(WebsocketConsumer):
         if not author:
             return
 
+        # Save the message
+        self.chat.add_message(body=body, author=author)
+
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
+            self.chat_group_name,
             {
                 'type': 'chat_message',
                 'body': body,
@@ -45,6 +62,7 @@ class ChatConsumer(WebsocketConsumer):
     def chat_message(self, event):
         # Send message to WebSocket
         self.send(text_data=json.dumps({
+            'type': event['type'],
             'body': event['body'],
             'author': event['author'],
         }))

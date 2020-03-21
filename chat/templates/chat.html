@@ -16,7 +16,16 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log-{{chat_id}}').value += (data.author + ': ' + data.body + '\n');
+            const log = document.querySelector('#chat-log-{{chat_id}}');
+
+            if (data.type === "chat_message") {
+                log.value += (data.author + ': ' + data.body + '\n');
+            }
+            else if (data.type === "chat_init") {
+                for (var i = 0; i < data.msgs.length; ++i) {
+                    log.value += (data.msgs[i].author + ': ' + data.msgs[i].body + '\n');
+                }
+            }
         };
 
         chatSocket.onclose = function(e) {

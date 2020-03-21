@@ -16,6 +16,9 @@ class ChatMessage(models.Model):
 class Chat(models.Model):
     chat_id = models.CharField(max_length=1024)
 
+    def add_message(self, author=None, body=None):
+        return ChatMessage.objects.create(author=author, body=body, chat=self)
+
     def messages_json(self):
         return [
             msg.__json__() for msg in self.messages.all()
