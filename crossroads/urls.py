@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^search/$', search_views.search, name='search'),
 
+    path('chat/', include('chat.urls')),
     path('church/', include('church.urls')),
     path('comments/', include('comments.urls')),
     path('prayer/', include('prayer.urls')),
