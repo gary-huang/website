@@ -1,53 +1,85 @@
-<textarea id="chat-log-{{chat_id}}" cols="100" rows="20"></textarea><br>
-    <input id="chat-author-input-{{chat_id}}" type="text" size="100"><br>
-    <input id="chat-message-input-{{chat_id}}" type="text" size="100"><br>
-    <input id="chat-message-submit-{{chat_id}}" type="button" value="Send">
-    {{ chat_id|json_script:"chat-id" }}
-    <script>
-        const chatId = JSON.parse(document.getElementById('chat-id').textContent);
+<form class="needs-validation" novalidate>
+    <div class="form-group">
+        <textarea id="chat-log-{{chat_id}}" class="form-control" rows="10" readonly></textarea>
+    </div>
+    <div id="username-form" class="form-group">
+        <label for="chat-message-input-{{chat_id}}">Username</label>
+        <input id="chat-author-input-{{chat_id}}" class="form-control" type="text" required>
+        <br>
+        <button id="username-btn" class="btn btn-primary" type="button">
+            Submit
+        </button>
+    </div>
 
-        const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/chat/'
-            + chatId
-            + '/'
-        );
+    <div id="message-form" class="form-group" style="display:none">
+        <label for="chat-message-input-{{chat_id}}">Message</label>
+        <input id="chat-message-input-{{chat_id}}" class="form-control" type="text">
+        <br>
+        <button id="chat-message-submit-{{chat_id}}" class="btn btn-primary" type="button">
+            Send
+        </button>
+    </div>
+</form>
+{{ chat_id|json_script:"chat-id" }}
+<script>
+    const chatId = JSON.parse(document.getElementById('chat-id').textContent);
 
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            const log = document.querySelector('#chat-log-{{chat_id}}');
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/chat/'
+        + chatId
+        + '/'
+    );
 
-            if (data.type === "chat_message") {
-                log.value += (data.author + ': ' + data.body + '\n');
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        const log = document.querySelector('#chat-log-{{chat_id}}');
+
+        if (data.type === "chat_message") {
+            log.value += (data.author + ': ' + data.body + '\n');
+        }
+        else if (data.type === "chat_init") {
+            for (var i = 0; i < data.msgs.length; ++i) {
+                log.value += (data.msgs[i].author + ': ' + data.msgs[i].body + '\n');
             }
-            else if (data.type === "chat_init") {
-                for (var i = 0; i < data.msgs.length; ++i) {
-                    log.value += (data.msgs[i].author + ': ' + data.msgs[i].body + '\n');
-                }
-            }
-        };
+        }
 
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
+        // scroll the textarea to the bottom
+        log.scrollTop = log.scrollHeight;
+    };
 
+    chatSocket.onclose = function (e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#chat-message-input-{{chat_id}}').onkeyup = function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit-{{chat_id}}').click();
+        }
+    };
+
+    document.querySelector('#chat-author-input-{{chat_id}}').onkeyup = function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#username-btn').click();
+        }
+    };
+
+    document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function (e) {
+        const messageInputDom = document.querySelector('#chat-message-input-{{chat_id}}');
+        const authorInputDom = document.querySelector('#chat-author-input-{{chat_id}}');
+        const body = messageInputDom.value;
+        const author = authorInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'body': body,
+            'author': author,
+        }));
+        messageInputDom.value = '';
+    };
+
+    document.querySelector('#username-btn').onclick = function (e) {
+        document.querySelector('#message-form').style.display = "";
+        document.querySelector('#username-form').style.display = "none";
         document.querySelector('#chat-message-input-{{chat_id}}').focus();
-        document.querySelector('#chat-message-input-{{chat_id}}').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit-{{chat_id}}').click();
-            }
-        };
-
-        document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input-{{chat_id}}');
-            const authorInputDom = document.querySelector('#chat-author-input-{{chat_id}}');
-            const body = messageInputDom.value;
-            const author = authorInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'body': body,
-                'author': author,
-            }));
-            messageInputDom.value = '';
-        };
-    </script>
+    };
+</script>
