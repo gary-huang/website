@@ -22,9 +22,10 @@ INSTALLED_APPS = [
     'church',
     'comments',
     'prayer',
+    'chat',
 
+    'channels',
     'octicons',
-
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.embeds',
@@ -165,3 +166,10 @@ BASE_URL = 'http://example.com'
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+ASGI_APPLICATION = 'crossroads.routing.application'
+CHANNEL_LAYERS={
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+     }
+}

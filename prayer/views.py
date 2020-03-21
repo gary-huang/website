@@ -14,6 +14,7 @@ def delete_prayer_request(request, pr_id):
 
 def submit_prayer_form(request, pr_id=None):
     if not request.user.is_authenticated:
+        # TODO: handle anonymous requests
         raise exceptions.PermissionDenied("")
 
     if request.method == "POST":

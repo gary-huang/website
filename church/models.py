@@ -140,30 +140,30 @@ class DiscussionSectionBlock(IDStructBlock):
 class ServicePage(Page):
     date = models.DateField("Service date")
 
-    mediasec = wtfields.StreamField([
-        ('media', ServiceMediaBlock(icon="media", required=False)),
-    ])
+    # mediasec = wtfields.StreamField([
+    #     ('media', ServiceMediaBlock(icon="media", required=False)),
+    # ])
 
     bulletin = wtfields.StreamField([
-        ('bulletin_section', BulletinSectionBlock(name="Bulletin Section")),
+        ("bulletin_section", BulletinSectionBlock(name="Bulletin Section")),
     ])
 
-    service = wtfields.StreamField([
-        ('worship_section', WorshipSectionBlock(name="Worship Section")),
-        ('announcements_section', AnnouncementsSectionBlock(name="Announcement Section")),
-        ('sermon_section', SermonSectionBlock(name="Sermon Section")),
-        ('discussion_section', DiscussionSectionBlock(name="Discussion Section")),
-        # TODO
-        # - polls/voting?
-        # - feedback
-        # - discussion
-    ])
+    # service = wtfields.StreamField([
+    #     ('worship_section', WorshipSectionBlock(name="Worship Section")),
+    #     ('announcements_section', AnnouncementsSectionBlock(name="Announcement Section")),
+    #     ('sermon_section', SermonSectionBlock(name="Sermon Section")),
+    #     ('discussion_section', DiscussionSectionBlock(name="Discussion Section")),
+    #     # TODO
+    #     # - polls/voting?
+    #     # - feedback
+    #     # - discussion
+    # ])
 
     content_panels = Page.content_panels + [
         FieldPanel("date"),
-        StreamFieldPanel("mediasec"),
         StreamFieldPanel("bulletin"),
-        StreamFieldPanel("service"),
+        # StreamFieldPanel("mediasec"),
+        # StreamFieldPanel("service"),
     ]
 
     prayer_requests = models.ManyToManyField(pr_models.PrayerRequest, related_name="services_pages")

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load prayer_tags %}
+{% load chat_tags prayer_tags %}
 {% load wagtailcore_tags %}
 {% load octicons %}
 
@@ -8,21 +8,31 @@
 <h1>{{ page.title }}</h1>
 <p class="meta">{{ page.date }}</p>
 
-<nav class="navbar fixed-bottom navbar-light bg-light">
-  {% for section in page.mediasec %}
-    {{ section }}
-  {% endfor %}
-</nav>
-
 {% if request.user.is_authenticated %}
   {% for section in page.bulletin %}
     {{ section }}
   {% endfor %}
   <hr/>
+{% endif %}
+
+<div class="embed-responsive embed-responsive-16by9">
+  <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/hIWfOQuIl4Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+  </iframe>
+</div>
+
+{% chat chat_id=self.pk %}
+
+{% if request.user.is_authenticated %}
   <h2 id="prayer-requests">Prayer</h2>
   {% prayer_requests prayer_requests=prs service_page=self.pk %}
   <hr/>
 {% endif %}
+
+<nav class="navbar fixed-bottom navbar-light bg-light">
+  {% for section in page.mediasec %}
+    {{ section }}
+  {% endfor %}
+</nav>
 
 {% for section in page.service %}
   {% include_block section with page=page id=section.id %}

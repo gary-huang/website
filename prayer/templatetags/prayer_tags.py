@@ -1,4 +1,5 @@
 from django import template
+from django.core import exceptions
 
 from prayer import forms, models
 from utils import views as viewtils
@@ -47,6 +48,6 @@ def prayer_request_form():
     return { "form": forms.PrayerRequestForm() }
 
 
-@register.inclusion_tag("public_prayer_form.html")
+@register.inclusion_tag("prayer_form.html")
 def public_prayer_request_form():
     return { "form": forms.PrayerRequestForm() }
