@@ -1,6 +1,14 @@
 <form class="">
     <div class="form-row">
         <div class="col-md-6">
+            <label for="viewers">Number of viewers:</label>
+            <label id="viewers"></label>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-md-6">
             <label for="chat-message-input-{{chat_id}}">Chat</label>
             <textarea id="chat-log-{{chat_id}}" class="form-control" rows="10" readonly></textarea>
         </div>
@@ -32,9 +40,22 @@
 </form>
 {{ chat_id|json_script:"chat-id" }}
 <script>
+    var stringToColour = function (str) {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        var colour = '#';
+        for (var i = 0; i < 3; i++) {
+            var value = (hash >> (i * 8)) & 0xFF;
+            colour += ('00' + value.toString(16)).substr(-2);
+        }
+        return colour;
+    };
+
     const chatId = JSON.parse(document.getElementById('chat-id').textContent);
 
-    const chatSocket = new WebSocket(
+    const chatSocket = new ReconnectingWebSocket(
         'ws://'
         + window.location.host
         + '/ws/chat/'
@@ -56,13 +77,21 @@
             }
         }
         else if (data.type === "chat_init") {
-            console.log(data)
             for (var i = 0; i < data.msgs.length; ++i) {
                 if (i > 0) {
                     log.value += '\n';
                 }
                 log.value += (data.msgs[i].author + ': ' + data.msgs[i].body);
             }
+        }
+        else if (data.type == "count_update") {
+            document.querySelector('#viewers').innerHTML = data.count;
+        }
+        else if (data.type == "user_connect") {
+            log.value += ('\n' + data.author + ' connected!');
+        }
+        else if (data.type == "user_disconnect") {
+            log.value += ('\n' + data.author + ' disconnected!');
         }
 
         // scroll the textarea to the bottom
@@ -92,6 +121,7 @@
         const body = messageInputDom.value;
         const author = authorInputDom.value;
         chatSocket.send(JSON.stringify({
+            'type': 'chat',
             'kind': kind,
             'body': body,
             'author': author
@@ -112,5 +142,11 @@
         document.querySelector('#message-form').style.display = "";
         document.querySelector('#username-form').style.display = "none";
         document.querySelector('#chat-message-input-{{chat_id}}').focus();
+        const authorInputDom = document.querySelector('#chat-author-input-{{chat_id}}');
+        const author = authorInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'type': 'username',
+            'author': author
+        }));
     };
 </script>
