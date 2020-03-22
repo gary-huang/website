@@ -10,11 +10,11 @@
     <div class="form-row">
         <div class="col-md-6">
             <label for="chat-message-input-{{chat_id}}">Chat</label>
-            <textarea id="chat-log-{{chat_id}}" class="form-control" rows="10" readonly></textarea>
+            <div id="chat-log-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-all; height: 300px"></div>
         </div>
         <div class="col-md-6">
             <label for="chat-log-pr-{{chat_id}}">Prayer Requests/Praise</label>
-            <textarea id="chat-log-pr-{{chat_id}}" class="form-control" rows="10" readonly></textarea>
+            <div id="chat-log-pr-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-all; height: 300px"></div>
         </div>
     </div>
     <div id="username-form" class="form-group">
@@ -40,18 +40,46 @@
 </form>
 {{ chat_id|json_script:"chat-id" }}
 <script>
-    var stringToColour = function (str) {
+    String.prototype.hashCode = function () {
         var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        for (var i = 0; i < this.length; i++) {
+            var character = this.charCodeAt(i);
+            hash = ((hash << 5) - hash) + character;
+            hash = hash & hash; // Convert to 32bit integer
         }
-        var colour = '#';
-        for (var i = 0; i < 3; i++) {
-            var value = (hash >> (i * 8)) & 0xFF;
-            colour += ('00' + value.toString(16)).substr(-2);
-        }
-        return colour;
+        return hash;
     };
+    colours = [
+        "#00ffff",
+        "#f0ffff",
+        "#000000",
+        "#0000ff",
+        "#a52a2a",
+        "#00ffff",
+        "#00008b",
+        "#008b8b",
+        "#006400",
+        "#bdb76b",
+        "#8b008b",
+        "#556b2f",
+        "#ff8c00",
+        "#9932cc",
+        "#8b0000",
+        "#9400d3",
+        "#008000",
+        "#4b0082",
+        "#808000",
+        "#ffa500",
+        "#ffc0cb",
+        "#800080",
+        "#800080",
+        "#ff0000",
+        "#ffff00"
+    ];
+
+    function colour(str) {
+        return colours[Math.abs(str.hashCode()) % (colours.length-1)];
+    }
 
     const chatId = JSON.parse(document.getElementById('chat-id').textContent);
 
@@ -63,6 +91,20 @@
         + '/'
     );
 
+    function addMessage(log, author, body) {
+        var msg = document.createElement('div');
+        msg.classList += "mb-2";
+        var elauthor = document.createElement('span');
+        elauthor.innerHTML = author;
+        elauthor.style.color = colour(author);
+        elauthor.style.fontWeight = 'bold';
+        var elbody = document.createElement('span');
+        elbody.innerHTML = ':  ' + body;
+        msg.appendChild(elauthor);
+        msg.appendChild(elbody);
+        log.append(msg);
+    };
+
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         const log = document.querySelector('#chat-log-{{chat_id}}');
@@ -70,28 +112,29 @@
 
         if (data.type === "chat_message") {
             if (data.kind == "chat") {
-                log.value += ('\n' + data.author + ': ' + data.body);
+                addMessage(log, data.author, data.body);
             }
             else if (data.kind == "pr") {
-                logpr.value += ('\n' + data.author + ': ' + data.body);
+                addMessage(logpr, data.author, data.body);
             }
         }
         else if (data.type === "chat_init") {
             for (var i = 0; i < data.msgs.length; ++i) {
-                if (i > 0) {
-                    log.value += '\n';
+                if (data.msgs[i].kind === "pr") {
+                    addMessage(logpr, data.msgs[i].author, data.msgs[i].body);
+                } else {
+                    addMessage(log, data.msgs[i].author, data.msgs[i].body);
                 }
-                log.value += (data.msgs[i].author + ': ' + data.msgs[i].body);
             }
         }
         else if (data.type == "count_update") {
             document.querySelector('#viewers').innerHTML = data.count;
         }
         else if (data.type == "user_connect") {
-            log.value += ('\n' + data.author + ' connected!');
+            addMessage(log, data.author, '  connected!');
         }
         else if (data.type == "user_disconnect") {
-            log.value += ('\n' + data.author + ' disconnected!');
+            addMessage(log, data.author, ' . disconnected!');
         }
 
         // scroll the textarea to the bottom
