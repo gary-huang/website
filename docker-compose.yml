@@ -14,15 +14,34 @@ services:
     ports:
       - "${PORT}:${PORT}"
 
-  prod:
+  prod_server:
     build:
       context: ./
       dockerfile: ./docker/server/Dockerfile
-    command: ddtrace-run daphne -b 0.0.0.0 -p ${PORT} crossroads.asgi:application
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --no-input &&
+             ddtrace-run daphne -b 0.0.0.0 -p 8000 crossroads.asgi:application"
     restart: always
     env_file:
       - .env.prod
     volumes:
       - .:/code
+      - staticfiles:/code/static
+    expose:
+      - 8000
+
+  prod:
+    build:
+      context: ./docker/nginx
+      dockerfile: ./Dockerfile
+    volumes:
+      - staticfiles:/static
     ports:
-      - "${PORT}:${PORT}"
+      - ${PORT}:80
+    depends_on:
+      - prod_server
+    # command: sh -c "./wait-for prod_server:8000"
+
+volumes:
+  staticfiles:
