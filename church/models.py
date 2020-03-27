@@ -25,9 +25,7 @@ class ServiceMediaBlock(AbstractMediaChooserBlock):
 class ServicesIndexPage(Page):
     intro = wtfields.RichTextField(blank=True)
 
-    content_panels = Page.content_panels + [
-        FieldPanel("intro", classname="full")
-    ]
+    content_panels = Page.content_panels + [FieldPanel("intro", classname="full")]
 
 
 class IDListBlock(blocks.ListBlock):
@@ -40,6 +38,7 @@ class IDListBlock(blocks.ListBlock):
         for i in r:
             if "id" not in i:
                 import uuid
+
                 i["id"] = uuid.uuid4()
         return r
 
@@ -47,6 +46,7 @@ class IDListBlock(blocks.ListBlock):
 class IDStructBlock(blocks.StructBlock):
     """
     """
+
     def to_python(self, value):
         self.child_blocks["id"] = blocks.CharBlock(required=False)
         r = super().to_python(value)
@@ -120,8 +120,9 @@ class DiscussionItemBlock(IDStructBlock):
 
     def get_context(self, value, parent_context=None):
         ctx = super().get_context(value, parent_context=parent_context)
-        ctx['item'] = self
+        ctx["item"] = self
         return ctx
+
     # day?
 
 
@@ -144,9 +145,9 @@ class ServicePage(Page):
     #     ('media', ServiceMediaBlock(icon="media", required=False)),
     # ])
 
-    bulletin = wtfields.StreamField([
-        ("bulletin_section", BulletinSectionBlock(name="Bulletin Section")),
-    ])
+    bulletin = wtfields.StreamField(
+        [("bulletin_section", BulletinSectionBlock(name="Bulletin Section")),]
+    )
 
     # service = wtfields.StreamField([
     #     ('worship_section', WorshipSectionBlock(name="Worship Section")),
@@ -166,7 +167,9 @@ class ServicePage(Page):
         # StreamFieldPanel("service"),
     ]
 
-    prayer_requests = models.ManyToManyField(pr_models.PrayerRequest, related_name="services_pages")
+    prayer_requests = models.ManyToManyField(
+        pr_models.PrayerRequest, related_name="services_pages"
+    )
 
     @classmethod
     def current_service_page(cls):
@@ -184,13 +187,13 @@ class ServicePage(Page):
 
 # class FeaturetteBlock(blocks.StructBlock):
 #     pass
-# 
-# 
+#
+#
 # class ContentPage(Page):
 #     content = wtfields.StreamField([
 #         ("featurette", FeaturetteBlock(name="Featurettes")),
 #     ])
-# 
+#
 #     content_panels = Page.content_panels + [
 #         StreamFieldPanel("content"),
 #     ]

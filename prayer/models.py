@@ -4,8 +4,12 @@ from django.db import models
 
 
 class PrayerRequestReact(models.Model):
-    item = models.ForeignKey("PrayerRequest", related_name="reacts", on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="reacts", on_delete=models.CASCADE)
+    item = models.ForeignKey(
+        "PrayerRequest", related_name="reacts", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name="reacts", on_delete=models.CASCADE
+    )
     type = models.CharField(max_length=16)
 
 
@@ -23,11 +27,15 @@ class PrayerRequest(models.Model):
     ]
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    body_visibility = models.CharField(max_length=32, choices=BODY_VISIBILITY_CHOICES, default="")
+    body_visibility = models.CharField(
+        max_length=32, choices=BODY_VISIBILITY_CHOICES, default=""
+    )
     author = models.ForeignKey(settings.AUTH_USER_MODEL, models.CASCADE)
     provided_name = models.CharField(max_length=64, default="")
     body = models.CharField(max_length=16384)
-    note = models.CharField(max_length=16384, default="")  # additional comments or resolution of the prayer
+    note = models.CharField(
+        max_length=16384, default=""
+    )  # additional comments or resolution of the prayer
     state = models.CharField(max_length=3, choices=STATE_CHOICES, default=STATE_ACTIVE)
 
     @classmethod
@@ -38,7 +46,9 @@ class PrayerRequest(models.Model):
     @classmethod
     def crossroads_requests_for_user(cls, user):
         groups = [g.name for g in user.groups.all()]
-        prayer_requests = cls.objects.filter(models.Q(body_visibility__in=groups) | models.Q(author=user))
+        prayer_requests = cls.objects.filter(
+            models.Q(body_visibility__in=groups) | models.Q(author=user)
+        )
         return prayer_requests
 
     def react_count(self, emoji):
@@ -60,4 +70,3 @@ class PrayerRequest(models.Model):
         if pr.author != user:
             raise exceptions.PermissionDenied("")
         return pr
-

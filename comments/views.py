@@ -14,6 +14,7 @@ def authenticated(f):
         if not request.user or not request.user.is_authenticated:
             raise ex.PermissionDenied("")
         return f(*args, **kwargs)
+
     return wrapper
 
 
@@ -34,10 +35,16 @@ def create_comment(request, thread_id, parent_id=None):
                 thread_id=thread_id,
                 parent=parent,
             )
-            return http.HttpResponseRedirect(f"{request.META.get('HTTP_REFERER')}{'#comment'}{comment.pk}")
+            return http.HttpResponseRedirect(
+                f"{request.META.get('HTTP_REFERER')}{'#comment'}{comment.pk}"
+            )
     else:
         form = forms.CommentForm()
-        return shortcuts.render(request, "comment_form.html", { "form": form, "thread_id": thread_id, "parent_id": parent_id })
+        return shortcuts.render(
+            request,
+            "comment_form.html",
+            {"form": form, "thread_id": thread_id, "parent_id": parent_id},
+        )
 
 
 @authenticated
@@ -59,9 +66,11 @@ def view_thread(request, thread_id):
         p, indent = parents.pop(0)
         if last_indent is not None:
             if last_indent < indent:
-                for _ in range(last_indent, indent): html.append("in")
+                for _ in range(last_indent, indent):
+                    html.append("in")
             elif last_indent > indent:
-                for _ in range(indent, last_indent): html.append("out")
+                for _ in range(indent, last_indent):
+                    html.append("out")
 
         html.append((p, indent))
         last_indent = indent
@@ -70,11 +79,16 @@ def view_thread(request, thread_id):
     # django templates don't support counting loops
     if html:
         last_indent = html[-1][1]
-        for i in range(0, last_indent): html.append("out")
+        for i in range(0, last_indent):
+            html.append("out")
 
     html = [p[0] if isinstance(p, tuple) else p for p in html]
     form = forms.CommentForm()
-    return shortcuts.render(request, "raw_comments_list.html", { "form": form, "thread_id": thread_id, "html": html })
+    return shortcuts.render(
+        request,
+        "raw_comments_list.html",
+        {"form": form, "thread_id": thread_id, "html": html},
+    )
 
 
 @authenticated

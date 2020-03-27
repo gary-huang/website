@@ -1,9 +1,12 @@
 # dev
 
 ```bash
+$ black --exclude migrations .
 $ cp .env.dev .env  # customize
 $ docker-compose up -d --build dev
 ```
+
+
 
 # prod
 

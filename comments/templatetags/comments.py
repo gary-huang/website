@@ -24,7 +24,11 @@ def render_comments_list_for(context, thread_id):
         p, indent = p
         html.append((p, indent))
         last_indent = indent
-        parents = [(c, indent + 1) for c in p.children.order_by("created_at")] + ["end"] + parents
+        parents = (
+            [(c, indent + 1) for c in p.children.order_by("created_at")]
+            + ["end"]
+            + parents
+        )
 
     html = [p[0] if isinstance(p, tuple) else p for p in html]
     form = forms.CommentForm()
@@ -40,6 +44,4 @@ def render_comments_list_for(context, thread_id):
 @register.inclusion_tag("comment_form.html", takes_context=True)
 def render_comments_form(context, thread_id):
     form = models.PrayerRequestForm()
-    return {
-        "form": form
-    }
+    return {"form": form}

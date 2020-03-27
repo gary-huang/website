@@ -12,13 +12,11 @@ from utils import views as viewtils
 def profile(request):
     if not request.user.is_authenticated:
         return http.HttpResponseRedirect(reverse("login"))
-    return shortcuts.render(request, "profile.html", {
-    })
+    return shortcuts.render(request, "profile.html", {})
 
 
 def prayer_requests_page(request):
-    return shortcuts.render(request, "church/prayer_requests_page.html", {
-    })
+    return shortcuts.render(request, "church/prayer_requests_page.html", {})
 
 
 @viewtils.authenticated

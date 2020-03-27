@@ -9,7 +9,9 @@ from utils import views as viewtils
 def delete_prayer_request(request, pr_id):
     pr = models.PrayerRequest.get_for_authed_user(pr_id, request.user)
     pr.delete()
-    return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
+    return http.HttpResponseRedirect(
+        request.META.get("HTTP_REFERER") + "#prayer-requests"
+    )
 
 
 def submit_prayer_form(request, pr_id=None):
@@ -38,7 +40,9 @@ def submit_prayer_form(request, pr_id=None):
                     provided_name=form.cleaned_data["provided_name"],
                     note=form.cleaned_data["note"],
                 )
-                return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
+                return http.HttpResponseRedirect(
+                    request.META.get("HTTP_REFERER") + "#prayer-requests"
+                )
         else:
             raise NotImplementedError("Form validation failures")
     else:
@@ -51,24 +55,36 @@ def submit_prayer_form(request, pr_id=None):
             pr = None
             form = forms.PrayerRequestForm()
 
-        return shortcuts.render(request, "prayer_form.html", {
-            "form": form,
-            "pr": pr,
-            "pr_id": pr_id,
-            "redirect": request.GET.get("redirect", "/"),
-        })
+        return shortcuts.render(
+            request,
+            "prayer_form.html",
+            {
+                "form": form,
+                "pr": pr,
+                "pr_id": pr_id,
+                "redirect": request.GET.get("redirect", "/"),
+            },
+        )
 
 
 @viewtils.authenticated
 def prayer_request_react(request, pr_id, emoji):
     pr = models.PrayerRequest.objects.get(pk=pr_id)
-    existing_reacts = models.PrayerRequestReact.objects.filter(item=pr, type=emoji, user=request.user)
+    existing_reacts = models.PrayerRequestReact.objects.filter(
+        item=pr, type=emoji, user=request.user
+    )
     if len(existing_reacts):
         for r in existing_reacts:
             r.delete()
-        return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
-    react = models.PrayerRequestReact.objects.create(item=pr, type=emoji, user=request.user)
-    return http.HttpResponseRedirect(request.META.get("HTTP_REFERER") + "#prayer-requests")
+        return http.HttpResponseRedirect(
+            request.META.get("HTTP_REFERER") + "#prayer-requests"
+        )
+    react = models.PrayerRequestReact.objects.create(
+        item=pr, type=emoji, user=request.user
+    )
+    return http.HttpResponseRedirect(
+        request.META.get("HTTP_REFERER") + "#prayer-requests"
+    )
 
 
 @viewtils.authenticated
