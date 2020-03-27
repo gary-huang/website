@@ -2,7 +2,7 @@ from django.db import models
 
 
 class ChatMessage(models.Model):
-    created_at = models.DateField(auto_now_add=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
     author = models.CharField(max_length=256)
     body = models.CharField(max_length=2048)
     chat = models.ForeignKey("Chat", related_name="messages", on_delete=models.CASCADE)
