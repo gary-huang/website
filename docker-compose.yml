@@ -1,15 +1,28 @@
 version: '3.7'
 
 services:
-  server:
+  dev:
     build:
       context: ./
       dockerfile: ./docker/server/Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    command: ddtrace-run python manage.py runserver 0.0.0.0:${PORT}
     restart: always
     env_file:
       - .env
     volumes:
       - .:/code
     ports:
-      - "8000:8000"
+      - "${PORT}:${PORT}"
+
+  prod:
+    build:
+      context: ./
+      dockerfile: ./docker/server/Dockerfile
+    command: ddtrace-run daphne -b 0.0.0.0 -p ${PORT} crossroads.asgi:application
+    restart: always
+    env_file:
+      - .env.prod
+    volumes:
+      - .:/code
+    ports:
+      - "${PORT}:${PORT}"

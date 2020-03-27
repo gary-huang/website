@@ -4,4 +4,6 @@ __pycache__/
 .vscode
 *.pyc
 
+.env.prod
 media/
+db.sqlite3

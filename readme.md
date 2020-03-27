@@ -1,8 +1,16 @@
-# building
+# dev
 
 ```bash
-$ docker-compose up -d --build server
+$ cp .env.dev .env  # customize
+$ docker-compose up -d --build dev
 ```
+
+# prod
+
+```bash
+$ docker-compose up -d --build prod
+```
+
 
 # TODO/brainstorming
 ## priority

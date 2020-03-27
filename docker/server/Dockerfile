@@ -1,6 +1,6 @@
 FROM python:3.8-slim
 
-RUN apt-get update && apt-get install -y git libjpeg-turbo-progs zlib1g-dev gcc
+RUN apt-get update && apt-get install -y git libjpeg-turbo-progs zlib1g-dev gcc fish
 
 ENV PYTHONUNBUFFERED 1
 
