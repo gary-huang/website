@@ -1,11 +1,12 @@
 <div id="chatapp" v-cloak class="d-flex flex-column h-100">
-  <span>Number of viewers [[ nviewers ]] </span>
-      <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word;">
+  <span><b>[[ nviewers ]]</b> people are here right now</span>
+      <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
             <div v-for="(msg, i) in messages" v-bind:key="i" class="mb2">
+                <span>[[ datefmt(msg.created_at) ]]</span>
                 <span v-bind:style="{
                     color: colour(msg.author),
                     fontWeight: 'bold'
-                }" >[[ msg.author ]]</span>
+                }" >[[ msg.author ]]</span><span>:</span>
                 <span>[[ msg.body ]]</span>
             </div>
       </div>
@@ -64,6 +65,14 @@
             messages: []
         },
         methods: {
+            datefmt: function(sec) {
+                const now = moment();
+                const ts = moment.unix(sec);
+                if ( now.day() != ts.day() ) {
+                    return ts.format("DD/MM/YYYY");
+                }
+                return moment.unix(sec).format("hh:mma");
+            },
             colour: function(str) {
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
             }
