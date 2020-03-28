@@ -9,7 +9,7 @@
 
     <div class="intro">{{ page.intro|richtext }}</div>
 
-    {% for post in page.get_children %}
+    {% for post in page.service_pages %}
     <div class="card">
       <div class="card-body">
         <h2 class="card-title"><a href="{% pageurl post %}">{{ post.specific.date }}</a></h2>

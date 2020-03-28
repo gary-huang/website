@@ -5,14 +5,12 @@
 
 {% block content %}
 <div class="container" style="">
-{% comment %}
 {% if request.user.is_authenticated %}
   {% for section in page.bulletin %}
     {{ section }}
   {% endfor %}
   <hr/>
 {% endif %}
-{% endcomment %}
 
 {% if request.user.is_authenticated %}
 <div class="row">
@@ -32,7 +30,7 @@
 <h1>{{ page.title }}</h1>
 <p class="meta">{{ page.date }}</p>
 <h2>Please use the link that was emailed to you to access this page.</h2>
-<h4>Or contact help@crossroadsajax.church for assistance</h4>
+<h4>Or contact <a href="mailto:kyle.verhoog@crossroadsinajax.org">kyle.verhoog@crossroadsinajax.org</a> for assistance</h4>
 {% endif %}
 
 {% comment %}

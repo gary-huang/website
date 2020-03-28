@@ -27,6 +27,10 @@ class ServicesIndexPage(Page):
 
     content_panels = Page.content_panels + [FieldPanel("intro", classname="full")]
 
+    @classmethod
+    def service_pages(cls):
+        return ServicePage.objects.all().order_by("-date")
+
 
 class IDListBlock(blocks.ListBlock):
     """Adds an ID to list items. Similarly to what's done
@@ -148,7 +152,8 @@ class ServicePage(Page):
     # ])
 
     bulletin = wtfields.StreamField(
-        [("bulletin_section", BulletinSectionBlock(name="Bulletin Section")),]
+        [("bulletin_section", BulletinSectionBlock(name="Bulletin Section")),],
+        blank=True,
     )
 
     # service = wtfields.StreamField([
@@ -166,7 +171,7 @@ class ServicePage(Page):
         FieldPanel("date"),
         FieldPanel("stream_link"),
         FieldPanel("chat_enabled"),
-        # StreamFieldPanel("bulletin"),
+        StreamFieldPanel("bulletin"),
         # StreamFieldPanel("mediasec"),
         # StreamFieldPanel("service"),
     ]
@@ -177,7 +182,7 @@ class ServicePage(Page):
 
     @classmethod
     def current_service_page(cls):
-        return cls.objects.all().order_by("date").first()
+        return cls.objects.all().order_by("date").last()
 
     def add_prayer_request(self, pr):
         self.prayer_requests.add(pr)
