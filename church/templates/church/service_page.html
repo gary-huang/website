@@ -8,26 +8,30 @@
 <h1>{{ page.title }}</h1>
 <p class="meta">{{ page.date }}</p>
 
+{% comment %}
 {% if request.user.is_authenticated %}
   {% for section in page.bulletin %}
     {{ section }}
   {% endfor %}
   <hr/>
 {% endif %}
+{% endcomment %}
 
+{% if request.user.is_authenticated %}
 <div class="embed-responsive embed-responsive-16by9">
-  <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/hIWfOQuIl4Y" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+  <iframe class="embed-responsive-item" src="{{page.stream_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
   </iframe>
 </div>
 
-{% chat chat_id=self.pk %}
+  {% chat chat_id=self.pk %}
 
-{% if request.user.is_authenticated %}
+{% endif %}
+
+{% comment %}
   <h2 id="prayer-requests">Prayer</h2>
   {% prayer_requests prayer_requests=prs service_page=self.pk %}
   <hr/>
-{% endif %}
-
+{% endcomment %}
 <nav class="navbar fixed-bottom navbar-light bg-light">
   {% for section in page.mediasec %}
     {{ section }}

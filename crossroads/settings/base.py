@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     "wagtailmedia",
     "modelcluster",
     "taggit",
-    'django_extensions',
+    "django_extensions",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -98,8 +98,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'crossroads.auth.TokenBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    "crossroads.auth.TokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 

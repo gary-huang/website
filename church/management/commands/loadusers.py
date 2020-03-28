@@ -27,9 +27,7 @@ class Command(BaseCommand):
                     User.objects.get(email=email)
                 except User.DoesNotExist:
                     User.objects.create(
-                        username=name,
-                        email=email,
-                        token=token,
+                        username=name, email=email, token=token,
                     )
 
         self.stdout.write(self.style.SUCCESS(f"Successfully created {nusers} users"))

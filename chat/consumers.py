@@ -1,81 +1,89 @@
 import json
+import logging
 
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
+import channels
+from channels.db import database_sync_to_async
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 from chat import models
+
+
+log = logging.getLogger(__name__)
 
 count = 0
 
 
-class ChatConsumer(WebsocketConsumer):
-    def connect(self):
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        user = await channels.auth.get_user(self.scope)
+        if not user.is_authenticated:
+            return
+
         global count
         count = count + 1
+
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
         self.chat_group_name = f"chat_{self.chat_id}"
-        self.chat, _ = models.Chat.objects.get_or_create(chat_id=self.chat_id,)
+
+        self.chat, _ = await database_sync_to_async(models.Chat.objects.get_or_create)(
+            chat_id=self.chat_id
+        )
+
+        log.info("user %r connected to chat %r", user, self.chat_id)
 
         # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.chat_group_name, self.channel_name
-        )
+        await self.channel_layer.group_add(self.chat_group_name, self.channel_name)
 
-        self.accept()
+        await self.accept()
+
+        json_msgs = await database_sync_to_async(self.chat.messages_json)()
 
         # Send initial chat data
-        self.send(
-            text_data=json.dumps(
-                {"type": "chat_init", "msgs": self.chat.messages_json(),}
-            )
-        )
+        await self.send(text_data=json.dumps({"type": "chat_init", "msgs": json_msgs,}))
 
         # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
+        await self.channel_layer.group_send(
             self.chat_group_name, {"type": "count_update", "count": count,}
         )
 
-    def disconnect(self, close_code):
+    async def disconnect(self, close_code):
+        user = await channels.auth.get_user(self.scope)
+        if not user.is_authenticated:
+            return
+
         global count
         count = count - 1
 
         # Leave room group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.chat_group_name, self.channel_name
-        )
+        await self.channel_layer.group_discard(self.chat_group_name, self.channel_name)
 
-        async_to_sync(self.channel_layer.group_send)(
+        await self.channel_layer.group_send(
             self.chat_group_name, {"type": "count_update", "count": count,}
         )
 
-    def receive(self, text_data):
+    async def receive(self, text_data):
         text_data_json = json.loads(text_data)
 
         if text_data_json["type"] == "chat":
             body = text_data_json["body"]
-            author = text_data_json.get("author")
             kind = text_data_json["kind"]
 
-            if not author or not body:
-                return
-
             # Save the message
-            msg = self.chat.add_message(body=body, author=author, kind=kind)
+            user = await channels.auth.get_user(self.scope)
+            msg = await database_sync_to_async(self.chat.add_message)(
+                body=body, author=user, kind=kind
+            )
 
             # Send message to room group
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.chat_group_name, {"type": "chat_message", **msg.__json__()}
-            )
-        elif text_data_json["type"] == "username":
-            author = text_data_json["author"]
-            async_to_sync(self.channel_layer.group_send)(
-                self.chat_group_name, {"type": "user_connect", "author": author,}
             )
 
     # Receive message from room group
-    def chat_message(self, event):
+    async def chat_message(self, event):
         # Send message to WebSocket
-        self.send(
+        await self.send(
             text_data=json.dumps(
                 {
                     "type": event["type"],
@@ -87,8 +95,8 @@ class ChatConsumer(WebsocketConsumer):
             )
         )
 
-    def count_update(self, event):
-        self.send(text_data=json.dumps(event))
+    async def count_update(self, event):
+        await self.send(text_data=json.dumps(event))
 
-    def user_connect(self, event):
-        self.send(text_data=json.dumps(event))
+    async def user_connect(self, event):
+        await self.send(text_data=json.dumps(event))

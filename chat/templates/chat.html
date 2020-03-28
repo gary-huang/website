@@ -10,23 +10,15 @@
     <div class="form-row">
         <div class="col-md-6">
             <label for="chat-message-input-{{chat_id}}">Chat</label>
-            <div id="chat-log-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-all; height: 300px"></div>
+            <div id="chat-log-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-word; height: 300px"></div>
         </div>
         <div class="col-md-6">
             <label for="chat-log-pr-{{chat_id}}">Prayer Requests/Praise</label>
-            <div id="chat-log-pr-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-all; height: 300px"></div>
+            <div id="chat-log-pr-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-word; height: 300px"></div>
         </div>
     </div>
-    <div id="username-form" class="form-group">
-        <label for="chat-message-input-{{chat_id}}">Enter a username</label>
-        <input id="chat-author-input-{{chat_id}}" class="form-control" type="text" required>
-        <br>
-        <button id="username-btn" class="btn btn-primary" type="button">
-            Submit
-        </button>
-    </div>
 
-    <div id="message-form" class="form-group" style="display:none">
+    <div id="message-form" class="form-group">
         <label for="chat-message-input-{{chat_id}}">Chat</label>
         <input id="chat-message-input-{{chat_id}}" class="form-control" type="text">
         <br>
@@ -151,22 +143,13 @@
         }
     };
 
-    document.querySelector('#chat-author-input-{{chat_id}}').onkeyup = function (e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#username-btn').click();
-        }
-    };
-
     function sendMessage(kind) {
         const messageInputDom = document.querySelector('#chat-message-input-{{chat_id}}');
-        const authorInputDom = document.querySelector('#chat-author-input-{{chat_id}}');
         const body = messageInputDom.value;
-        const author = authorInputDom.value;
         chatSocket.send(JSON.stringify({
             'type': 'chat',
             'kind': kind,
             'body': body,
-            'author': author
         }));
         messageInputDom.value = '';
     };
@@ -175,20 +158,7 @@
         sendMessage("chat");
     };
 
-
     document.querySelector('#chat-message-submit-pr-{{chat_id}}').onclick = function (e) {
         sendMessage("pr");
-    };
-
-    document.querySelector('#username-btn').onclick = function (e) {
-        document.querySelector('#message-form').style.display = "";
-        document.querySelector('#username-form').style.display = "none";
-        document.querySelector('#chat-message-input-{{chat_id}}').focus();
-        const authorInputDom = document.querySelector('#chat-author-input-{{chat_id}}');
-        const author = authorInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'type': 'username',
-            'author': author
-        }));
     };
 </script>
