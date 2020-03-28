@@ -1,20 +1,17 @@
-<form class="">
-    <div class="form-row">
-        <div class="col-md-6">
-            <label for="viewers">Number of viewers:</label>
-            <label id="viewers"></label>
-        </div>
-        <div class="col-md-6">
-        </div>
-    </div>
+<div id="chatapp" v-cloak class="">
+    <span>Number of viewers [[ nviewers ]] </span>
     <div class="form-row">
         <div class="col-md-6">
             <label for="chat-message-input-{{chat_id}}">Chat</label>
-            <div id="chat-log-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-word; height: 300px"></div>
-        </div>
-        <div class="col-md-6">
-            <label for="chat-log-pr-{{chat_id}}">Prayer Requests/Praise</label>
-            <div id="chat-log-pr-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-word; height: 300px"></div>
+            <div id="chat-log-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-word; height: 300px">
+                <div v-for="(msg, i) in messages" v-bind:key="i" class="mb2">
+                    <span v-bind:style="{
+                        color: colour(msg.author),
+                        fontWeight: 'bold'
+                    }" >[[ msg.author ]]</span>
+                    <span>[[ msg.body ]]</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -25,13 +22,12 @@
         <button id="chat-message-submit-{{chat_id}}" class="btn btn-primary" type="button">
             Send
         </button>
-        <button id="chat-message-submit-pr-{{chat_id}}" class="btn btn-warning" type="button">
-            Send as prayer request/praise
-        </button>
     </div>
-</form>
+</div>
 {{ chat_id|json_script:"chat-id" }}
 <script>
+    document.querySelector('#chat-message-input-{{chat_id}}').focus();
+
     String.prototype.hashCode = function () {
         var hash = 0;
         for (var i = 0; i < this.length; i++) {
@@ -70,10 +66,27 @@
 
     function colour(str) {
         return colours[Math.abs(str.hashCode()) % (colours.length-1)];
-    }
+    };
+
+    var chatApp = new Vue({
+        el: "#chatapp",
+        delimiters: ['[[', ']]'],
+        data: {
+            nviewers: 0,
+            messages: []
+        },
+        methods: {
+            colour: function(str) {
+                return colours[Math.abs(str.hashCode()) % (colours.length-1)];
+            }
+
+        },
+        computed: {
+
+        }
+    });
 
     const chatId = JSON.parse(document.getElementById('chat-id').textContent);
-
     const chatSocket = new ReconnectingWebSocket(
         'ws://'
         + window.location.host
@@ -82,55 +95,37 @@
         + '/'
     );
 
-    function addMessage(log, author, body) {
-        var msg = document.createElement('div');
-        msg.classList += "mb-2";
-        var elauthor = document.createElement('span');
-        elauthor.innerHTML = author;
-        elauthor.style.color = colour(author);
-        elauthor.style.fontWeight = 'bold';
-        var elbody = document.createElement('span');
-        elbody.innerHTML = ':  ' + body;
-        msg.appendChild(elauthor);
-        msg.appendChild(elbody);
-        log.append(msg);
-    };
-
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
         const log = document.querySelector('#chat-log-{{chat_id}}');
-        const logpr = document.querySelector('#chat-log-pr-{{chat_id}}');
 
         if (data.type === "chat_message") {
             if (data.kind == "chat") {
-                addMessage(log, data.author, data.body);
+                chatApp.messages.push(data);
             }
             else if (data.kind == "pr") {
-                addMessage(logpr, data.author, data.body);
+                // addMessage(logpr, data.author, data.body);
             }
         }
         else if (data.type === "chat_init") {
             for (var i = 0; i < data.msgs.length; ++i) {
-                if (data.msgs[i].kind === "pr") {
-                    addMessage(logpr, data.msgs[i].author, data.msgs[i].body);
-                } else {
-                    addMessage(log, data.msgs[i].author, data.msgs[i].body);
-                }
+                chatApp.messages.push(data.msgs[i]);
             }
         }
         else if (data.type == "count_update") {
-            document.querySelector('#viewers').innerHTML = data.count;
+            chatApp.nviewers = data.count;
         }
         else if (data.type == "user_connect") {
-            addMessage(log, data.author, '  connected!');
+            data.body = "connected!"
+            chatApp.messages.push(data);
         }
         else if (data.type == "user_disconnect") {
-            addMessage(log, data.author, ' . disconnected!');
+            data.body = "disconnected!"
+            chatApp.messages.push(data);
         }
 
         // scroll the textarea to the bottom
         log.scrollTop = log.scrollHeight;
-        logpr.scrollTop = logpr.scrollHeight;
     };
 
     chatSocket.onclose = function (e) {
@@ -156,9 +151,5 @@
 
     document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function (e) {
         sendMessage("chat");
-    };
-
-    document.querySelector('#chat-message-submit-pr-{{chat_id}}').onclick = function (e) {
-        sendMessage("pr");
     };
 </script>
