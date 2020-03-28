@@ -6,7 +6,7 @@ DEBUG = False
 SECRET_KEY = os.getenv("DJ_SECRET")
 
 ALLOWED_HOSTS = [
-    "crossroadschurch.ajax",
+    "crossroadsajax.church",
     "crossroadsinajax.xyz",
 ]
 
