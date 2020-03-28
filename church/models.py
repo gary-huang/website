@@ -14,7 +14,7 @@ from prayer import models as pr_models
 
 
 class User(AbstractUser):
-    pass
+    token = models.CharField(max_length=32)
 
 
 class ServiceMediaBlock(AbstractMediaChooserBlock):

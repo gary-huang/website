@@ -41,7 +41,6 @@ services:
       - ${PORT}:80
     depends_on:
       - prod_server
-    # command: sh -c "./wait-for prod_server:8000"
 
 volumes:
   staticfiles:
