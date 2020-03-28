@@ -4,10 +4,7 @@
 {% load octicons %}
 
 {% block content %}
-<div class="container" style="margin-bottom: 70px">
-<h1>{{ page.title }}</h1>
-<p class="meta">{{ page.date }}</p>
-
+<div class="container" style="">
 {% comment %}
 {% if request.user.is_authenticated %}
   {% for section in page.bulletin %}
@@ -18,12 +15,21 @@
 {% endcomment %}
 
 {% if request.user.is_authenticated %}
-<div class="embed-responsive embed-responsive-16by9">
-  <iframe class="embed-responsive-item" src="{{page.stream_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-  </iframe>
+<div class="row">
+  <div class="col-12 col-md-8" style="padding-right: 5px">
+    <div class="embed-responsive embed-responsive-16by9">
+      <iframe class="embed-responsive-item" src="{{page.stream_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    {% chat chat_id=self.pk %}
+  </div>
 </div>
+<h1>{{ page.title }}</h1>
+<p class="meta">{{ page.date }}</p>
 
-  {% chat chat_id=self.pk %}
+
 
 {% endif %}
 

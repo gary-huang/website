@@ -1,28 +1,20 @@
-<div id="chatapp" v-cloak class="">
-    <span>Number of viewers [[ nviewers ]] </span>
-    <div class="form-row">
-        <div class="col-md-6">
-            <label for="chat-message-input-{{chat_id}}">Chat</label>
-            <div id="chat-log-{{chat_id}}" class="form-control" style="overflow-y: scroll; word-break: break-word; height: 300px">
-                <div v-for="(msg, i) in messages" v-bind:key="i" class="mb2">
-                    <span v-bind:style="{
-                        color: colour(msg.author),
-                        fontWeight: 'bold'
-                    }" >[[ msg.author ]]</span>
-                    <span>[[ msg.body ]]</span>
-                </div>
+<div id="chatapp" v-cloak class="d-flex flex-column h-100">
+  <span>Number of viewers [[ nviewers ]] </span>
+      <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word;">
+            <div v-for="(msg, i) in messages" v-bind:key="i" class="mb2">
+                <span v-bind:style="{
+                    color: colour(msg.author),
+                    fontWeight: 'bold'
+                }" >[[ msg.author ]]</span>
+                <span>[[ msg.body ]]</span>
             </div>
-        </div>
-    </div>
-
-    <div id="message-form" class="form-group">
-        <label for="chat-message-input-{{chat_id}}">Chat</label>
-        <input id="chat-message-input-{{chat_id}}" class="form-control" type="text">
-        <br>
-        <button id="chat-message-submit-{{chat_id}}" class="btn btn-primary" type="button">
+      </div>
+      <div class="row">
+        <input id="chat-message-input-{{chat_id}}" class="form-control" type="text" autocomplete="off" placeholder="Type your message here">
+        <button id="chat-message-submit-{{chat_id}}" class="btn btn-primary form-control" type="button">
             Send
         </button>
-    </div>
+      </div>
 </div>
 {{ chat_id|json_script:"chat-id" }}
 <script>
@@ -64,10 +56,6 @@
         "#ffff00"
     ];
 
-    function colour(str) {
-        return colours[Math.abs(str.hashCode()) % (colours.length-1)];
-    };
-
     var chatApp = new Vue({
         el: "#chatapp",
         delimiters: ['[[', ']]'],
@@ -83,6 +71,11 @@
         },
         computed: {
 
+        },
+        updated: function() {
+            const log = document.querySelector('#chat-log-{{chat_id}}');
+            // scroll the textarea to the bottom
+            log.scrollTop = log.scrollHeight;
         }
     });
 
@@ -97,7 +90,6 @@
 
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        const log = document.querySelector('#chat-log-{{chat_id}}');
 
         if (data.type === "chat_message") {
             if (data.kind == "chat") {
@@ -124,8 +116,6 @@
             chatApp.messages.push(data);
         }
 
-        // scroll the textarea to the bottom
-        log.scrollTop = log.scrollHeight;
     };
 
     chatSocket.onclose = function (e) {

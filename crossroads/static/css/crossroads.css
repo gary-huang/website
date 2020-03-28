@@ -1,5 +1,5 @@
 #crossroads-logo {
-  width: 150px;
+  width: 120px;
 }
 
 .dropdown-item:not(:first-child) {
@@ -22,4 +22,17 @@ body {
 
 .featurette-divider {
   margin: 3rem 0;
+}
+
+@media (min-width: 1200px) {
+  .container, .container-lg, .container-md, .container-sm, .container-xl {
+      max-width: 1800px !important;
+      padding-left: 15px;
+      padding-right: 15px;
+  }
+}
+
+.row {
+  margin-right: unset !important;
+  margin-left: unset !important;
 }

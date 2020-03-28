@@ -3,7 +3,7 @@ __pycache__/
 .venv/
 .vscode
 *.pyc
-./static/
+/static/
 ./media/
 
 .env.prod
