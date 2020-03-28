@@ -78,5 +78,29 @@
       "name": "hospitality",
       "permissions": []
     }
+  },
+  {
+    "model": "auth.group",
+    "pk": 14,
+    "fields": {
+      "name": "pastor",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 15,
+    "fields": {
+      "name": "elder",
+      "permissions": []
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 16,
+    "fields": {
+      "name": "chat_mod",
+      "permissions": []
+    }
   }
 ]

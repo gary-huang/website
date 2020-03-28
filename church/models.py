@@ -127,8 +127,6 @@ class DiscussionItemBlock(IDStructBlock):
         ctx["item"] = self
         return ctx
 
-    # day?
-
 
 class DiscussionSectionBlock(IDStructBlock):
     title = blocks.CharBlock(required=False, default="Discussion")

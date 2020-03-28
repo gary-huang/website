@@ -2,7 +2,7 @@
   <span><b>[[ nviewers ]]</b> people are here right now</span>
       <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
             <div v-for="(msg, i) in messages" v-bind:key="i" class="mb2">
-                <span>[[ datefmt(msg.created_at) ]]</span>
+                <span style="color: grey; font-size: 12px;">[[ datefmt(msg.created_at) ]]</span>
                 <span v-bind:style="{
                     color: colour(msg.author),
                     fontWeight: 'bold'

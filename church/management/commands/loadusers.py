@@ -20,14 +20,18 @@ class Command(BaseCommand):
         nusers = 0
         with f:
             data = json.load(f)
-            for name, email in data:
+            for username, firstname, lastname, email in data:
                 token = secrets.token_hex(8)
                 nusers += 1
                 try:
                     User.objects.get(email=email)
                 except User.DoesNotExist:
                     User.objects.create(
-                        username=name, email=email, token=token,
+                        username=username,
+                        firstname=firstname,
+                        lastname=lastname,
+                        email=email,
+                        token=token,
                     )
 
         self.stdout.write(self.style.SUCCESS(f"Successfully created {nusers} users"))
