@@ -1,21 +1,48 @@
 <div id="chatapp" v-cloak class="d-flex flex-column h-100">
   <span><b>[[ nviewers ]]</b> people are here right now</span>
-      <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
-            <div v-for="(msg, i) in messages" v-bind:key="i" class="mb2">
-                <span style="color: grey; font-size: 12px;">[[ datefmt(msg.created_at) ]]</span>
-                <span v-bind:style="{
-                    color: colour(msg.author),
-                    fontWeight: 'bold'
-                }" >[[ msg.author ]]</span><span>:</span>
-                <span>[[ msg.body ]]</span>
+  <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
+    <div v-for="(msg, i) in messages" v-bind:key="i" class="mb2">
+      <div class="card">
+          <div class="float-right" style="height: 1px;">
+            <div class="dropdown float-right d-inline-block" style="margin-right: 5px; margin-top: 5px; cursor: pointer; width: 20px;">
+              <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="">
+              </div>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pr{{forloop.counter}}dropdown">
+                  <a class="dropdown-item" href="">Make prayer request</a>
+              </div>
             </div>
+          </div>
+          <div class="card-body" style="padding: 0.25rem;">
+            <span v-bind:style="{
+                color: colour(msg.author),
+                fontWeight: 'bold'
+            }">[[ msg.author ]]</span><span>:</span>
+            <span>[[ msg.body ]]</span>
+            <footer class="">
+              <span style="color: grey;">[[ datefmt(msg.created_at) ]]</span>
+              <a class="btn emoji-btn" role="button" href="">
+              {% if pr.prayer_react_count %}
+                <span class="">🙏 &nbsp;{{ pr.prayer_react_count }}</span>
+              {% else %}
+                <span class="inactive-emoji">🙏</span>
+              {% endif %}
+              </a>
+              <a class="btn emoji-btn" role="button" href="">
+              {% if pr.praise_react_count %}
+              <span class="ml-2">🙌 &nbsp;{{ pr.praise_react_count }}</span>
+              {% else %}
+              <span class="ml-2 inactive-emoji">🙌</span>
+              {% endif %}
+              </a>
+            </footer>
+          </div>
       </div>
-      <div class="row">
-        <input id="chat-message-input-{{chat_id}}" class="form-control" type="text" autocomplete="off" placeholder="Type your message here">
-        <button id="chat-message-submit-{{chat_id}}" class="btn btn-primary form-control" type="button">
-            Send
-        </button>
-      </div>
+    </div>
+  </div>
+  <div class="row">
+    <input id="chat-message-input-{{chat_id}}" class="form-control" type="text" autocomplete="off" placeholder="Type your message here">
+    <button id="chat-message-submit-{{chat_id}}" class="btn btn-primary form-control" type="button">Send</button>
+  </div>
 </div>
 {{ chat_id|json_script:"chat-id" }}
 <script>
