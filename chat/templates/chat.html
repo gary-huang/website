@@ -67,14 +67,12 @@
             colour: function(str) {
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
             }
-
         },
         computed: {
 
         },
         updated: function() {
             const log = document.querySelector('#chat-log-{{chat_id}}');
-            // scroll the textarea to the bottom
             log.scrollTop = log.scrollHeight;
         }
     });
@@ -128,18 +126,17 @@
         }
     };
 
-    function sendMessage(kind) {
+    document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function (e) {
         const messageInputDom = document.querySelector('#chat-message-input-{{chat_id}}');
         const body = messageInputDom.value;
+        if (!body) {
+            return;
+        }
         chatSocket.send(JSON.stringify({
             'type': 'chat',
-            'kind': kind,
+            'kind': 'chat',
             'body': body,
         }));
         messageInputDom.value = '';
-    };
-
-    document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function (e) {
-        sendMessage("chat");
     };
 </script>
