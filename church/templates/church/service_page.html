@@ -28,6 +28,11 @@
 </div>
 <h1>{{ page.title }}</h1>
 <p class="meta">{{ page.date }}</p>
+{% else %}
+<h1>{{ page.title }}</h1>
+<p class="meta">{{ page.date }}</p>
+<h2>Please use the link that was emailed to you to access this page.</h2>
+<h4>Or contact help@crossroadsajax.church for assistance</h4>
 {% endif %}
 
 {% comment %}
