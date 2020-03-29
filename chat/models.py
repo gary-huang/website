@@ -30,7 +30,7 @@ class ChatMessage(models.Model):
     def react(cls, user, msg_id, type):
         # Toggle a reaction
         msg = cls.objects.get(pk=msg_id)
-        prev_reacts = ChatMessageReact.objects.filter(user=user, type=type)
+        prev_reacts = ChatMessageReact.objects.filter(user=user, item=msg, type=type)
         if len(prev_reacts):
             for react in prev_reacts:
                 react.delete()
