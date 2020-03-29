@@ -122,6 +122,7 @@
             messages: [],
             users: [],
             message: "",
+            updateType: "",
             view: window.location.hash.substr(1) || "chat"
         },
         methods: {
@@ -209,14 +210,21 @@
             }
         },
         updated: function() {
-            const log = document.querySelector('#chat-log-{{chat_id}}');
+            var t = this.updateType;
+            if ( t === "chat_message" || t === "chat_message_update" ) {
+                this.updateType = "";
+                return;
+            }
+            var log = document.querySelector('#chat-log-{{chat_id}}');
             log.scrollTop = log.scrollHeight;
+            this.updateType = "";
         }
     });
 
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
 
+        chatApp.updateType = data.type;
         if (data.type === "chat_message") {
             chatApp.messages.push(data);
         }
@@ -238,14 +246,6 @@
             for (var i = 0; i < data.users.length; ++i) {
                 chatApp.users.push(data.users[i]);
             }
-        }
-        else if (data.type == "user_connect") {
-            data.body = "connected!"
-            chatApp.messages.push(data);
-        }
-        else if (data.type == "user_disconnect") {
-            data.body = "disconnected!"
-            chatApp.messages.push(data);
         }
     };
 
