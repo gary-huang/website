@@ -58,6 +58,8 @@ class ChatMessage(models.Model):
 
         if tag in ["prayerrequest", "pr", "prayer", "pray", "pryr", "pry", "pyr"]:
             return "pr"
+        if tag in ["q", "qna", "qa", "question", "q&a", "question"]:
+            return "q"
         return tag
 
     def add_tag(self, raw_tag: str):

@@ -3,7 +3,7 @@
   <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
     <div v-for="(msg, i) in messages" v-bind:key="i" class="mb-1">
       <div class="card" v-bind:style="{
-          backgroundColor: isPR(msg) ? '#f6efe2' : 'white'
+          backgroundColor: backgroundColor(msg)
       }">
           <div class="float-right" style="height: 1px;">
             <div class="dropdown float-right d-inline-block" style="margin-right: 5px; margin-top: 5px; cursor: pointer; width: 20px;">
@@ -99,6 +99,15 @@
             message: ""
         },
         methods: {
+            backgroundColor: function(msg) {
+                if (this.isPR(msg)) {
+                    return '#f6efe2';
+                }
+                else if (this.isQ(msg)) {
+                    return '#d2f8d2';
+                }
+                return '';
+            },
             togglePR: function(msg) {
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_toggle_pr',
@@ -107,6 +116,9 @@
             },
             isPR: function(msg) {
                 return msg.tags.includes("pr");
+            },
+            isQ: function(msg) {
+                return msg.tags.includes("q");
             },
             getReacts: function(msg) {
                 if (this.isPR(msg)) {
