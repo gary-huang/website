@@ -1,5 +1,4 @@
 <div id="chatapp" v-cloak class="d-flex flex-column h-100">
-  <span><b>[[ nviewers ]]</b> people are here right now</span>
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
       <a class="nav-link active" data-toggle="tab" href="#chat" role="tab" aria-selected="true" v-on:click="view='chat'">Chat</a>
@@ -10,8 +9,16 @@
     <li class="nav-item">
       <a class="nav-link" data-toggle="tab" href="#qa" role="tab" aria-selected="false" v-on:click="view='qa'">Q&A</a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#viewers" role="tab" aria-selected="false" v-on:click="view='viewers'">Viewers ([[ numViewers ]])</a>
+    </li>
   </ul>
   <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
+    <template v-if="view==='viewers'">
+        <div v-if="view==='viewers'" v-for="user in users" style="font-size: 1rem; font-weight: bold;">
+            <span>[[ user.username ]] ([[ user.count ]])</span>
+        </div>
+    </template>
     <div v-for="(msg, i) in displaymessages" v-bind:key="i" class="mb-1">
       <div class="card" v-bind:style="{
           backgroundColor: backgroundColor(msg)
@@ -112,10 +119,10 @@
         el: "#chatapp",
         delimiters: ['[[', ']]'],
         data: {
-            nviewers: 0,
             messages: [],
+            users: [],
             message: "",
-            view: "chat"
+            view: window.location.hash.substr(1) || "chat"
         },
         methods: {
             backgroundColor: function(msg) {
@@ -176,9 +183,12 @@
             }
         },
         computed: {
+            numViewers: function() {
+                return this.users.reduce(function(acc, x) {
+                    return acc + x.count;
+                }, 0);
+            },
             displaymessages: function() {
-                console.log(this.view);
-                console.log(this.messages);
                 if ( this.view === "chat" ) {
                     return this.messages;
                 }
@@ -192,6 +202,9 @@
                         return x.tags.includes("q");
                     });
                 }
+                else if ( this.view === "viewers" ) {
+                    return [];
+                }
                 return this.messages;
             }
         },
@@ -203,8 +216,6 @@
 
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-
-        console.log(data);
 
         if (data.type === "chat_message") {
             chatApp.messages.push(data);
@@ -222,8 +233,11 @@
                     break;
             Vue.set(chatApp.messages, index, data);
         }
-        else if (data.type == "count_update") {
-            chatApp.nviewers = data.count;
+        else if (data.type == "users_update") {
+            chatApp.users.splice(0, chatApp.users.length);
+            for (var i = 0; i < data.users.length; ++i) {
+                chatApp.users.push(data.users[i]);
+            }
         }
         else if (data.type == "user_connect") {
             data.body = "connected!"

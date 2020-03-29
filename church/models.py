@@ -16,6 +16,10 @@ from prayer import models as pr_models
 class User(AbstractUser):
     token = models.CharField(max_length=32)
 
+    @property
+    def chat_name(self):
+        return f"{self.role_emoji}{self.username}"
+
     # TODO: cachedproperty
     @property
     def role_emoji(self):

@@ -102,7 +102,7 @@ class ChatMessage(models.Model):
     def __json__(self):
         return dict(
             id=self.pk,
-            author=f"{self.author.role_emoji}{self.author.username}",
+            author=self.author.chat_name,
             body=self.body,
             created_at=self.created_at.strftime("%s"),
             reacts=self.aggreacts(),

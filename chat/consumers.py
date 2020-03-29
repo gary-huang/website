@@ -13,13 +13,34 @@ from church.models import User
 
 log = logging.getLogger(__name__)
 
-count = 0
-
 
 class Chatbot:
 
     # user.pk: timestamp (seconds)
     connect_time = {}
+
+    # user.username: dict(user=user, count=int)
+    users = {}
+
+    @classmethod
+    def register(cls, user):
+        cls.users[user.username] = cls.users.get(
+            user.username, dict(user=user, count=0)
+        )
+        cls.users[user.username]["count"] += 1
+
+    @classmethod
+    def deregister(cls, user):
+        if user.username in cls.users:
+            cls.users[user.username]["count"] -= 1
+
+    @classmethod
+    def user_list(cls):
+        return [
+            dict(username=username, count=meta["count"])
+            for username, meta in cls.users.items()
+            if meta["count"] > 0
+        ]
 
     @classmethod
     def should_send_connect(cls, user):
@@ -47,9 +68,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not user.is_authenticated:
             return
 
-        global count
-        count = count + 1
-
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
         self.chat_group_name = f"chat_{self.chat_id}"
 
@@ -72,9 +90,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send initial chat data
         await self.send(text_data=json.dumps({"type": "chat_init", "msgs": json_msgs,}))
 
+        Chatbot.register(user)
         # Send update message
         await self.channel_layer.group_send(
-            self.chat_group_name, {"type": "count_update", "count": count,}
+            self.chat_group_name, {"type": "users_update", "users": Chatbot.user_list()}
         )
 
         # Create welcome message for user
@@ -98,14 +117,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not user.is_authenticated:
             return
 
-        global count
-        count = count - 1
+        Chatbot.deregister(user)
 
         # Leave room group
         await self.channel_layer.group_discard(self.chat_group_name, self.channel_name)
 
         await self.channel_layer.group_send(
-            self.chat_group_name, {"type": "count_update", "count": count,}
+            self.chat_group_name, {"type": "users_update", "users": Chatbot.user_list()}
         )
 
     async def receive(self, text_data):
@@ -166,7 +184,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Forward message to WebSocket
         await self.send(text_data=json.dumps(event))
 
-    async def count_update(self, event):
+    async def users_update(self, event):
         await self.send(text_data=json.dumps(event))
 
     async def user_connect(self, event):
