@@ -32,8 +32,8 @@
     </div>
   </div>
   <div class="row">
-    <input id="chat-message-input-{{chat_id}}" class="form-control" type="text" autocomplete="off" placeholder="Type your message here">
-    <button id="chat-message-submit-{{chat_id}}" class="btn btn-primary form-control" type="button">Send</button>
+    <input id="chat-message-input-{{chat_id}}" class="form-control" type="text" autocomplete="off" placeholder="Type your message here" v-model="message" v-on:keyup.enter="send">
+    <button class="btn btn-primary form-control" type="button" v-on:click="send">Send</button>
   </div>
 </div>
 {{ chat_id|json_script:"chat-id" }}
@@ -90,7 +90,8 @@
         delimiters: ['[[', ']]'],
         data: {
             nviewers: 0,
-            messages: []
+            messages: [],
+            message: ""
         },
         methods: {
             datefmt: function(sec) {
@@ -108,8 +109,19 @@
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_react',
                     'msg_id': msgId,
-                    'react': react,
+                    'react': react
                 }));
+            },
+            send: function() {
+                const body = this.message;
+                if (!body) {
+                    return;
+                }
+                chatSocket.send(JSON.stringify({
+                    'type': 'chat_message',
+                    'body': body
+                }));
+                this.message = '';
             }
         },
         computed: {
@@ -121,9 +133,10 @@
         }
     });
 
-
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
+
+        console.log(data);
 
         if (data.type === "chat_message") {
             chatApp.messages.push(data);
@@ -138,17 +151,6 @@
             for (index = 0; index < chatApp.messages.length; ++index)
                 if ( chatApp.messages[index].id === data["msg_id"] )
                     break;
-
-            // const map = {
-            //     "🙏": 0,
-            //     "👋": 1,
-            //     "🙌": 2
-            // };
-            // const msg = chatApp.messages[index];
-            // msg.reacts[map[data["react"]]][1]++;  // yuck
-            // const msg = chatApp.messages[index];
-            // msg.react = data.reacts;
-            // chatApp.messages.$set(index, data);
             Vue.set(chatApp.messages, index, data);
         }
         else if (data.type == "count_update") {
@@ -166,25 +168,5 @@
 
     chatSocket.onclose = function (e) {
         console.error('Chat socket closed unexpectedly');
-    };
-
-    document.querySelector('#chat-message-input-{{chat_id}}').onkeyup = function (e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#chat-message-submit-{{chat_id}}').click();
-        }
-    };
-
-    document.querySelector('#chat-message-submit-{{chat_id}}').onclick = function (e) {
-        const messageInputDom = document.querySelector('#chat-message-input-{{chat_id}}');
-        const body = messageInputDom.value;
-        if (!body) {
-            return;
-        }
-        chatSocket.send(JSON.stringify({
-            'type': 'chat_message',
-            'kind': 'chat',
-            'body': body,
-        }));
-        messageInputDom.value = '';
     };
 </script>

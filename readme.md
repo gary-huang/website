@@ -10,6 +10,7 @@ $ docker-compose up -d --build dev
 # prod
 
 ```bash
+$ cp .env.prod.template .env.prod  # fill in with secrets
 $ docker-compose up -d --build prod
 ```
 

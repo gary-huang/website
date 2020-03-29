@@ -22,7 +22,7 @@ class ChatMessage(models.Model):
         # Aggregate common reacts into a list of tuples [(emoji, count)]
         aggr = []
         reacts = self.reacts.all()
-        for react in "🙏,👋,🙌,➕".split(","):
+        for react in "🙏,🙌,👋,➕".split(","):
             aggr.append((react, len(reacts.filter(type=react))))
         return aggr
 
