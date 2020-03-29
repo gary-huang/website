@@ -28,8 +28,8 @@ class Command(BaseCommand):
                 except User.DoesNotExist:
                     User.objects.create(
                         username=username,
-                        firstname=firstname,
-                        lastname=lastname,
+                        first_name=firstname,
+                        last_name=lastname,
                         email=email,
                         token=token,
                     )
