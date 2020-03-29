@@ -23,6 +23,7 @@
       <div class="card" v-bind:style="{
           backgroundColor: backgroundColor(msg)
       }">
+        {% if user.is_chatmod %}
           <div class="float-right" style="height: 1px;">
             <div class="dropdown float-right d-inline-block" style="margin-right: 5px; margin-top: 5px; cursor: pointer; width: 20px;">
               <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -35,6 +36,7 @@
               </div>
             </div>
           </div>
+        {% endif %}
           <div class="card-body" style="padding: 0.25rem 1.5rem 0rem 0.25rem;">
             <span v-bind:style="{
                 color: colour(msg.author),

@@ -34,6 +34,10 @@ class User(AbstractUser):
             return "🧐"
         return ""
 
+    @property
+    def is_chatmod(self):
+        return self.is_superuser or "chatmod" in [g.name for g in self.groups.all()]
+
 
 class ServiceMediaBlock(AbstractMediaChooserBlock):
     class Meta:
