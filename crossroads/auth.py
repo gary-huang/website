@@ -42,5 +42,8 @@ class AuthenticationMiddleware:
         token = request.GET[self.TOKEN]
 
         user = authenticate(request, token=token)
-        login(request, user)
-        return HttpResponseRedirect(request.path_info)
+        if user:
+            login(request, user)
+            return HttpResponseRedirect(request.path_info)
+
+        return self.get_response(request)

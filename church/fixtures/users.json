@@ -1,0 +1,10 @@
+[
+  {
+    "model": "church.User",
+    "pk": 99,
+    "fields": {
+      "username": "guest",
+      "token": "anonymous"
+    }
+  }
+]
