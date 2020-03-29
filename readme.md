@@ -2,7 +2,7 @@
 
 ```bash
 # set-up local environment
-$ cp .env.dev.template .env.dev  # customize
+$ cp .env.dev.template .env  # customize
 
 # custom django local overrides
 $ vim crossroads/settings/local.py
@@ -17,7 +17,7 @@ $ docker-compose up -d --build dev
 # prod
 
 ```bash
-$ cp .env.prod.template .env.prod  # fill in with prod secrets
+$ cp .env.prod.template .env  # fill in with prod secrets
 $ docker-compose up -d --build prod
 ```
 
