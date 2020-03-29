@@ -10,7 +10,7 @@
       <a class="nav-link" data-toggle="tab" href="#q" role="tab" aria-selected="false" v-on:click="view='q'">Q&A</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-toggle="tab" href="#viewers" role="tab" aria-selected="false" v-on:click="view='viewers'">Viewers ([[ numViewers ]])</a>
+      <a class="nav-link" data-toggle="tab" href="#viewers" role="tab" aria-selected="false" v-on:click="view='viewers'">Users ([[ numViewers ]])</a>
     </li>
   </ul>
   <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
@@ -58,6 +58,9 @@
   </div>
   <div class="row">
     {% if user.username != "guest" %}
+    <button class="btn btn-info form-control" type="button" v-on:click="popupClick" v-bind:style="{
+        display: showNewPopup ? 'block' : 'none'
+    }">Scroll down to see new messages! 🙂</button>
     <input id="chat-message-input-{{chat_id}}" class="form-control" type="text" autocomplete="off" placeholder="Type your message here" v-model="message" v-on:keyup.enter="send">
     <button class="btn btn-primary form-control" type="button" v-on:click="send">Send</button>
     {% else %}
@@ -67,11 +70,6 @@
 </div>
 {{ chat_id|json_script:"chat-id" }}
 <script>
-    var chatInput = document.querySelector('#chat-message-input-{{chat_id}}');
-    if (chatInput) {
-        chatInput.focus();
-    }
-
     String.prototype.hashCode = function () {
         var hash = 0;
         for (var i = 0; i < this.length; i++) {
@@ -125,9 +123,17 @@
             users: [],
             message: "",
             updateType: "",
-            view: window.location.hash.substr(1) || "chat"
+            view: window.location.hash.substr(1) || "chat",
+            prevShowNewPopup: false
+        },
+        created: function() {
         },
         methods: {
+            popupClick: function() {
+                this.prevShowNewPopup = false;
+                var log = document.querySelector('#chat-log-{{chat_id}}');
+                log.scrollTop = log.scrollHeight;
+            },
             backgroundColor: function(msg) {
                 if (this.isPR(msg)) {
                     return '#f6efe2';
@@ -215,16 +221,38 @@
                     return [];
                 }
                 return this.messages;
+            },
+            showNewPopup: function() {
+                if ( this.updateType !== "chat_message" ) {
+                    return this.prevShowNewPopup;
+                }
+                var log = document.querySelector('#chat-log-{{chat_id}}');
+
+                if ( log.scrollTop + 50*16 < log.scrollHeight ) {
+                    this.prevShowNewPopup = true;
+                    return true;
+                }
+                this.prevShowNewPopup = false;
+                return false;
             }
         },
         updated: function() {
             var t = this.updateType;
-            if ( t === "chat_message_update" ) {
-                this.updateType = "";
-                return;
+            if ( t === "chat_message" ) {
+                var log = document.querySelector('#chat-log-{{chat_id}}');
+                // a message is about 50 pixels
+                if ( log ) {
+                    if ( log.scrollTop + 50*16 < log.scrollHeight ) {
+                    }
+                    else {
+                        log.scrollTop = log.scrollHeight;
+                    }
+                }
             }
-            var log = document.querySelector('#chat-log-{{chat_id}}');
-            log.scrollTop = log.scrollHeight;
+            else if ( t === "chat_init" ) {
+                var log = document.querySelector('#chat-log-{{chat_id}}');
+                log.scrollTop = log.scrollHeight;
+            }
             this.updateType = "";
         }
     });
