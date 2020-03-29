@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 
@@ -7,11 +8,37 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from chat import models
+from church.models import User
 
 
 log = logging.getLogger(__name__)
 
 count = 0
+
+
+class Chatbot:
+
+    # user.pk: timestamp (seconds)
+    connect_time = {}
+
+    @classmethod
+    def should_send_connect(cls, user):
+        # If there exists a gap of 5 minutes from when the user
+        # last connected, then show another message
+        pk = user.pk
+        this_time = int(datetime.now().strftime("%s"))
+        try:
+            if pk not in cls.connect_time:
+                cls.connect_time[pk] = this_time
+                return True
+            else:
+                last_time = cls.connect_time[pk]
+                # After 5 minutes
+                if this_time - last_time > 60 * 5:
+                    return True
+                return False
+        finally:
+            cls.connect_time[pk] = this_time
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -26,8 +53,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
         self.chat_group_name = f"chat_{self.chat_id}"
 
+        self.chatbot, _ = await database_sync_to_async(User.objects.get_or_create)(
+            username="chatbot"
+        )
         self.chat, _ = await database_sync_to_async(models.Chat.objects.get_or_create)(
-            chat_id=self.chat_id
+            chat_id=self.chat_id,
         )
 
         log.info("user %r connected to chat %r", user, self.chat_id)
@@ -42,9 +72,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Send initial chat data
         await self.send(text_data=json.dumps({"type": "chat_init", "msgs": json_msgs,}))
 
-        # Send message to room group
+        # Send update message
         await self.channel_layer.group_send(
             self.chat_group_name, {"type": "count_update", "count": count,}
+        )
+
+        # Create welcome message for user
+        body = f"{user.username} has joined the service! 😊"
+        if Chatbot.should_send_connect(user):
+            await self.chatbotmsg(body)
+
+    async def chatbotmsg(self, body, type=None):
+        msg = await database_sync_to_async(self.chat.add_message)(
+            body=body, author=self.chatbot
+        )
+
+        # Send message to room group
+        msg_json = await database_sync_to_async(msg.__json__)()
+        await self.channel_layer.group_send(
+            self.chat_group_name, {"type": "chat_message", **msg_json}
         )
 
     async def disconnect(self, close_code):

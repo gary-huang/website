@@ -31,7 +31,6 @@ class User(AbstractUser):
         return ""
 
 
-
 class ServiceMediaBlock(AbstractMediaChooserBlock):
     class Meta:
         template = "blocks/service_media_block.html"
