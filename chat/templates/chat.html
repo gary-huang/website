@@ -28,8 +28,8 @@
               <a v-for="r in getReacts(msg)" v-bind:style="{
                 filter: r[1] == 0 ? 'grayscale(100%)' : 'none',
                 cursor: 'pointer',
-              }">
-                <span class="mr-1" v-on:click="react(r[0], msg)" >[[ r[0] ]]</span><span class="mr-2" v-if="r[1] > 0">[[ r[1] ]]</span>
+              }" v-on:click="react(r[0], msg)">
+                <span class="mr-1">[[ r[0] ]]</span><span class="mr-2" v-if="r[1] > 0">[[ r[1] ]]</span>
               </a>
             </footer>
           </div>
