@@ -5,7 +5,7 @@
   <a href="#collapseBulletin" data-toggle="collapse" role="button" aria-controls="collapseBulletin" class="" style="color: black;">
     <h2>Bulletin <span class="float-right">{% octicon "chevron-down" width=25 height=25 %}</span></h2>
   </a>
-  <div id="collapseBulletin" class="panel-collapse collapse">
+  <div id="collapseBulletin" class="panel-collapse">
     <div class="card-columns">
       {% for item in value.items %}
         {% include_block item %}
