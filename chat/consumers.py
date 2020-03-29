@@ -65,35 +65,46 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
 
-        if text_data_json["type"] == "chat":
+        user = await channels.auth.get_user(self.scope)
+
+        if text_data_json["type"] == "chat_message":
             body = text_data_json["body"]
-            kind = text_data_json["kind"]
 
             # Save the message
-            user = await channels.auth.get_user(self.scope)
             msg = await database_sync_to_async(self.chat.add_message)(
-                body=body, author=user, kind=kind
+                body=body, author=user
             )
 
             # Send message to room group
+            msg_json = await database_sync_to_async(msg.__json__)()
             await self.channel_layer.group_send(
-                self.chat_group_name, {"type": "chat_message", **msg.__json__()}
+                self.chat_group_name, {"type": "chat_message", **msg_json}
             )
+        elif text_data_json["type"] == "chat_react":
+            msg_id = text_data_json["msg_id"]
+            react = text_data_json["react"]
+            # Forward the react message to the rest of the clients
+            msg = await database_sync_to_async(models.ChatMessage.react)(user, msg_id, react)
+            msg_json = await database_sync_to_async(msg.__json__)()
+
+            await self.channel_layer.group_send(self.chat_group_name, dict(
+                type="chat_message_update",
+                msg_id=msg_id,
+                **msg_json,
+            ))
+
+        elif text_data_json["type"] == "chat_edit":
+            pass
+
+    # Receive message from room group
+    async def chat_message_update(self, event):
+        # Forward message to WebSocket
+        await self.send(text_data=json.dumps(event))
 
     # Receive message from room group
     async def chat_message(self, event):
-        # Send message to WebSocket
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": event["type"],
-                    "kind": event["kind"],
-                    "body": event["body"],
-                    "author": event["author"],
-                    "created_at": event["created_at"],
-                }
-            )
-        )
+        # Forward message to WebSocket
+        await self.send(text_data=json.dumps(event))
 
     async def count_update(self, event):
         await self.send(text_data=json.dumps(event))

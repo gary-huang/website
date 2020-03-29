@@ -8,7 +8,7 @@ class PrayerRequestReact(models.Model):
         "PrayerRequest", related_name="reacts", on_delete=models.CASCADE
     )
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name="reacts", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL, related_name="pr_reacts", on_delete=models.CASCADE
     )
     type = models.CharField(max_length=16)
 
