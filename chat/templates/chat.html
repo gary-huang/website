@@ -1,13 +1,13 @@
 <div id="chatapp" v-cloak class="d-flex flex-column h-100">
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
-      <a class="nav-link active" data-toggle="tab" href="#chat" role="tab" aria-selected="true" v-on:click="view='chat'">Chat</a>
+      <a class="nav-link active" data-toggle="tab" href="#chat" role="tab" aria-selected="true" v-on:click="changeTab('chat')">Chat</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-toggle="tab" href="#pr" role="tab" aria-selected="false" v-on:click="view='pr'">Prayer</a>
+      <a class="nav-link" data-toggle="tab" href="#pr" role="tab" aria-selected="false" v-on:click="changeTab('pr')">Prayer</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-toggle="tab" href="#q" role="tab" aria-selected="false" v-on:click="view='q'">Q&A</a>
+      <a class="nav-link" data-toggle="tab" href="#q" role="tab" aria-selected="false" v-on:click="changeTab('q')">Q&A</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" data-toggle="tab" href="#viewers" role="tab" aria-selected="false" v-on:click="view='viewers'">Users ([[ numViewers ]])</a>
@@ -129,6 +129,10 @@
         created: function() {
         },
         methods: {
+            changeTab: function(view) {
+                this.view = view;
+                this.updateType = "change_tab";
+            },
             popupClick: function() {
                 this.prevShowNewPopup = false;
                 var log = document.querySelector('#chat-log-{{chat_id}}');
@@ -238,7 +242,9 @@
         },
         updated: function() {
             var t = this.updateType;
-            if ( t === "chat_message" ) {
+            if ( t === "chat_message_update" || t === "users_update" ) {
+            }
+            else if ( t === "chat_message" ) {
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 // a message is about 50 pixels
                 if ( log ) {
@@ -249,7 +255,7 @@
                     }
                 }
             }
-            else if ( t === "chat_init" ) {
+            else if ( t === "chat_init" || t === "change_tab" ) {
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 log.scrollTop = log.scrollHeight;
             }
