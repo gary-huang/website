@@ -65,7 +65,7 @@
 </div>
 {{ chat_id|json_script:"chat-id" }}
 <script>
-    const chatInput = document.querySelector('#chat-message-input-{{chat_id}}');
+    var chatInput = document.querySelector('#chat-message-input-{{chat_id}}');
     if (chatInput) {
         chatInput.focus();
     }
@@ -106,8 +106,8 @@
         "#ffff00"
     ];
 
-    const chatId = JSON.parse(document.getElementById('chat-id').textContent);
-    const chatSocket = new ReconnectingWebSocket(
+    var chatId = JSON.parse(document.getElementById('chat-id').textContent);
+    var chatSocket = new ReconnectingWebSocket(
         'ws://'
         + window.location.host
         + '/ws/chat/'
@@ -154,8 +154,8 @@
                 return msg.reacts;
             },
             datefmt: function(sec) {
-                const now = moment();
-                const ts = moment.unix(sec);
+                var now = moment();
+                var ts = moment.unix(sec);
                 if ( now.day() != ts.day() ) {
                     return ts.format("DD/MM/YYYY");
                 }
@@ -217,7 +217,7 @@
         },
         updated: function() {
             var t = this.updateType;
-            if ( t === "chat_message" || t === "chat_message_update" ) {
+            if ( t === "chat_message_update" ) {
                 this.updateType = "";
                 return;
             }
@@ -228,7 +228,7 @@
     });
 
     chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
+        var data = JSON.parse(e.data);
 
         chatApp.updateType = data.type;
         if (data.type === "chat_message") {
