@@ -8,7 +8,7 @@ services:
     command: ddtrace-run python manage.py runserver 0.0.0.0:${PORT}
     restart: always
     env_file:
-      - .env
+      - .env.dev
     volumes:
       - .:/code
     ports:
@@ -43,6 +43,17 @@ services:
       - ${PORT}:80
     depends_on:
       - prod_server
+
+  datadog:
+    links:
+      - prod_server
+    image: datadog/agent:latest
+    environment:
+      - DD_API_KEY=${DD_API_KEY}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
 
 volumes:
   staticfiles:
