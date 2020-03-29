@@ -20,7 +20,7 @@
         </div>
     </template>
     <div v-for="(msg, i) in displaymessages" v-bind:key="i" class="mb-1">
-      <div class="card" v-bind:style="{
+      <div v-if="!isChatbot(msg)" class="card" v-bind:style="{
           backgroundColor: backgroundColor(msg)
       }">
         {% if user.is_chatmod %}
@@ -45,13 +45,54 @@
             <span>[[ msg.body ]]</span>
             <footer class="" style="font-size:14px">
               <span style="color: grey;">[[ datefmt(msg.created_at) ]]</span>
-              <a v-for="r in getReacts(msg)" v-bind:style="{
-                filter: r[1] == 0 ? 'grayscale(100%)' : 'none',
+              <a v-for="(r, emoji) in getReacts(msg)" v-bind:style="{
+                filter: r.count == 0 ? 'grayscale(100%)' : 'none',
                 cursor: 'pointer',
-              }" v-on:click="react(r[0], msg)">
-                <span class="mr-1">[[ r[0] ]]</span><span class="mr-2" v-if="r[1] > 0">[[ r[1] ]]</span>
+              }" v-on:click="react(emoji, msg)" data-toggle="tooltip" data-placement="top" data-html="true" v-bind:title="[[ fmtTooltip(r.reactors) ]]">
+                <div style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px;padding-left: 4px;">
+                    <span class="">[[ emoji ]]</span>
+                    <span class="mr-2" v-if="r.count > 0" v-bind:style="{
+                        color: hasReacted(msg, emoji) ? '#007bff' : 'black'
+                    }">[[ r.count ]]</span>
+                </div>
               </a>
             </footer>
+          </div>
+      </div>
+
+    <!--
+        Handle Chatbot messages separately.
+    -->
+      <div v-else class="card" v-bind:style="{
+      }">
+        {% if user.is_chatmod %}
+          <div class="float-right" style="height: 1px;">
+            <div class="dropdown float-right d-inline-block" style="margin-right: 5px; margin-top: 5px; cursor: pointer; width: 20px;">
+              <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              </div>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pr{{forloop.counter}}dropdown">
+                  <a class="dropdown-item" v-on:click="togglePR(msg)">
+                      <template v-if="isPR(msg)">Remove #prayerrequest tag</template>
+                      <template v-else>Tag as #prayerrequest</template>
+                  </a>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+          <div class="card-body" style="padding: 0.25rem 1.5rem 0rem 0.25rem">
+            <span style="color: grey;">[[ datefmt(msg.created_at) ]]</span>
+            <span style="font-style: italic">️[[ msg.body.substring(0, msg.body.length-2) ]]</span>
+            <a class="ml-2" v-for="(r, emoji) in getReacts(msg)" v-bind:style="{
+                            filter: r.count == 0 ? 'grayscale(100%)' : 'none',
+                            cursor: 'pointer',
+            }" v-on:click="react(emoji, msg)" data-toggle="tooltip" data-placement="top" data-html="true" v-bind:title="[[ fmtTooltip(r.reactors) ]]">
+            <div style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px;padding-left: 4px;">
+                <span class="">[[ emoji ]]</span>
+                <span class="mr-2" v-if="r.count > 0" v-bind:style="{
+                    color: hasReacted(msg, emoji) ? '#007bff' : 'black'
+                }">[[ r.count ]]</span>
+            </div>
+            </a>
           </div>
       </div>
     </div>
@@ -129,8 +170,15 @@
         created: function() {
         },
         methods: {
+            hasReacted: function(msg, emoji) {
+                var username = "{{ user.username }}";
+                return emoji in msg.reacts && msg.reacts[emoji].reactors.includes(username);
+            },
+            fmtTooltip: function(reactors) {
+                return reactors.join(", ");
+            },
             changeTab: function(view) {
-                this.view = view;
+                this.view = view;kk
                 this.updateType = "change_tab";
             },
             popupClick: function() {
@@ -153,6 +201,9 @@
                     'msg_id': msg.id
                 }));
             },
+            isChatbot: function(msg) {
+                return msg.author === "chatbot";
+            },
             isPR: function(msg) {
                 return msg.tags.includes("pr");
             },
@@ -161,7 +212,23 @@
             },
             getReacts: function(msg) {
                 if (this.isPR(msg)) {
-                    return msg.reacts.slice(0, 2);
+                    return {
+                        "🙏": msg.reacts["🙏"],
+                        "🙌": msg.reacts["🙌"]
+                    };
+                }
+                else if ( this.isChatbot(msg) ) {
+                    if ( "👋" in msg.reacts ) {
+                        return {
+                            "👋": msg.reacts["👋"]
+                        };
+                    }
+                    return {
+                        "👋": {
+                            count: 0,
+                            reactors: []
+                        }
+                    };
                 }
                 return msg.reacts;
             },
@@ -176,11 +243,12 @@
             colour: function(str) {
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
             },
-            react: function(react, msg) {
+            react: function(emoji, msg) {
+                console.log('react', emoji, msg);
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_react',
                     'msg_id': msg.id,
-                    'react': react
+                    'react': emoji
                 }));
             },
             send: function() {
@@ -265,6 +333,8 @@
 
     chatSocket.onmessage = function (e) {
         var data = JSON.parse(e.data);
+
+        console.log(data);
 
         chatApp.updateType = data.type;
         if (data.type === "chat_message") {

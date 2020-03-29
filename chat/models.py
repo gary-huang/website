@@ -26,23 +26,27 @@ class ChatMessage(models.Model):
     chat = models.ForeignKey("Chat", related_name="messages", on_delete=models.CASCADE)
 
     def aggreacts(self):
-        # Aggregate common reacts into a list of tuples [(emoji, count)]
-        aggr = []
+        # Aggregate common reacts into a dict(<emoji> = dict(count=<int>, reactors=[username]))
+        aggr = dict()
         reacts = self.reacts.all()
+
         for react in "🙏,🙌,👋,➕,🤣".split(","):
-            aggr.append((react, len(reacts.filter(type=react))))
+            rs = reacts.filter(type=react)
+            aggr[react] = dict(
+                count=len(rs), reactors=[react.user.username for react in rs],
+            )
         return aggr
 
     @classmethod
     def react(cls, user, msg_id, type):
         # Toggle a reaction
         msg = cls.objects.get(pk=msg_id)
-        prev_reacts = ChatMessageReact.objects.filter(user=user, item=msg, type=type)
+        prev_reacts = msg.reacts.filter(user=user, item=msg, type=type)
         if len(prev_reacts):
             for react in prev_reacts:
                 react.delete()
         else:
-            ChatMessageReact.objects.create(item=msg, user=user, type=type)
+            msg.reacts.create(user=user, item=msg, type=type)
 
         return msg
 
