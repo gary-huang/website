@@ -84,17 +84,31 @@ class ChatConsumer(AsyncWebsocketConsumer):
             msg_id = text_data_json["msg_id"]
             react = text_data_json["react"]
             # Forward the react message to the rest of the clients
-            msg = await database_sync_to_async(models.ChatMessage.react)(user, msg_id, react)
+            msg = await database_sync_to_async(models.ChatMessage.react)(
+                user, msg_id, react
+            )
             msg_json = await database_sync_to_async(msg.__json__)()
 
-            await self.channel_layer.group_send(self.chat_group_name, dict(
-                type="chat_message_update",
-                msg_id=msg_id,
-                **msg_json,
-            ))
+            await self.channel_layer.group_send(
+                self.chat_group_name,
+                dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
+            )
+        elif text_data_json["type"] == "chat_toggle_pr":
+            if not await database_sync_to_async(user.has_perm)(
+                "chat.change_chatmessage"
+            ):
+                log.info("user %r tried to toggle pr without permissions", user)
+                return
 
-        elif text_data_json["type"] == "chat_edit":
-            pass
+            msg_id = text_data_json["msg_id"]
+            msg = await database_sync_to_async(models.ChatMessage.toggle_tag)(
+                "#pr", msg_id
+            )
+            msg_json = await database_sync_to_async(msg.__json__)()
+            await self.channel_layer.group_send(
+                self.chat_group_name,
+                dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
+            )
 
     # Receive message from room group
     async def chat_message_update(self, event):

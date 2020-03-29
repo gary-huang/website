@@ -2,13 +2,18 @@
   <span><b>[[ nviewers ]]</b> people are here right now</span>
   <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
     <div v-for="(msg, i) in messages" v-bind:key="i" class="mb-1">
-      <div class="card">
+      <div class="card" v-bind:style="{
+          backgroundColor: isPR(msg) ? '#f6efe2' : 'white'
+      }">
           <div class="float-right" style="height: 1px;">
             <div class="dropdown float-right d-inline-block" style="margin-right: 5px; margin-top: 5px; cursor: pointer; width: 20px;">
-              <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="">
+              <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               </div>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pr{{forloop.counter}}dropdown">
-                  <a class="dropdown-item" href="">Make prayer request</a>
+                  <a class="dropdown-item" v-on:click="togglePR(msg)">
+                      <template v-if="isPR(msg)">Remove #prayerrequest tag</template>
+                      <template v-else>Tag as #prayerrequest</template>
+                  </a>
               </div>
             </div>
           </div>
@@ -20,11 +25,11 @@
             <span>[[ msg.body ]]</span>
             <footer class="" style="font-size:14px">
               <span style="color: grey;">[[ datefmt(msg.created_at) ]]</span>
-              <a v-for="r in msg.reacts" v-bind:style="{
+              <a v-for="r in getReacts(msg)" v-bind:style="{
                 filter: r[1] == 0 ? 'grayscale(100%)' : 'none',
                 cursor: 'pointer',
               }">
-                <span class="" v-on:click="react(r[0], msg.id)" >[[ r[0] ]]</span><span class="mr-2" v-if="r[1] > 0">[[ r[1] ]]</span>
+                <span class="mr-1" v-on:click="react(r[0], msg)" >[[ r[0] ]]</span><span class="mr-2" v-if="r[1] > 0">[[ r[1] ]]</span>
               </a>
             </footer>
           </div>
@@ -94,6 +99,21 @@
             message: ""
         },
         methods: {
+            togglePR: function(msg) {
+                chatSocket.send(JSON.stringify({
+                    'type': 'chat_toggle_pr',
+                    'msg_id': msg.id
+                }));
+            },
+            isPR: function(msg) {
+                return msg.tags.includes("pr");
+            },
+            getReacts: function(msg) {
+                if (this.isPR(msg)) {
+                    return msg.reacts.slice(0, 2);
+                }
+                return msg.reacts;
+            },
             datefmt: function(sec) {
                 const now = moment();
                 const ts = moment.unix(sec);
@@ -105,10 +125,10 @@
             colour: function(str) {
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
             },
-            react: function(react, msgId) {
+            react: function(react, msg) {
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_react',
-                    'msg_id': msgId,
+                    'msg_id': msg.id,
                     'react': react
                 }));
             },
@@ -135,6 +155,8 @@
 
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
+
+        console.log(data);
 
         if (data.type === "chat_message") {
             chatApp.messages.push(data);
