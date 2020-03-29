@@ -16,6 +16,21 @@ from prayer import models as pr_models
 class User(AbstractUser):
     token = models.CharField(max_length=32)
 
+    # TODO: cachedproperty
+    @property
+    def role_emoji(self):
+        if self.is_superuser:
+            return "🛠"
+        groups = [g.name for g in self.groups.all()]
+        if "pastor" in groups:
+            return "😎"
+        elif "elder" in groups:
+            return "🤓"
+        elif "chat_mod" in groups:
+            return "🧐"
+        return ""
+
+
 
 class ServiceMediaBlock(AbstractMediaChooserBlock):
     class Meta:
