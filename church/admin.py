@@ -16,6 +16,9 @@ def email_bulletin(modeladmin, request, queryset):
 
 
 class UserAdmin(DjangoUserAdmin):
+    fieldsets = DjangoUserAdmin.fieldsets + (("Authentication", dict(
+        fields=("token",),
+    )),)
     actions = [email_bulletin]
 
 
