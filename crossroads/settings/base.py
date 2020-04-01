@@ -3,10 +3,39 @@ Django settings for crossroads project.
 """
 
 import os
+import sys
+
+import daiquiri
+import logging
+
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
+daiquiri.setup(
+  outputs=[
+    daiquiri.output.Datadog(
+        hostname=os.getenv("DATADOG_TRACE_AGENT_HOSTNAME"),
+        ),
+    daiquiri.output.Stream(sys.stdout),
+  ],
+  level=logging.WARN,
+)
+
+LOGGING = {}
+
+# LOGGING = {
+#     "version": 1,
+#     "handlers": {
+#         "console": {"class": "logging.StreamHandler",},
+#         "file": {
+#             "class": "logging.FileHandler",
+#             "filename": "/var/log/crossroads/crossroads.log",
+#             "level": "DEBUG",
+#         },
+#     },
+#     "loggers": {"django": {"handlers": ["console", "file"], "level": "INFO",},},
+# }
 
 INSTALLED_APPS = [
     "home",

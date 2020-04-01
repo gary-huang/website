@@ -1,5 +1,19 @@
 # dev
 
+## datadog setup
+
+### logs
+
+**Recommended:** run the agent out of docker.
+
+If running the agent locally (not out of docker) on a mac then:
+
+```bash
+$ mkdir -p ~/.datadog-agent/conf.d/python.d
+$ cp ./.datadog-agent-conf.d/python.d/conf.yaml ~/.datadog-agent/conf.d/python.d/conf.yaml
+```
+
+
 ```bash
 # set-up local environment
 $ cp .env.dev.template .env  # customize

@@ -11,6 +11,7 @@ services:
       - .env
     volumes:
       - .:/code
+      - ./log:/var/log/crossroads/
     ports:
       - "${PORT}:${PORT}"
 
@@ -26,7 +27,7 @@ services:
              ddtrace-run daphne -b 0.0.0.0 -p 8000 crossroads.asgi:application"
     restart: always
     env_file:
-      - ".env"
+      - .env
     volumes:
       - .:/code
       - staticfiles:/code/static
@@ -50,10 +51,15 @@ services:
     image: datadog/agent:latest
     environment:
       - DD_API_KEY=${DD_API_KEY}
+      - DD_APM_ENABLED=${DD_APM_ENABLED}
+      - DD_LOGS_ENABLED=${DD_LOGS_ENABLED}
+      - DD_LOGS_CONFIG_USE_HTTP=true
+      - DD_LOGS_CONFIG_USE_COMPRESSION=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+      - ${MY_DD_LOCAL_AGENT_CONF_DIR}:/conf.d:ro
 
 volumes:
   staticfiles:
