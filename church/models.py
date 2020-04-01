@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 from modelcluster.fields import ParentalKey
@@ -15,6 +16,9 @@ from prayer import models as pr_models
 
 class User(AbstractUser):
     token = models.CharField(max_length=32)
+
+    # override the username validator
+    username_validator = UnicodeUsernameValidator()
 
     @property
     def chat_name(self):
