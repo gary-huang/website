@@ -1,6 +1,6 @@
 from django.conf import settings
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, To
+from sendgrid.helpers.mail import Mail, To, From, ReplyTo
 
 from church.models import ServicePage
 
@@ -26,12 +26,12 @@ def send_bulletin(users):
     # ]
 
     for user in users:
-        message = Mail(
-            from_email="lynn@crossroadsajax.church",
-            to_emails=[(user.email, f"{user.first_name} {user.last_name}")],
-        )
+        message = Mail(to_emails=[(user.email, f"{user.first_name} {user.last_name}")],)
+        message.from_email = From("lynn@crossroadsajax.church", "Lynn Jackson")
+        message.reply_to = ReplyTo("lynn@crossroadsinajax.org", "Lynn Jackson")
         message.dynamic_template_data = dict(
-            member_name=f"{user.first_name} {user.last_name}",
+            first_name=user.first_name,
+            last_name=user.last_name,
             stream_link=f"{stream_link}?mem={user.token}",
         )
         message.template_id = settings.EMAIL_TEMPLATE.BULLETIN
