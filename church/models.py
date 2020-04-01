@@ -1,7 +1,10 @@
+import secrets
+
 from django import forms
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
+from django.dispatch import receiver
 
 from modelcluster.fields import ParentalKey
 
@@ -41,6 +44,11 @@ class User(AbstractUser):
     @property
     def is_chatmod(self):
         return self.is_superuser or "chatmod" in [g.name for g in self.groups.all()]
+
+
+@receiver(models.signals.pre_save, sender=User)
+def add_token(sender, instance, *args, **kwargs):
+    instance.token = secrets.token_hex(8)
 
 
 class ServiceMediaBlock(AbstractMediaChooserBlock):
