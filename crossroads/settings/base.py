@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     "search",
     "church",
     "comments",
+    "crossroads",
     "prayer",
     "chat",
     "channels",
@@ -156,3 +157,10 @@ LOGOUT_REDIRECT_URL = "/"
 
 ASGI_APPLICATION = "crossroads.routing.application"
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
+
+class EMAIL_TEMPLATE:
+    BULLETIN = "d-8922bc7108f440ac870da8d87b88eb86"
+
+
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
