@@ -12,7 +12,7 @@ def email_bulletin(modeladmin, request, queryset):
         print(e)
         messages.error(request, f"Error: {e}")
     else:
-        messages.success(request, "Email(s) sent successfully!")
+        messages.success(request, f"{len(queryset)} email(s) sent successfully!")
 
 
 class UserAdmin(DjangoUserAdmin):

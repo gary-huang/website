@@ -27,11 +27,11 @@ def send_bulletin(users):
 
     for user in users:
         message = Mail(
-            from_email=("kyle@crossroadsajax.church", "Kyle Verhoog"),
+            from_email="lynn@crossroadsajax.church",
             to_emails=[(user.email, f"{user.first_name} {user.last_name}")],
         )
         message.dynamic_template_data = dict(
-            name=f"{user.first_name} {user.last_name}",
+            member_name=f"{user.first_name} {user.last_name}",
             stream_link=f"{stream_link}?mem={user.token}",
         )
         message.template_id = settings.EMAIL_TEMPLATE.BULLETIN
