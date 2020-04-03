@@ -244,7 +244,6 @@
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
             },
             react: function(emoji, msg) {
-                console.log('react', emoji, msg);
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_react',
                     'msg_id': msg.id,
@@ -333,8 +332,6 @@
 
     chatSocket.onmessage = function (e) {
         var data = JSON.parse(e.data);
-
-        console.log(data);
 
         chatApp.updateType = data.type;
         if (data.type === "chat_message") {

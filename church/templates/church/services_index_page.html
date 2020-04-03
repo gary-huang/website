@@ -12,8 +12,8 @@
     {% for post in page.service_pages %}
     <div class="card">
       <div class="card-body">
-        <h2 class="card-title"><a href="{% pageurl post %}">{{ post.specific.date }}</a></h2>
-        <h3 class="card-title">{{ post.specific.title }}</h3>
+        <h3 class="card-title"><a href="{% pageurl post %}">{{ post.specific.date }}</a></h3>
+        <h5 class="card-title">{{ post.specific.title }}</h5>
       </div>
     </div>
     {% endfor %}
