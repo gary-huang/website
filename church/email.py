@@ -13,18 +13,6 @@ def send_bulletin(users):
 
     stream_link = f"https://crossroadsajax.church{service_page.url}"
 
-    # to_emails = [
-    #     To(
-    #         email=user.email,
-    #         name=f"{user.first_name} {user.last_name}",
-    #         substitutions=dict(
-    #             name=f"{user.first_name} {user.last_name}",
-    #             stream_link=f"{stream_link}?mem={user.token}",
-    #         ),
-    #     )
-    #     for user in users
-    # ]
-
     for user in users:
         # Skip sending to users without emails
         if not user.email:

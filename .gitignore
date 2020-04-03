@@ -1,7 +1,8 @@
 __pycache__/
 .mypy_cache/
 .venv/
-.vscode
+.vscode/
+.idea/
 *.pyc
 /static/
 /media/
