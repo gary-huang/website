@@ -149,7 +149,7 @@
 
     var chatId = JSON.parse(document.getElementById('chat-id').textContent);
     var chatSocket = new ReconnectingWebSocket(
-        'ws://'
+        (SETTINGS.DEBUG ? 'ws://' : 'wss://')
         + window.location.host
         + '/ws/chat/'
         + chatId
