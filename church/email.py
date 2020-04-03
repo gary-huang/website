@@ -26,6 +26,9 @@ def send_bulletin(users):
     # ]
 
     for user in users:
+        # Skip sending to users without emails
+        if not user.email:
+            continue
         message = Mail(to_emails=[(user.email, f"{user.first_name} {user.last_name}")],)
         message.from_email = From("lynn@crossroadsajax.church", "Lynn Jackson")
         message.reply_to = ReplyTo("lynn@crossroadsinajax.org", "Lynn Jackson")
