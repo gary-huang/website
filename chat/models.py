@@ -114,6 +114,25 @@ class ChatMessage(models.Model):
         )
 
 
+class ChatLog(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
+    chat = models.ForeignKey("Chat", related_name="logs", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True
+    )
+    type = models.CharField(max_length=16)
+    body = models.CharField(max_length=4096)
+
+    def __json__(self):
+        return dict(
+            id=self.pk,
+            type=self.type,
+            user_id=self.user.pk,
+            body=self.body,
+            created_at=self.created_at.strftime("%s"),
+        )
+
+
 class Chat(models.Model):
     chat_id = models.CharField(max_length=1024)
 
@@ -122,5 +141,15 @@ class Chat(models.Model):
         cm.add_tags(body)
         return cm
 
+    def add_log(self, type, user, body):
+        log = ChatLog.objects.create(chat=self, user=user, body=body)
+        return log
+
     def messages_json(self):
         return [msg.__json__() for msg in self.messages.all()]
+
+    def logs_json(self):
+        return [log.__json__() for log in self.logs.all()]
+
+    def __json__(self):
+        return dict(messages=self.messages_json(), log=self.logs_json(),)

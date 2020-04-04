@@ -71,9 +71,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
         self.chat_group_name = f"chat_{self.chat_id}"
 
-        self.chatbot, _ = await database_sync_to_async(User.objects.get_or_create)(
-            username="chatbot"
-        )
         self.chat, _ = await database_sync_to_async(models.Chat.objects.get_or_create)(
             chat_id=self.chat_id,
         )
@@ -85,10 +82,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-        json_msgs = await database_sync_to_async(self.chat.messages_json)()
+        chat_json = await database_sync_to_async(self.chat.__json__)()
 
         # Send initial chat data
-        await self.send(text_data=json.dumps({"type": "chat_init", "msgs": json_msgs,}))
+        await self.send(text_data=json.dumps({"type": "init", "chat": chat_json,}))
 
         Chatbot.register(user)
         # Send update message
@@ -96,21 +93,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.chat_group_name, {"type": "users_update", "users": Chatbot.user_list()}
         )
 
-        # Create welcome message for user
-        body = f"{user.username} has joined the service! 😊"
-        if Chatbot.should_send_connect(user):
-            await self.chatbotmsg(body)
+        await self.log("user_connect", user=user)
 
-    async def chatbotmsg(self, body, type=None):
-        msg = await database_sync_to_async(self.chat.add_message)(
-            body=body, author=self.chatbot
+    async def log(self, type, user=None, body=""):
+        log = await database_sync_to_async(self.chat.add_log)(
+            type=type, body=body, user=user,
         )
 
-        # Send message to room group
-        msg_json = await database_sync_to_async(msg.__json__)()
-        await self.channel_layer.group_send(
-            self.chat_group_name, {"type": "chat_message", **msg_json}
-        )
+        # Send log to room group
+        # log_json = await database_sync_to_async(log.__json__)()
+        # await self.channel_layer.group_send(
+        #     self.chat_group_name, {"type": "log", **log_json}
+        # )
 
     async def disconnect(self, close_code):
         user = await channels.auth.get_user(self.scope)
@@ -118,10 +112,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         Chatbot.deregister(user)
+        await self.log("user_disconnect", user=user)
 
         # Leave room group
         await self.channel_layer.group_discard(self.chat_group_name, self.channel_name)
 
+        # Update room with user count
         await self.channel_layer.group_send(
             self.chat_group_name, {"type": "users_update", "users": Chatbot.user_list()}
         )

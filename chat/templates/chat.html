@@ -322,7 +322,7 @@
                     }
                 }
             }
-            else if ( t === "chat_init" || t === "change_tab" ) {
+            else if ( t === "init" || t === "change_tab" ) {
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 log.scrollTop = log.scrollHeight;
             }
@@ -337,10 +337,10 @@
         if (data.type === "chat_message") {
             chatApp.messages.push(data);
         }
-        else if (data.type === "chat_init") {
+        else if (data.type === "init") {
             chatApp.messages.splice(0, chatApp.messages.length);
-            for (var i = 0; i < data.msgs.length; ++i) {
-                chatApp.messages.push(data.msgs[i]);
+            for (var i = 0; i < data.chat.messages.length; ++i) {
+                chatApp.messages.push(data.chat.messages[i]);
             }
         }
         else if (data.type == "chat_message_update") {
