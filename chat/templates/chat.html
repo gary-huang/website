@@ -1,3 +1,37 @@
+<script type="text/x-template" id="chat-message-template">
+  <div class="mb-1" @mouseover="hover=true" @mouseleave="hover=false">
+    <div class="card" style="font-size: 12px;">
+      <div class="float-right" style="height: 1px;">
+          <span class="float-right" v-bind:style="{
+              cursor: 'pointer',
+              filter: 'grayscale(100%)',
+              paddingTop: '10px',
+              paddingRight: '5px',
+              display: hover ? '' : 'none'
+            }">😊</span>
+      </div>
+      <div class="card-body" style="padding: 0.25rem 1.5rem 0rem 0.25rem;">
+          <span v-bind:style="{
+              color: colour(author),
+          }">[[author]]</span>
+          <span style="color: grey;">[[datefmt(date)]]</span>
+          <br>
+          <span style="font-size: 14px">[[body]]</span>
+          <footer class="" style="font-size: 12px">
+              <a v-for="(r, emoji) in reacts" style="cursor: pointer;"
+                 v-on:click="onReact(emoji)"
+              >
+                <div style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px">
+                    <span class="ml-1 mr-1">[[ emoji ]]</span>
+                    <span class="mr-1" v-if="r.count > 0" v-bind:style="{
+                }">[[ r.count ]]</span>
+                </div>
+              </a>
+          </footer>
+      </div>
+    </div>
+  </div>
+</script>
 <div id="chatapp" v-cloak class="d-flex flex-column h-100">
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
@@ -82,6 +116,11 @@
     Vue.component('chat-message', {
         props: ['id', 'type', 'author', 'body', 'date', 'reacts'],
         delimiters: ['[[', ']]'],
+        data: function() {
+            return {
+                hover: false
+            };
+        },
         methods: {
             colour: function(str) {
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
@@ -98,35 +137,8 @@
                 this.$emit('react', this.$props.id, emoji);
             }
         },
-        template: '\
-        <div class="mb-1">\
-          <div class="card" style="font-size: 12px;">\
-            <div class="float-right" style="height: 1px;">\
-                <span class="float-right" style="padding-top: 10px;">😊</span>\
-            </div>\
-            <div class="card-body" style="padding: 0.25rem 1.5rem 0rem 0.25rem;">\
-                <span v-bind:style="{\
-                    color: colour(author),\
-                }">[[author]]</span>\
-                <span style="color: grey;">[[datefmt(date)]]</span>\
-                <br>\
-                <span style="font-size: 14px">[[body]]</span>\
-                <footer class="" style="font-size: 12px">\
-                    <a v-for="(r, emoji) in reacts"\
-                       v-on:click="onReact(emoji)"\
-                    >\
-                        <div style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px">\
-                            <span class="ml-1 mr-1">[[ emoji ]]</span>\
-                            <span class="mr-1" v-if="r.count > 0" v-bind:style="{\
-                        }">[[ r.count ]]</span>\
-                        </div>\
-                    </a>\
-                </footer>\
-            </div>\
-          </div>\
-        </div>\
-        '
-    })
+        template: '#chat-message-template'
+    });
 
     var chatId = JSON.parse(document.getElementById('chat-id').textContent);
     var chatSocket = new ReconnectingWebSocket(
