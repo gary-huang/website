@@ -23,9 +23,7 @@ class ChatManager:
     @classmethod
     def get_or_create_room(cls, room):
         if room not in cls.rooms:
-            cls.rooms[room] = dict(
-                users=dict(),
-            )
+            cls.rooms[room] = dict(users=dict(),)
         return cls.rooms[room]
 
     @classmethod
@@ -60,7 +58,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
         self.chat_group_name = f"chat_{self.chat_id}"
 
-        with tracer.trace("connect", service=ddc.service, resource=self.chat_group_name) as span:
+        with tracer.trace(
+            "connect", service=ddc.service, resource=self.chat_group_name
+        ) as span:
 
             user = await channels.auth.get_user(self.scope)
             if not user.is_authenticated:
@@ -68,9 +68,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             span.set_tag("user", user.username)
 
-            self.chat, _ = await database_sync_to_async(models.Chat.objects.get_or_create)(
-                chat_id=self.chat_id,
-            )
+            self.chat, _ = await database_sync_to_async(
+                models.Chat.objects.get_or_create
+            )(chat_id=self.chat_id,)
 
             log.info("user %r connected to chat %r", user, self.chat_id)
 
@@ -87,7 +87,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             ChatManager.register(self.chat_id, user)
             # Send update message
             await self.channel_layer.group_send(
-                self.chat_group_name, {"type": "users_update", "users": ChatManager.user_list(self.chat_id)}
+                self.chat_group_name,
+                {"type": "users_update", "users": ChatManager.user_list(self.chat_id)},
             )
 
             await self.log("user_connect", user=user)
@@ -116,7 +117,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Update room with user count
         await self.channel_layer.group_send(
-            self.chat_group_name, {"type": "users_update", "users": ChatManager.user_list(self.chat_id)}
+            self.chat_group_name,
+            {"type": "users_update", "users": ChatManager.user_list(self.chat_id)},
         )
 
     async def receive(self, text_data):

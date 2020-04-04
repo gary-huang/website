@@ -29,20 +29,13 @@ class ChatMessage(models.Model):
     @cached_property
     def aggreacts(self):
         # Aggregate common reacts into a dict(<emoji> = dict(count=<int>, reactors=[username]))
-        emojis = "🙏,🙌,🤣".split(",")
-        aggr = {
-            emoji: dict(count=0, reactors=[])
-            for emoji in emojis
-        }
+        aggr = {}
 
         reacts = self.reacts.all()
 
         for react in reacts:
             if react.type not in aggr:
-                aggr[react.type] = dict(
-                    count=0,
-                    reactors=[],
-                )
+                aggr[react.type] = dict(count=0, reactors=[],)
             count = aggr[react.type]["count"]
             aggr[react.type]["count"] = count + 1
             aggr[react.type]["reactors"].append(react.user.username)
@@ -130,7 +123,7 @@ class ChatMessage(models.Model):
     def __json__(self):
         return dict(
             id=self.pk,
-            author=self.author.chat_name,
+            author=self.author.username,
             body=self.body,
             created_at=self.created_at.strftime("%s"),
             reacts=self.aggreacts,

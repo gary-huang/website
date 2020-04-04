@@ -25,10 +25,6 @@ class User(AbstractUser):
     username_validator = UnicodeUsernameValidator()
 
     @cached_property
-    def chat_name(self):
-        return f"{self.role_emoji}{self.username}"
-
-    @cached_property
     def role_emoji(self):
         if self.is_superuser:
             return "🛠"
