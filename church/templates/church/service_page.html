@@ -8,10 +8,19 @@
 {% if request.user.is_authenticated %}
 <div class="row">
   <div class="col-12 col-md-9" style="padding-right: 5px">
+    {% if page.stream_link %}
     <div class="embed-responsive embed-responsive-16by9">
       <iframe class="embed-responsive-item" src="{{page.stream_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
       </iframe>
     </div>
+    {% else %}
+    <div class="container d-flex h-100" style="background: #ced4da">
+      <div class="row justify-content-center align-self-center">
+        <h2>The stream start around 10:00am on Sunday</h2>
+        <h2>Please refresh the page to load it</h2>
+      </div>
+    </div>
+    {% endif %}
   </div>
   <div class="col-12 col-md-3" style="min-height: 400px; padding-left: 5px;">
     {% chat chat_id=self.pk %}
@@ -20,10 +29,10 @@
 <div class="container">
 <h2>{{ page.title }}</h2>
 <p class="meta">{{ page.date }}</p>
-<h2>Website tips and tricks!</h2>
+<h4>Website tips and tricks</h4>
 <ul>
-  <li>Use the textbox to type your message. We have your name set-up this time 😄</li>
-  <li>React to messages with the emoji buttons at the bottom of each message 🙏🙌👋</li>
+  <li>Use the textbox to type your message</li>
+  <li>React to messages with the emoji buttons at the bottom of each message 🙏🙌</li>
   <li>Type <b>#prayer</b> in your message to have it show up as a prayer request!</li>
   <li>Type <b>#question</b> in your message to tag it as a question for Pastor Martin to address it at the end of the service</li>
   <li>Let us know if something's wrong or can be improved by emailing Kyle at <a href="mailto:kyle@verhoog.ca">kyle@verhoog.ca</a></li>

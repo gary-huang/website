@@ -176,7 +176,7 @@ class DiscussionSectionBlock(IDStructBlock):
 
 class ServicePage(Page):
     date = models.DateField("Service date")
-    stream_link = models.URLField(default="")
+    stream_link = models.URLField(default="", blank=True)
     chat_enabled = models.BooleanField(default=True)
 
     # mediasec = wtfields.StreamField([
