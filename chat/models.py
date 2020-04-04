@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.functional import cached_property
 
 
 class ChatMessageReact(models.Model):
@@ -25,16 +26,27 @@ class ChatMessage(models.Model):
     body = models.CharField(max_length=2048)
     chat = models.ForeignKey("Chat", related_name="messages", on_delete=models.CASCADE)
 
+    @cached_property
     def aggreacts(self):
         # Aggregate common reacts into a dict(<emoji> = dict(count=<int>, reactors=[username]))
-        aggr = dict()
+        emojis = "🙏,🙌,🤣".split(",")
+        aggr = {
+            emoji: dict(count=0, reactors=[])
+            for emoji in emojis
+        }
+
         reacts = self.reacts.all()
 
-        for react in "🙏,🙌,👋,➕,🤣".split(","):
-            rs = reacts.filter(type=react)
-            aggr[react] = dict(
-                count=len(rs), reactors=[react.user.username for react in rs],
-            )
+        for react in reacts:
+            if react.type not in aggr:
+                aggr[react.type] = dict(
+                    count=0,
+                    reactors=[],
+                )
+            count = aggr[react.type]["count"]
+            aggr[react.type]["count"] = count + 1
+            aggr[react.type]["reactors"].append(react.user.username)
+
         return aggr
 
     @classmethod
@@ -48,6 +60,10 @@ class ChatMessage(models.Model):
         else:
             msg.reacts.create(user=user, item=msg, type=type)
 
+        try:
+            del msg.aggreacts
+        except AttributeError:
+            pass
         return msg
 
     @staticmethod
@@ -69,6 +85,10 @@ class ChatMessage(models.Model):
     def add_tag(self, raw_tag: str):
         tag = self._alias_tag(raw_tag)
         t, _ = ChatMessageTag.objects.get_or_create(item=self, value=tag)
+        try:
+            del self.raw_tags
+        except AttributeError:
+            pass
         return t
 
     def add_tags(self, raw_tags=None):
@@ -94,12 +114,16 @@ class ChatMessage(models.Model):
             tags = ChatMessageTag.objects.filter(item=cm, value=cls._alias_tag(tag))
             for t in tags:
                 t.delete()
-            return cm
         else:
             cm.add_tags(raw_tag)
+
+        try:
+            del cm.raw_tags
+        except AttributeError:
+            pass
         return cm
 
-    @property
+    @cached_property
     def raw_tags(self):
         return [tag.value for tag in self.tags.all()]
 
@@ -109,7 +133,7 @@ class ChatMessage(models.Model):
             author=self.author.chat_name,
             body=self.body,
             created_at=self.created_at.strftime("%s"),
-            reacts=self.aggreacts(),
+            reacts=self.aggreacts,
             tags=self.raw_tags,
         )
 
@@ -139,17 +163,27 @@ class Chat(models.Model):
     def add_message(self, author, body=None):
         cm = ChatMessage.objects.create(author=author, body=body, chat=self,)
         cm.add_tags(body)
+        try:
+            del self.messages_json
+        except AttributeError:
+            pass
         return cm
 
     def add_log(self, type, user, body):
         log = ChatLog.objects.create(chat=self, user=user, body=body)
+        try:
+            del self.logs_json
+        except AttributeError:
+            pass
         return log
 
+    @cached_property
     def messages_json(self):
         return [msg.__json__() for msg in self.messages.all()]
 
+    @cached_property
     def logs_json(self):
         return [log.__json__() for log in self.logs.all()]
 
     def __json__(self):
-        return dict(messages=self.messages_json(), log=self.logs_json(),)
+        return dict(messages=self.messages_json, log=self.logs_json,)

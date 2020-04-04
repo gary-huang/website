@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.dispatch import receiver
+from django.utils.functional import cached_property
 
 from modelcluster.fields import ParentalKey
 
@@ -23,12 +24,11 @@ class User(AbstractUser):
     # override the username validator
     username_validator = UnicodeUsernameValidator()
 
-    @property
+    @cached_property
     def chat_name(self):
         return f"{self.role_emoji}{self.username}"
 
-    # TODO: cachedproperty
-    @property
+    @cached_property
     def role_emoji(self):
         if self.is_superuser:
             return "🛠"
@@ -41,7 +41,7 @@ class User(AbstractUser):
             return "🧐"
         return ""
 
-    @property
+    @cached_property
     def is_chatmod(self):
         return self.is_superuser or "chatmod" in [g.name for g in self.groups.all()]
 

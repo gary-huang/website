@@ -6,6 +6,7 @@ from asgiref.sync import async_to_sync
 import channels
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
+from ddtrace import tracer, config as ddc
 
 from chat import models
 from church.models import User
@@ -14,86 +15,82 @@ from church.models import User
 log = logging.getLogger(__name__)
 
 
-class Chatbot:
+class ChatManager:
+    # maintain real-time stats about a chatroom
 
-    # user.pk: timestamp (seconds)
-    connect_time = {}
-
-    # user.username: dict(user=user, count=int)
-    users = {}
+    rooms = dict()
 
     @classmethod
-    def register(cls, user):
-        cls.users[user.username] = cls.users.get(
-            user.username, dict(user=user, count=0)
-        )
-        cls.users[user.username]["count"] += 1
+    def get_or_create_room(cls, room):
+        if room not in cls.rooms:
+            cls.rooms[room] = dict(
+                users=dict(),
+            )
+        return cls.rooms[room]
 
     @classmethod
-    def deregister(cls, user):
-        if user.username in cls.users:
-            cls.users[user.username]["count"] -= 1
+    def register(cls, room, user):
+        room = cls.get_or_create_room(room)
+        user_meta = room["users"].get(user.username, dict(count=0))
+        user_meta["count"] = user_meta["count"] + 1
+        room["users"][user.username] = user_meta
 
     @classmethod
-    def user_list(cls):
+    def deregister(cls, room, user):
+        room = cls.get_or_create_room(room)
+        user_meta = room["users"].get(user.username)
+        if not user_meta:
+            return
+        user_meta["count"] = user_meta["count"] - 1
+
+    @classmethod
+    def user_list(cls, room):
+        room = cls.get_or_create_room(room)
+        users = room["users"]
         return [
             dict(username=username, count=meta["count"])
-            for username, meta in cls.users.items()
+            for username, meta in users.items()
             if meta["count"] > 0
         ]
-
-    @classmethod
-    def should_send_connect(cls, user):
-        # If there exists a gap of 5 minutes from when the user
-        # last connected, then show another message
-        pk = user.pk
-        this_time = int(datetime.now().strftime("%s"))
-        try:
-            if pk not in cls.connect_time:
-                cls.connect_time[pk] = this_time
-                return True
-            else:
-                last_time = cls.connect_time[pk]
-                # After 5 minutes
-                if this_time - last_time > 60 * 5:
-                    return True
-                return False
-        finally:
-            cls.connect_time[pk] = this_time
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        user = await channels.auth.get_user(self.scope)
-        if not user.is_authenticated:
-            return
 
         self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
         self.chat_group_name = f"chat_{self.chat_id}"
 
-        self.chat, _ = await database_sync_to_async(models.Chat.objects.get_or_create)(
-            chat_id=self.chat_id,
-        )
+        with tracer.trace("connect", service=ddc.service, resource=self.chat_group_name) as span:
 
-        log.info("user %r connected to chat %r", user, self.chat_id)
+            user = await channels.auth.get_user(self.scope)
+            if not user.is_authenticated:
+                return
 
-        # Join room group
-        await self.channel_layer.group_add(self.chat_group_name, self.channel_name)
+            span.set_tag("user", user.username)
 
-        await self.accept()
+            self.chat, _ = await database_sync_to_async(models.Chat.objects.get_or_create)(
+                chat_id=self.chat_id,
+            )
 
-        chat_json = await database_sync_to_async(self.chat.__json__)()
+            log.info("user %r connected to chat %r", user, self.chat_id)
 
-        # Send initial chat data
-        await self.send(text_data=json.dumps({"type": "init", "chat": chat_json,}))
+            # Join room group
+            await self.channel_layer.group_add(self.chat_group_name, self.channel_name)
 
-        Chatbot.register(user)
-        # Send update message
-        await self.channel_layer.group_send(
-            self.chat_group_name, {"type": "users_update", "users": Chatbot.user_list()}
-        )
+            await self.accept()
 
-        await self.log("user_connect", user=user)
+            chat_json = await database_sync_to_async(self.chat.__json__)()
+
+            # Send initial chat data
+            await self.send(text_data=json.dumps({"type": "init", "chat": chat_json,}))
+
+            ChatManager.register(self.chat_id, user)
+            # Send update message
+            await self.channel_layer.group_send(
+                self.chat_group_name, {"type": "users_update", "users": ChatManager.user_list(self.chat_id)}
+            )
+
+            await self.log("user_connect", user=user)
 
     async def log(self, type, user=None, body=""):
         log = await database_sync_to_async(self.chat.add_log)(
@@ -111,7 +108,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not user.is_authenticated:
             return
 
-        Chatbot.deregister(user)
+        ChatManager.deregister(self.chat_id, user)
         await self.log("user_disconnect", user=user)
 
         # Leave room group
@@ -119,7 +116,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Update room with user count
         await self.channel_layer.group_send(
-            self.chat_group_name, {"type": "users_update", "users": Chatbot.user_list()}
+            self.chat_group_name, {"type": "users_update", "users": ChatManager.user_list(self.chat_id)}
         )
 
     async def receive(self, text_data):

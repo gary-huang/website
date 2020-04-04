@@ -333,6 +333,10 @@
     chatSocket.onmessage = function (e) {
         var data = JSON.parse(e.data);
 
+        if ( SETTINGS.DEBUG ) {
+            console.log(data);
+        }
+
         chatApp.updateType = data.type;
         if ( data.type === 'chat_message' ) {
             chatApp.messages.push(data);
