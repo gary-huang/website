@@ -21,16 +21,31 @@
           <br>
           <span style="font-size: 14px">[[body]]</span>
           <footer class="" style="font-size: 12px">
-              <a v-for="(r, emoji) in reacts" style="cursor: pointer;"
-                 v-on:click="onReact(emoji)"
-              >
-                <div style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px">
+            <a
+              v-for="(r, emoji) in reacts"
+              style="cursor: pointer;"
+              v-on:click="onReact(emoji)"
+            >
+            <popper
+              trigger="hover"
+              :options="{
+                  placement: 'right',
+                  modifiers: {
+                  }
+              }">
+                <div class="popper">
+                  <template v-for="reactor in r.reactors">
+                    <span>[[reactor]]</span><br>
+                  </template>
+                </div>
+                <div slot="reference" style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px">
                     <span class="ml-1 mr-1">[[ emoji ]]</span>
                     <span class="mr-1" v-if="r.count > 0" v-bind:style="{
                         color: hasReacted(emoji) ? '#007bff' : 'black'
                     }">[[ r.count ]]</span>
                 </div>
-              </a>
+              </popper>
+            </a>
           </footer>
       </div>
     </div>
@@ -126,6 +141,9 @@
             return {
                 hover: false
             };
+        },
+        components: {
+            'popper': VuePopper
         },
         computed: {
             emojis: function() {
