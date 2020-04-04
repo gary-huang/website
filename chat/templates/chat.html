@@ -4,15 +4,16 @@
       backgroundColor: backgroundColor
     }">
       <div class="float-right" style="height: 1px;">
-          <span class="float-right" v-bind:style="{
+          <span v-for="emoji in emojis" class="float-right" v-bind:style="{
               cursor: 'pointer',
               filter: 'grayscale(100%)',
               paddingTop: '10px',
               paddingRight: '5px',
+              fontSize: '14px',
               display: hover ? '' : 'none'
-            }">😊</span>
+            }" v-on:click="onReact(emoji)">[[emoji]]</span>
       </div>
-      <div class="card-body" style="padding: 0.25rem 1.5rem 0rem 0.25rem;">
+      <div class="card-body" style="padding: 0.15rem 1.5rem 0rem 0.25rem;">
           <span v-bind:style="{
               color: colour(author),
           }">[[author]]</span>
@@ -26,7 +27,8 @@
                 <div style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px">
                     <span class="ml-1 mr-1">[[ emoji ]]</span>
                     <span class="mr-1" v-if="r.count > 0" v-bind:style="{
-                }">[[ r.count ]]</span>
+                        color: hasReacted(emoji) ? '#007bff' : 'black'
+                    }">[[ r.count ]]</span>
                 </div>
               </a>
           </footer>
@@ -57,6 +59,7 @@
     </template>
     <chat-message
         v-for="msg in displaymessages"
+        v-bind:emojis="['🙏', '🙌', '🤣']"
         v-bind:id="msg.id"
         v-bind:type="getType(msg)"
         v-bind:author="msg.author"
@@ -117,7 +120,7 @@
     ];
 
     Vue.component('chat-message', {
-        props: ['id', 'type', 'author', 'body', 'date', 'reacts'],
+        props: ['id', 'type', 'author', 'body', 'date', 'emojis', 'reacts'],
         delimiters: ['[[', ']]'],
         data: function() {
             return {
@@ -125,6 +128,9 @@
             };
         },
         computed: {
+            emojis: function() {
+                return this.$props.emojis.reverse();
+            },
             backgroundColor: function() {
                 var type = this.$props.type;
                 if ( type === 'chat' ) {
@@ -140,6 +146,11 @@
             }
         },
         methods: {
+            hasReacted: function(emoji) {
+                var username = '{{ user.username }}';
+                var reacts = this.$props.reacts;
+                return emoji in reacts && reacts[emoji].reactors.includes(username);
+            },
             colour: function(str) {
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
             },
@@ -179,10 +190,6 @@
             prevShowNewPopup: false
         },
         methods: {
-            hasReacted: function(msg, emoji) {
-                var username = '{{ user.username }}';
-                return emoji in msg.reacts && msg.reacts[emoji].reactors.includes(username);
-            },
             fmtTooltip: function(reactors) {
                 return reactors.join(', ');
             },
