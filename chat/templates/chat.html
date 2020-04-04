@@ -121,30 +121,30 @@
         return hash;
     };
     colours = [
-        "#00ffff",
-        "#000000",
-        "#0000ff",
-        "#a52a2a",
-        "#00ffff",
-        "#00008b",
-        "#008b8b",
-        "#006400",
-        "#bdb76b",
-        "#8b008b",
-        "#556b2f",
-        "#ff8c00",
-        "#9932cc",
-        "#8b0000",
-        "#9400d3",
-        "#008000",
-        "#4b0082",
-        "#808000",
-        "#ffa500",
-        "#ffc0cb",
-        "#800080",
-        "#800080",
-        "#ff0000",
-        "#ffff00"
+        '#00ffff',
+        '#000000',
+        '#0000ff',
+        '#a52a2a',
+        '#00ffff',
+        '#00008b',
+        '#008b8b',
+        '#006400',
+        '#bdb76b',
+        '#8b008b',
+        '#556b2f',
+        '#ff8c00',
+        '#9932cc',
+        '#8b0000',
+        '#9400d3',
+        '#008000',
+        '#4b0082',
+        '#808000',
+        '#ffa500',
+        '#ffc0cb',
+        '#800080',
+        '#800080',
+        '#ff0000',
+        '#ffff00'
     ];
 
     var chatId = JSON.parse(document.getElementById('chat-id').textContent);
@@ -157,29 +157,29 @@
     );
 
     var chatApp = new Vue({
-        el: "#chatapp",
+        el: '#chatapp',
         delimiters: ['[[', ']]'],
         data: {
             messages: [],
             users: [],
-            message: "",
-            updateType: "",
-            view: window.location.hash.substr(1) || "chat",
+            message: '',
+            updateType: '',
+            view: window.location.hash.substr(1) || 'chat',
             prevShowNewPopup: false
         },
         created: function() {
         },
         methods: {
             hasReacted: function(msg, emoji) {
-                var username = "{{ user.username }}";
+                var username = '{{ user.username }}';
                 return emoji in msg.reacts && msg.reacts[emoji].reactors.includes(username);
             },
             fmtTooltip: function(reactors) {
-                return reactors.join(", ");
+                return reactors.join(', ');
             },
             changeTab: function(view) {
                 this.view = view;
-                this.updateType = "change_tab";
+                this.updateType = 'change_tab';
             },
             popupClick: function() {
                 this.prevShowNewPopup = false;
@@ -202,29 +202,29 @@
                 }));
             },
             isChatbot: function(msg) {
-                return msg.author === "chatbot";
+                return msg.author === 'chatbot';
             },
             isPR: function(msg) {
-                return msg.tags.includes("pr");
+                return msg.tags.includes('pr');
             },
             isQ: function(msg) {
-                return msg.tags.includes("q");
+                return msg.tags.includes('q');
             },
             getReacts: function(msg) {
                 if (this.isPR(msg)) {
                     return {
-                        "🙏": msg.reacts["🙏"],
-                        "🙌": msg.reacts["🙌"]
+                        '🙏': msg.reacts["🙏"],
+                        '🙌': msg.reacts["🙌"]
                     };
                 }
                 else if ( this.isChatbot(msg) ) {
-                    if ( "👋" in msg.reacts ) {
+                    if ( '👋' in msg.reacts ) {
                         return {
-                            "👋": msg.reacts["👋"]
+                            '👋': msg.reacts['👋']
                         };
                     }
                     return {
-                        "👋": {
+                        '👋': {
                             count: 0,
                             reactors: []
                         }
@@ -236,9 +236,9 @@
                 var now = moment();
                 var ts = moment.unix(sec);
                 if ( now.day() != ts.day() ) {
-                    return ts.format("DD/MM/YYYY");
+                    return ts.format('DD/MM/YYYY');
                 }
-                return moment.unix(sec).format("hh:mma");
+                return moment.unix(sec).format('hh:mma');
             },
             colour: function(str) {
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
@@ -255,11 +255,11 @@
                 if (!body) {
                     return;
                 }
-                if ( this.view === "pr" ) {
-                    body += " #prayerrequest";
+                if ( this.view === 'pr' ) {
+                    body += ' #prayerrequest';
                 }
-                else if ( this.view === "q" ) {
-                    body += " #q";
+                else if ( this.view === 'q' ) {
+                    body += ' #q';
                 }
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_message',
@@ -275,26 +275,26 @@
                 }, 0);
             },
             displaymessages: function() {
-                if ( this.view === "chat" ) {
+                if ( this.view === 'chat' ) {
                     return this.messages;
                 }
-                else if ( this.view === "pr" ) {
+                else if ( this.view === 'pr' ) {
                     return this.messages.filter(function(x) {
-                        return x.tags.includes("pr");
+                        return x.tags.includes('pr');
                     });
                 }
-                else if ( this.view === "q" ) {
+                else if ( this.view === 'q' ) {
                     return this.messages.filter(function(x) {
-                        return x.tags.includes("q");
+                        return x.tags.includes('q');
                     });
                 }
-                else if ( this.view === "viewers" ) {
+                else if ( this.view === 'viewers' ) {
                     return [];
                 }
                 return this.messages;
             },
             showNewPopup: function() {
-                if ( this.updateType !== "chat_message" ) {
+                if ( this.updateType !== 'chat_message' ) {
                     return this.prevShowNewPopup;
                 }
                 var log = document.querySelector('#chat-log-{{chat_id}}');
@@ -309,9 +309,9 @@
         },
         updated: function() {
             var t = this.updateType;
-            if ( t === "chat_message_update" || t === "users_update" ) {
+            if ( t === 'chat_message_update' || t === 'users_update' ) {
             }
-            else if ( t === "chat_message" ) {
+            else if ( t === 'chat_message' ) {
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 // a message is about 50 pixels
                 if ( log ) {
@@ -322,7 +322,7 @@
                     }
                 }
             }
-            else if ( t === "init" || t === "change_tab" ) {
+            else if ( t === 'init' || t === 'change_tab' ) {
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 log.scrollTop = log.scrollHeight;
             }
@@ -334,25 +334,25 @@
         var data = JSON.parse(e.data);
 
         chatApp.updateType = data.type;
-        if (data.type === "chat_message") {
+        if ( data.type === 'chat_message' ) {
             chatApp.messages.push(data);
         }
-        else if (data.type === "init") {
+        else if ( data.type === 'init' ) {
             chatApp.messages.splice(0, chatApp.messages.length);
             for (var i = 0; i < data.chat.messages.length; ++i) {
                 chatApp.messages.push(data.chat.messages[i]);
             }
         }
-        else if (data.type == "chat_message_update") {
+        else if ( data.type == 'chat_message_update' ) {
             var index;
-            for (index = 0; index < chatApp.messages.length; index++)
-                if ( chatApp.messages[index].id === data["msg_id"] )
+            for ( index = 0; index < chatApp.messages.length; index++ )
+                if ( chatApp.messages[index].id === data['msg_id'] )
                     break;
             Vue.set(chatApp.messages, index, data);
         }
-        else if (data.type == "users_update") {
+        else if ( data.type == 'users_update' ) {
             chatApp.users.splice(0, chatApp.users.length);
-            for (var i = 0; i < data.users.length; ++i) {
+            for ( var i = 0; i < data.users.length; ++i ) {
                 chatApp.users.push(data.users[i]);
             }
         }
