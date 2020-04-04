@@ -1,5 +1,5 @@
 #crossroads-logo {
-  width: 120px;
+  width: 100px;
 }
 
 .dropdown-item:not(:first-child) {
@@ -35,4 +35,8 @@ body {
 .row {
   margin-right: unset !important;
   margin-left: unset !important;
+}
+
+.navbar {
+  padding: 0rem 1rem !important;
 }
