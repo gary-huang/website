@@ -1,6 +1,8 @@
 <script type="text/x-template" id="chat-message-template">
   <div class="mb-1" @mouseover="hover=true" @mouseleave="hover=false">
-    <div class="card" style="font-size: 12px;">
+    <div class="card" style="font-size: 12px;" v-bind:style="{
+      backgroundColor: backgroundColor
+    }">
       <div class="float-right" style="height: 1px;">
           <span class="float-right" v-bind:style="{
               cursor: 'pointer',
@@ -56,6 +58,7 @@
     <chat-message
         v-for="msg in displaymessages"
         v-bind:id="msg.id"
+        v-bind:type="getType(msg)"
         v-bind:author="msg.author"
         v-bind:body="msg.body"
         v-bind:date="msg.created_at"
@@ -121,6 +124,21 @@
                 hover: false
             };
         },
+        computed: {
+            backgroundColor: function() {
+                var type = this.$props.type;
+                if ( type === 'chat' ) {
+                    return '';
+                }
+                else if ( type === 'pr' ) {
+                    return '#f6efe2';
+                }
+                else if ( type === 'q' ) {
+                    return '#d2f8d2';
+                }
+                return '';
+            }
+        },
         methods: {
             colour: function(str) {
                 return colours[Math.abs(str.hashCode()) % (colours.length-1)];
@@ -177,29 +195,22 @@
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 log.scrollTop = log.scrollHeight;
             },
-            backgroundColor: function(msg) {
-                if (this.isPR(msg)) {
-                    return '#f6efe2';
-                }
-                else if (this.isQ(msg)) {
-                    return '#d2f8d2';
-                }
-                return '';
-            },
             togglePR: function(msg) {
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_toggle_pr',
                     'msg_id': msg.id
                 }));
             },
-            isChatbot: function(msg) {
-                return msg.author === 'chatbot';
-            },
-            isPR: function(msg) {
-                return msg.tags.includes('pr');
-            },
-            isQ: function(msg) {
-                return msg.tags.includes('q');
+            getType: function(msg) {
+                if ( msg.tags.includes('pr') ) {
+                    return 'pr';
+                }
+                else if ( msg.tags.includes('q') ) {
+                    return 'q';
+                }
+                else {
+                    return 'chat';
+                }
             },
             getReacts: function(msg) {
                 return msg.reacts;
