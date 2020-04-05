@@ -59,7 +59,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.chat_group_name = f"chat_{self.chat_id}"
 
         with tracer.trace(
-            "connect", service=ddc.service, resource=self.chat_group_name
+            "connect", service=ddc.service, resource=f"WSS {self.chat_group_name}"
         ) as span:
 
             user = await channels.auth.get_user(self.scope)
@@ -122,52 +122,57 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
+        with tracer.trace("receive", resource=f"WSS {self.chat_group_name}") as span:
+            text_data_json = json.loads(text_data)
+            msgtype = text_data_json.get("type")
+            span.set_tag("msg_type", msgtype)
 
-        user = await channels.auth.get_user(self.scope)
+            user = await channels.auth.get_user(self.scope)
+            span.set_tag("user", user.username)
 
-        if text_data_json["type"] == "chat_message":
-            body = text_data_json["body"]
+            if msgtype == "chat_message":
+                body = text_data_json["body"]
 
-            # Save the message
-            msg = await database_sync_to_async(self.chat.add_message)(
-                body=body, author=user
-            )
+                # Save the message
+                msg = await database_sync_to_async(self.chat.add_message)(
+                    body=body, author=user
+                )
 
-            # Send message to room group
-            msg_json = await database_sync_to_async(msg.__json__)()
-            await self.channel_layer.group_send(
-                self.chat_group_name, {"type": "chat_message", **msg_json}
-            )
-        elif text_data_json["type"] == "chat_react":
-            msg_id = text_data_json["msg_id"]
-            react = text_data_json["react"]
-            # Forward the react message to the rest of the clients
-            msg = await database_sync_to_async(models.ChatMessage.react)(
-                user, msg_id, react
-            )
-            msg_json = await database_sync_to_async(msg.__json__)()
+                # Send message to room group
+                msg_json = await database_sync_to_async(msg.__json__)()
+                await self.channel_layer.group_send(
+                    self.chat_group_name, {"type": "chat_message", **msg_json}
+                )
+            elif msgtype == "chat_react":
+                msg_id = text_data_json["msg_id"]
+                react = text_data_json["react"]
+                span.set_tag("react", react)
+                # Forward the react message to the rest of the clients
+                msg = await database_sync_to_async(models.ChatMessage.react)(
+                    user, msg_id, react
+                )
+                msg_json = await database_sync_to_async(msg.__json__)()
 
-            await self.channel_layer.group_send(
-                self.chat_group_name,
-                dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
-            )
-        elif text_data_json["type"] == "chat_toggle_pr":
-            if not await database_sync_to_async(user.has_perm)(
-                "chat.change_chatmessage"
-            ):
-                log.info("user %r tried to toggle pr without permissions", user)
-                return
+                await self.channel_layer.group_send(
+                    self.chat_group_name,
+                    dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
+                )
+            elif msgtype == "chat_toggle_pr":
+                if not await database_sync_to_async(user.has_perm)(
+                    "chat.change_chatmessage"
+                ):
+                    log.info("user %r tried to toggle pr without permissions", user)
+                    return
 
-            msg_id = text_data_json["msg_id"]
-            msg = await database_sync_to_async(models.ChatMessage.toggle_tag)(
-                "#pr", msg_id
-            )
-            msg_json = await database_sync_to_async(msg.__json__)()
-            await self.channel_layer.group_send(
-                self.chat_group_name,
-                dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
-            )
+                msg_id = text_data_json["msg_id"]
+                msg = await database_sync_to_async(models.ChatMessage.toggle_tag)(
+                    "#pr", msg_id
+                )
+                msg_json = await database_sync_to_async(msg.__json__)()
+                await self.channel_layer.group_send(
+                    self.chat_group_name,
+                    dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
+                )
 
     # Receive message from room group
     async def chat_message_update(self, event):

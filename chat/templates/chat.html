@@ -237,7 +237,6 @@
                 log.scrollTop = log.scrollHeight;
             },
             togglePR: function(id) {
-                console.log(id);
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_toggle_pr',
                     'msg_id': id
