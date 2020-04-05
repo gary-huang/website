@@ -57,7 +57,8 @@ class User(AbstractUser):
 
 @receiver(models.signals.pre_save, sender=User)
 def add_token(sender, instance, *args, **kwargs):
-    instance.token = secrets.token_hex(8)
+    if not instance.token:
+        instance.token = secrets.token_hex(8)
 
 
 class ServiceMediaBlock(AbstractMediaChooserBlock):
