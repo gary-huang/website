@@ -293,9 +293,7 @@
             },
             displaymessages: function() {
                 if ( this.view === 'chat' ) {
-                    return this.messages.filter(function(msg) {
-                        return msg.author !== "chatbot";
-                    });
+                    return this.messages;
                 }
                 else if ( this.view === 'pr' ) {
                     return this.messages.filter(function(x) {

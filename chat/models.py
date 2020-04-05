@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
 
+from church.models import User
+
 
 class ChatMessageReact(models.Model):
     item = models.ForeignKey(
@@ -172,11 +174,14 @@ class Chat(models.Model):
 
     @cached_property
     def messages_json(self):
-        return [msg.__json__() for msg in self.messages.all()]
+        # TODO: migrate chatbot messages into logs
+        chatbot = User.objects.get(username="chatbot")
+        return [msg.__json__() for msg in self.messages.exclude(author=chatbot)]
 
     @cached_property
     def logs_json(self):
-        return [log.__json__() for log in self.logs.all()]
+        # return [log.__json__() for log in self.logs.all()]
+        return []
 
     def __json__(self):
         return dict(messages=self.messages_json, log=self.logs_json,)
