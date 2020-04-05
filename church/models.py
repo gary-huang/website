@@ -54,6 +54,12 @@ class User(AbstractUser):
         guest = cls.objects.get(username="guest")
         return guest.get_next_service_link()
 
+    def get_services_link(self):
+        link = yarl.URL(f"https://crossroadsajax.church/services").with_query(
+            dict(mem=self.token)
+        )
+        return str(link)
+
 
 @receiver(models.signals.pre_save, sender=User)
 def add_token(sender, instance, *args, **kwargs):

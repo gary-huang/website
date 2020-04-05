@@ -23,6 +23,7 @@ def send_bulletin(users):
             last_name=user.last_name,
             stream_link=user.get_next_service_link(),
             guest_stream_link=guest_next_service_link,
+            services_link=user.get_services_link(),
         )
         message.template_id = settings.EMAIL_TEMPLATE.BULLETIN
         sendgrid_client.send(message)
@@ -43,6 +44,7 @@ def send_service(users):
             last_name=user.last_name,
             stream_link=user.get_next_service_link(),
             guest_stream_link=guest_next_service_link,
+            services_link=user.get_services_link(),
         )
         message.template_id = settings.EMAIL_TEMPLATE.SERVICE
         sendgrid_client.send(message)
