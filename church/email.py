@@ -28,7 +28,7 @@ def send_bulletin(users):
         sendgrid_client.send(message)
 
 
-def send_service_email(users):
+def send_service(users):
     guest_next_service_link = User.get_guest_next_service_link()
 
     for user in users:
