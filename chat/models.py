@@ -176,7 +176,13 @@ class Chat(models.Model):
     def messages_json(self):
         # TODO: migrate chatbot messages into logs
         chatbot = User.objects.get(username="chatbot")
-        return [msg.__json__() for msg in self.messages.exclude(author=chatbot)]
+        return [
+            msg.__json__()
+            for msg in self.messages.select_related("author")
+            .prefetch_related("tags")
+            .prefetch_related("reacts__user")
+            .exclude(author=chatbot)
+        ]
 
     @cached_property
     def logs_json(self):
