@@ -1,18 +1,29 @@
 <script type="text/x-template" id="chat-message-template">
   <div class="card" @mouseover="hover=true" @mouseleave="hover=false" v-bind:style="{
-    fontSize: '12px',
+    fontSize: '14px',
     backgroundColor: backgroundColor,
-    filter: hover ? 'grayscale(10%)' : 'none',
     borderWidth: '0px 0px 1px 0px',
     borderRadius: 'unset'
   }">
     <div class="float-right" style="height: 1px;">
+        {% if user.is_chatmod %}
+        <div class="dropdown float-right d-inline-block" style="margin-right: 5px; margin-top: 5px; cursor: pointer; width: 20px;">
+        <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        </div>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pr{{forloop.counter}}dropdown">
+            <a class="dropdown-item" v-on:click="$emit('toggle-pr', $props.id)">
+                <template v-if="type === 'pr'">Remove #prayerrequest tag</template>
+                <template v-else>Tag as #prayerrequest</template>
+            </a>
+        </div>
+        </div>
+        {% endif %}
         <span v-for="emoji in emojis" class="float-right" v-bind:style="{
             cursor: 'pointer',
             filter: 'grayscale(100%)',
             paddingTop: '3px',
             paddingRight: '5px',
-            fontSize: '14px',
+            fontSize: '1rem',
             display: hover ? '' : 'none'
           }" v-on:click="onReact(emoji)">[[emoji]]</span>
     </div>
@@ -22,7 +33,7 @@
         }">[[author]]</span>
         <span style="color: grey;">[[datefmt(date)]]</span>
         <br>
-        <div style="font-size: 14px; margin-bottom: 3px;">
+        <div style="font-size: 1rem; margin-bottom: 3px;">
           <span style="">[[body]]</span>
         </div>
         <footer class="" style="font-size: 14px; margin-bottom: 5px;">
@@ -34,7 +45,7 @@
           <popper
             trigger="hover"
             :options="{
-                placement: 'top',
+                placement: 'right',
                 modifiers: {
                 },
             }">
@@ -70,7 +81,7 @@
       <a class="nav-link" data-toggle="tab" href="#viewers" role="tab" aria-selected="false" v-on:click="view='viewers'">Users ([[ numViewers ]])</a>
     </li>
   </ul>
-  <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px;">
+  <div id="chat-log-{{chat_id}}" class="row form-control flex-grow-1" style="overflow-y: scroll; word-break: break-word; font-size: 14px; padding: 0px;">
     <template v-if="view==='viewers'">
         <div v-if="view==='viewers'" v-for="user in users" style="font-size: 1rem; font-weight: bold;">
             <span>[[ user.username ]] ([[ user.count ]])</span>
@@ -86,6 +97,7 @@
         v-bind:date="msg.created_at"
         v-bind:reacts="getReacts(msg)"
         @react="react"
+        @toggle-pr="togglePR"
     ></chat-message>
   </div>
   <div class="row">
@@ -224,10 +236,11 @@
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 log.scrollTop = log.scrollHeight;
             },
-            togglePR: function(msg) {
+            togglePR: function(id) {
+                console.log(id);
                 chatSocket.send(JSON.stringify({
                     'type': 'chat_toggle_pr',
-                    'msg_id': msg.id
+                    'msg_id': id
                 }));
             },
             getType: function(msg) {
@@ -313,9 +326,9 @@
         },
         updated: function() {
             var t = this.updateType;
-            if ( t === 'chat_message_update' || t === 'users_update' ) {
+            if ( t === 'users_update' ) {
             }
-            else if ( t === 'chat_message' ) {
+            else if ( t === 'chat_message' || t === 'chat_message_update' ) {
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 // a message is about 50 pixels
                 if ( log ) {
