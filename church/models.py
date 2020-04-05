@@ -6,14 +6,13 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.dispatch import receiver
 from django.utils.functional import cached_property
-
 from modelcluster.fields import ParentalKey
-
 from wagtail.core.models import Page, Orderable
 from wagtail.core import fields as wtfields, blocks
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.edit_handlers import MediaChooserPanel
+import yarl
 
 from prayer import models as pr_models
 
@@ -40,6 +39,19 @@ class User(AbstractUser):
     @cached_property
     def is_chatmod(self):
         return self.is_superuser or "chatmod" in [g.name for g in self.groups.all()]
+
+    def get_next_service_link(self):
+        service_page = ServicePage.current_service_page()
+
+        # TODO: get the hostname dynamically
+        stream_link = yarl.URL(
+            f"https://crossroadsajax.church{service_page.url}"
+        ).with_query(dict(mem=self.token))
+
+    @classmethod
+    def get_guest_next_service_link(cls):
+        guest = cls.objects.get(username="guest")
+        return guest.get_next_service_link()
 
 
 @receiver(models.signals.pre_save, sender=User)
