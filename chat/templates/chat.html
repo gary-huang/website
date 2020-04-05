@@ -1,53 +1,57 @@
 <script type="text/x-template" id="chat-message-template">
-  <div class="mb-1" @mouseover="hover=true" @mouseleave="hover=false">
-    <div class="card" style="font-size: 12px;" v-bind:style="{
-      backgroundColor: backgroundColor
-    }">
-      <div class="float-right" style="height: 1px;">
-          <span v-for="emoji in emojis" class="float-right" v-bind:style="{
-              cursor: 'pointer',
-              filter: 'grayscale(100%)',
-              paddingTop: '10px',
-              paddingRight: '5px',
-              fontSize: '14px',
-              display: hover ? '' : 'none'
-            }" v-on:click="onReact(emoji)">[[emoji]]</span>
-      </div>
-      <div class="card-body" style="padding: 0.15rem 1.5rem 0rem 0.25rem;">
-          <span v-bind:style="{
-              color: colour(author),
-          }">[[author]]</span>
-          <span style="color: grey;">[[datefmt(date)]]</span>
-          <br>
-          <span style="font-size: 14px">[[body]]</span>
-          <footer class="" style="font-size: 12px">
-            <a
-              v-for="(r, emoji) in reacts"
-              style="cursor: pointer;"
-              v-on:click="onReact(emoji)"
-            >
-            <popper
-              trigger="hover"
-              :options="{
-                  placement: 'right',
-                  modifiers: {
-                  }
-              }">
-                <div class="popper">
-                  <template v-for="reactor in r.reactors">
-                    <span>[[reactor]]</span><br>
-                  </template>
-                </div>
-                <div slot="reference" style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px">
-                    <span class="ml-1 mr-1">[[ emoji ]]</span>
-                    <span class="mr-1" v-if="r.count > 0" v-bind:style="{
-                        color: hasReacted(emoji) ? '#007bff' : 'black'
-                    }">[[ r.count ]]</span>
-                </div>
-              </popper>
-            </a>
-          </footer>
-      </div>
+  <div class="card" @mouseover="hover=true" @mouseleave="hover=false" v-bind:style="{
+    fontSize: '12px',
+    backgroundColor: backgroundColor,
+    filter: hover ? 'grayscale(10%)' : 'none',
+    borderWidth: '0px 0px 1px 0px',
+    borderRadius: 'unset'
+  }">
+    <div class="float-right" style="height: 1px;">
+        <span v-for="emoji in emojis" class="float-right" v-bind:style="{
+            cursor: 'pointer',
+            filter: 'grayscale(100%)',
+            paddingTop: '3px',
+            paddingRight: '5px',
+            fontSize: '14px',
+            display: hover ? '' : 'none'
+          }" v-on:click="onReact(emoji)">[[emoji]]</span>
+    </div>
+    <div class="card-body" style="padding: 0.15rem 1.5rem 0rem 0.25rem;">
+        <span v-bind:style="{
+            color: colour(author),
+        }">[[author]]</span>
+        <span style="color: grey;">[[datefmt(date)]]</span>
+        <br>
+        <div style="font-size: 14px; margin-bottom: 3px;">
+          <span style="">[[body]]</span>
+        </div>
+        <footer class="" style="font-size: 14px; margin-bottom: 5px;">
+          <a
+            v-for="(r, emoji) in reacts"
+            style="cursor: pointer;"
+            v-on:click="onReact(emoji)"
+          >
+          <popper
+            trigger="hover"
+            :options="{
+                placement: 'top',
+                modifiers: {
+                },
+            }">
+              <div class="popper" style="">
+                <template v-for="reactor in r.reactors">
+                  <span>[[reactor]]</span><br>
+                </template>
+              </div>
+              <div slot="reference" style="display: inherit;border: 1px solid rgba(0,0,0,.125);border-radius: 6px">
+                  <span class="ml-1">[[ emoji ]]</span>
+                  <span class="mr-1" v-if="r.count > 0" v-bind:style="{
+                      color: hasReacted(emoji) ? '#007bff' : 'black'
+                  }">[[ r.count ]]</span>
+              </div>
+            </popper>
+          </a>
+        </footer>
     </div>
   </div>
 </script>
