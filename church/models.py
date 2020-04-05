@@ -47,6 +47,7 @@ class User(AbstractUser):
         stream_link = yarl.URL(
             f"https://crossroadsajax.church{service_page.url}"
         ).with_query(dict(mem=self.token))
+        return str(stream_link)
 
     @classmethod
     def get_guest_next_service_link(cls):
