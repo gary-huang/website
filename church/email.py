@@ -37,8 +37,8 @@ def send_service(users):
         if not user.email:
             continue
         message = Mail(to_emails=[(user.email, f"{user.first_name} {user.last_name}")],)
-        message.from_email = From("kyle@crossroadsajax.church", "Kyle Verhoog")
-        message.reply_to = ReplyTo("kyle.verhoog@crossroadsinajax.org", "Kyle Verhoog")
+        message.from_email = From("martin@crossroadsajax.church", "Martin Vellekoop")
+        message.reply_to = ReplyTo("martinvellekoop@gmail.com", "Martin Vellekoop")
         message.dynamic_template_data = dict(
             first_name=user.first_name,
             last_name=user.last_name,
