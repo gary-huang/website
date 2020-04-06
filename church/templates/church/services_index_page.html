@@ -14,6 +14,11 @@
       <div class="card-body">
         <h3 class="card-title"><a href="{% pageurl post %}">{{ post.specific.date }}</a></h3>
         <h5 class="card-title">{{ post.specific.title }}</h5>
+        <ul>
+          {% for child in post.child_pages %}
+            <li><a href="{% pageurl child %}">{{child.title}}</a></li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
     {% endfor %}

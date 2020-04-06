@@ -228,6 +228,9 @@ class ServicePage(Page):
         pr_models.PrayerRequest, related_name="services_pages"
     )
 
+    def child_pages(self):
+        return self.get_children().live()
+
     @classmethod
     def current_service_page(cls):
         return cls.objects.all().order_by("date").last()
@@ -267,3 +270,21 @@ class SundayGatheringsPage(Page):
 
 class PersonalStoriesPage(Page):
     pass
+
+
+class DailyReadingPage(Page):
+    date = models.DateField("Date")
+    video_link = models.URLField(default="", blank=True)
+    chat_enabled = models.BooleanField(default=True)
+    content = wtfields.RichTextField(blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("date"),
+        FieldPanel("video_link"),
+        FieldPanel("chat_enabled"),
+        FieldPanel("content"),
+    ]
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        return context
