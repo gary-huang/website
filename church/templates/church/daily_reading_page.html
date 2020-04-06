@@ -2,9 +2,10 @@
 {% load chat_tags prayer_tags %}
 {% load wagtailcore_tags %}
 {% load octicons %}
+{% load comments %}
 
 {% block content %}
-<div class="container" style="">
+<div class="container" style="padding-left: 2rem; padding-right: 2rem;">
 <h2>{{ page.title }}</h2>
 <p class="meta">{{ page.date }}</p>
 {% if request.user.is_authenticated %}
@@ -15,21 +16,16 @@
       </iframe>
     </div>
   </div>
-  <div class="col-12 col-md-7" style="min-height: 400px; padding-left: 2px;">
-    {% chat chat_id=self.pk %}
+  <div class="col-12 col-md-7" style="min-height: 400px; padding-left: 10px;">
+  {{ page.content|richtext }}
   </div>
-</div>
-
-{% else %}
-<div class="embed-responsive embed-responsive-16by9">
-  <iframe class="embed-responsive-item" src="{{page.video_link}}" frameborder="0"
-    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-  </iframe>
 </div>
 {% endif %}
 
-<div class="container">
-  {{ page.content|richtext }}
+<div class="container mt-3">
+{% if user.is_authenticated %}
+  {% render_comments_list_for self.pk %}
+{% endif %}
 </div>
 </div>
 {% endblock %}

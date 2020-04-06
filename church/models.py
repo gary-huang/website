@@ -79,7 +79,7 @@ class ServicesIndexPage(Page):
 
     @classmethod
     def service_pages(cls):
-        return ServicePage.objects.all().order_by("-date")
+        return ServicePage.objects.in_menu().order_by("-date")
 
 
 class IDListBlock(blocks.ListBlock):
@@ -194,6 +194,7 @@ class ServicePage(Page):
     date = models.DateField("Service date")
     stream_link = models.URLField(default="", blank=True)
     chat_enabled = models.BooleanField(default=True)
+    weekly_theme = models.CharField(max_length=128, default="", blank=True)
 
     # mediasec = wtfields.StreamField([
     #     ('media', ServiceMediaBlock(icon="media", required=False)),
@@ -220,6 +221,7 @@ class ServicePage(Page):
         FieldPanel("stream_link"),
         FieldPanel("chat_enabled"),
         StreamFieldPanel("bulletin"),
+        FieldPanel("weekly_theme"),
         # StreamFieldPanel("mediasec"),
         # StreamFieldPanel("service"),
     ]
