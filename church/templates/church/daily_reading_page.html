@@ -8,7 +8,6 @@
 <div class="container" style="padding-left: 2rem; padding-right: 2rem;">
 <h2>{{ page.title }}</h2>
 <p class="meta">{{ page.date }}</p>
-{% if request.user.is_authenticated %}
 <div class="row" style="min-height: 500px;">
   <div class="col-12 col-md-5" style="padding-right: 5px">
     <div class="embed-responsive embed-responsive-1by1" style="min-height: 500px;">
@@ -20,8 +19,6 @@
   {{ page.content|richtext }}
   </div>
 </div>
-{% endif %}
-
 <div class="container mt-3">
 {% if user.is_authenticated %}
   {% render_comments_list_for self.pk %}
