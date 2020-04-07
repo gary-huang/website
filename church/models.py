@@ -231,7 +231,8 @@ class ServicePage(Page):
     )
 
     def child_pages(self):
-        return self.get_children().live()
+        pages = DailyReadingPage.objects.live().descendant_of(self).order_by("-date")
+        return pages
 
     @classmethod
     def current_service_page(cls):
