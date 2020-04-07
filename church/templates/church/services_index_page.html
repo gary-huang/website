@@ -18,7 +18,9 @@
         {% endif %}
         <ul>
           {% for child in post.child_pages %}
-            <li><a href="{% pageurl child %}">{{child.title}}</a></li>
+            <li>
+              <h5>{{child.date}}&nbsp;<a href="{% pageurl child %}">{{child.title}}</a></h5>
+            </li>
           {% endfor %}
         </ul>
       </div>
