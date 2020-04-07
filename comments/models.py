@@ -1,3 +1,4 @@
+import arrow
 from django.conf import settings
 from django.db import models
 
@@ -12,3 +13,8 @@ class Comment(models.Model):
     body = models.CharField(max_length=16384)
 
     thread_id = models.CharField(max_length=128)
+
+    @property
+    def created_at_human(self):
+        t = arrow.get(self.created_at).to("America/Toronto")
+        return t.humanize()
