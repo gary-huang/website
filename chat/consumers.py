@@ -4,7 +4,7 @@ import logging
 
 from asgiref.sync import async_to_sync
 import channels
-from channels.db import database_sync_to_async
+from channels.db import database_sync_to_async as dbstoa
 from channels.generic.websocket import AsyncWebsocketConsumer
 from ddtrace import tracer, config as ddc
 
@@ -68,7 +68,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             span.set_tag("user", user.username)
 
-            self.chat, _ = await database_sync_to_async(
+            self.chat, _ = await dbstoa(
                 models.Chat.objects.get_or_create
             )(chat_id=self.chat_id,)
 
@@ -79,7 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             await self.accept()
 
-            chat_json = await database_sync_to_async(self.chat.__json__)()
+            chat_json = await dbstoa(self.chat.__json__)()
 
             # Send initial chat data
             await self.send(text_data=json.dumps({"type": "init", "chat": chat_json,}))
@@ -94,7 +94,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.log("user_connect", user=user)
 
     async def log(self, type, user=None, body=""):
-        log = await database_sync_to_async(self.chat.add_log)(
+        log = await dbstoa(self.chat.add_log)(
             type=type, body=body, user=user,
         )
 
@@ -134,12 +134,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 body = text_data_json["body"]
 
                 # Save the message
-                msg = await database_sync_to_async(self.chat.add_message)(
+                msg = await dbstoa(self.chat.add_message)(
                     body=body, author=user
                 )
 
                 # Send message to room group
-                msg_json = await database_sync_to_async(msg.__json__)()
+                msg_json = await dbstoa(msg.__json__)()
                 await self.channel_layer.group_send(
                     self.chat_group_name, {"type": "chat_message", **msg_json}
                 )
@@ -148,27 +148,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 react = text_data_json["react"]
                 span.set_tag("react", react)
                 # Forward the react message to the rest of the clients
-                msg = await database_sync_to_async(models.ChatMessage.react)(
+                msg = await dbstoa(models.ChatMessage.react)(
                     user, msg_id, react
                 )
-                msg_json = await database_sync_to_async(msg.__json__)()
+                msg_json = await dbstoa(msg.__json__)()
 
                 await self.channel_layer.group_send(
                     self.chat_group_name,
                     dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
                 )
             elif msgtype == "chat_toggle_pr":
-                if not await database_sync_to_async(user.has_perm)(
+                if not await dbstoa(user.has_perm)(
                     "chat.change_chatmessage"
                 ):
                     log.info("user %r tried to toggle pr without permissions", user)
                     return
 
                 msg_id = text_data_json["msg_id"]
-                msg = await database_sync_to_async(models.ChatMessage.toggle_tag)(
+                msg = await dbstoa(models.ChatMessage.toggle_tag)(
                     "#pr", msg_id
                 )
-                msg_json = await database_sync_to_async(msg.__json__)()
+                msg_json = await dbstoa(msg.__json__)()
                 await self.channel_layer.group_send(
                     self.chat_group_name,
                     dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
