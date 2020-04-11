@@ -252,6 +252,14 @@ class ServicePage(Page):
     def add_prayer_request(self, pr):
         self.prayer_requests.add(pr)
 
+    @property
+    def email_attachments(self):
+        return [
+            doclink.document.file.file
+            for doclink in self.documents.all()
+            if doclink.include_in_email
+        ]
+
     def get_context(self, request):
         context = super().get_context(request)
         context["self"] = self
