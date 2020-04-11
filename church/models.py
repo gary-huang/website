@@ -9,6 +9,8 @@ from django.utils.functional import cached_property
 from modelcluster.fields import ParentalKey
 from wagtail.core.models import Page, Orderable
 from wagtail.core import fields as wtfields, blocks
+from wagtail.documents.models import Document
+from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
 from wagtailmedia.blocks import AbstractMediaChooserBlock
 from wagtailmedia.edit_handlers import MediaChooserPanel
@@ -37,8 +39,16 @@ class User(AbstractUser):
         return ""
 
     @cached_property
+    def group_names(self):
+        return [g.name for g in self.groups.all()]
+
+    @cached_property
     def is_chatmod(self):
         return self.is_superuser or "chatmod" in [g.name for g in self.groups.all()]
+
+    @cached_property
+    def is_pastor(self):
+        return "pastor" in self.group_names
 
     def get_next_service_link(self):
         service_page = ServicePage.current_service_page()
@@ -219,6 +229,7 @@ class ServicePage(Page):
     content_panels = Page.content_panels + [
         FieldPanel("date"),
         FieldPanel("stream_link"),
+        InlinePanel("documents", label="Documents"),
         FieldPanel("chat_enabled"),
         StreamFieldPanel("bulletin"),
         FieldPanel("weekly_theme"),
@@ -247,6 +258,17 @@ class ServicePage(Page):
         context["prs"] = self.prayer_requests.all()
         context["guest_link"] = User.get_guest_next_service_link()
         return context
+
+
+class ServicePageDocumentLink(Orderable):
+    page = ParentalKey(ServicePage, related_name="documents")
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name="+")
+    include_in_email = models.BooleanField(default=True)
+
+    panels = [
+        DocumentChooserPanel("document"),
+        FieldPanel("include_in_email"),
+    ]
 
 
 # class FeaturetteBlock(blocks.StructBlock):
