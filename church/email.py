@@ -5,16 +5,6 @@ import os
 from django.conf import settings
 from django.contrib.staticfiles import finders
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import (
-    Attachment,
-    Disposition,
-    FileContent,
-    FileType,
-    From,
-    Mail,
-    ReplyTo,
-    To,
-)
 from sendgrid.helpers import mail
 
 from church.models import ServicePage, User
