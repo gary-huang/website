@@ -11,6 +11,7 @@ $ # format code
 $ black --exclude migrations .
 
 $ docker-compose up -d --build dev
+# TODO add migration
 ```
 
 

@@ -50,6 +50,10 @@ class User(AbstractUser):
     def is_pastor(self):
         return "pastor" in self.group_names
 
+    @cached_property
+    def is_streamer(self):
+        return "streamer" in self.group_names
+
     def get_next_service_link(self):
         service_page = ServicePage.current_service_page()
 

@@ -3,6 +3,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import re_path
 
 import chat.consumers  # noqa this import is required to register the chat consumer
+import church.consumers  # noqa this import is required to register the chat consumer
 from . import consumers
 
 

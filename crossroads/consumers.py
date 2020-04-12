@@ -67,7 +67,6 @@ class ConsumerRegistry:
         assert cls.app_name not in registry, "app names must be unique"
         assert cls.channel_layer is None, "This is to be set by Consumer"
         assert cls.channel_name is None, "This is to be set by Consumer"
-        assert cls.app_name == "chat"
         self._registry[cls.app_name] = cls
         return cls
 
@@ -206,7 +205,7 @@ class Consumer(AsyncWebsocketConsumer):
             consumer = self.subcons(event)
 
             if not consumer:
-                log.error("No consumer found for event")
+                log.error("No consumer found for event %r", text_data)
                 return
 
             await consumer.receive(user, event)

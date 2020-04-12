@@ -102,5 +102,13 @@
       "name": "chat_mod",
       "permissions": []
     }
+  },
+  {
+    "model": "auth.group",
+    "pk": 17,
+    "fields": {
+      "name": "streamer",
+      "permissions": []
+    }
   }
 ]
