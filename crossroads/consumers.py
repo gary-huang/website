@@ -158,6 +158,7 @@ class Consumer(AsyncWebsocketConsumer):
         if not subcons:
             # create a new SubConsumer
             subcons = cls(self.channel_layer, self.channel_name, self.send)
+            self._sub_consumers[cls] = subcons
 
         return subcons
 
@@ -181,8 +182,9 @@ class Consumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         user = await channels.auth.get_user(self.scope)
-        if not user.is_authenticated:
-            return
+
+        for sub in self._sub_consumers.values():
+            await sub.receive(user, dict(type=f"{sub.app_name}.disconnect"))
 
         # Leave room group
         await self.channel_layer.group_discard(self.group_name, self.channel_name)

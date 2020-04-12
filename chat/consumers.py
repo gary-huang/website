@@ -16,6 +16,44 @@ from crossroads.consumers import SubConsumer, registry
 log = logging.getLogger(__name__)
 
 
+class ChatManager:
+    # TODO move this to SubConsumer
+    # maintain real-time stats about a chatroom
+
+    rooms = dict()
+
+    @classmethod
+    def get_or_create_room(cls, room):
+        if room not in cls.rooms:
+            cls.rooms[room] = dict(users=dict(),)
+        return cls.rooms[room]
+
+    @classmethod
+    def register(cls, room, user):
+        room = cls.get_or_create_room(room)
+        user_meta = room["users"].get(user.username, dict(count=0))
+        user_meta["count"] = user_meta["count"] + 1
+        room["users"][user.username] = user_meta
+
+    @classmethod
+    def deregister(cls, room, user):
+        room = cls.get_or_create_room(room)
+        user_meta = room["users"].get(user.username)
+        if not user_meta:
+            return
+        user_meta["count"] = user_meta["count"] - 1
+
+    @classmethod
+    def user_list(cls, room):
+        room = cls.get_or_create_room(room)
+        users = room["users"]
+        return [
+            dict(username=username, count=meta["count"])
+            for username, meta in users.items()
+            if meta["count"] > 0
+        ]
+
+
 @registry.register
 class ChatConsumer(SubConsumer):
 
@@ -29,9 +67,9 @@ class ChatConsumer(SubConsumer):
             self.chat_id = data["chat_id"]
             self.group_name = self.chat_id
 
-            self.chat, _ = await dbstoa(
-                models.Chat.objects.get_or_create
-            )(chat_id=self.chat_id,)
+            self.chat, _ = await dbstoa(models.Chat.objects.get_or_create)(
+                chat_id=self.chat_id,
+            )
 
             log.info("user %r connected to chat %r", user, self.chat_id)
 
@@ -41,17 +79,34 @@ class ChatConsumer(SubConsumer):
             chat_json = await dbstoa(self.chat.__json__)()
 
             # Send initial chat data
-            await self.send(text_data=json.dumps({"type": "chat.init", "chat": chat_json,}))
+            await self.send(
+                text_data=json.dumps({"type": "chat.init", "chat": chat_json,})
+            )
 
             # Send update message
-            # await self.channel_layer.group_send(
-            #     self.chat_group_name,
-            #     {"type": "users_update", "users": ChatManager.user_list(self.chat_id)},
-            # )
-            # await self.group_send(self._group_name)
+            ChatManager.register(self.chat_id, user)
+            await self.group_send(
+                self.group_name,
+                {
+                    "type": "chat.users_update",
+                    "users": ChatManager.user_list(self.chat_id),
+                },
+            )
 
             await self.log("user_connect", user=user)
-            pass
+        elif _type == "chat.disconnect":
+            ChatManager.deregister(self.chat_id, user)
+            await self.log("user_disconnect", user=user)
+            await self.group_leave(self.group_name)
+
+            # Update room with user count
+            await self.group_send(
+                self.group_name,
+                {
+                    "type": "chat.users_update",
+                    "users": ChatManager.user_list(self.chat_id),
+                },
+            )
 
     async def log(self, type, user=None, body=""):
         log = await dbstoa(self.chat.add_log)(type=type, body=body, user=user,)
@@ -68,72 +123,7 @@ class ChatConsumer(SubConsumer):
 
 
 """
-
 class ChatConsumer(AsyncWebsocketConsumer):
-
-    async def connect(self):
-        print("CHAT CONNECT")
-
-    async def chat_init(self, event):
-        print("CHAT_INIT")
-        return
-        self.chat_id = self.scope["url_route"]["kwargs"]["chat_id"]
-        self.chat_group_name = f"chat_{self.chat_id}"
-
-        with tracer.trace(
-            "ws.chat_init", service=ddc.service, resource=f"WSS {self.chat_group_name}"
-        ) as span:
-
-            user = await channels.auth.get_user(self.scope)
-            if not user.is_authenticated:
-                return
-
-            span.set_tag("user", user.username)
-
-            self.chat, _ = await dbstoa(models.Chat.objects.get_or_create)(
-                chat_id=self.chat_id,
-            )
-
-            log.info("user %r connected to chat %r", user, self.chat_id)
-
-            # Join room group
-            await self.channel_layer.group_add(self.chat_group_name, self.channel_name)
-
-            await self.accept()
-
-            chat_json = await dbstoa(self.chat.__json__)()
-
-            # Send initial chat data
-            await self.send(text_data=json.dumps({"type": "init", "chat": chat_json,}))
-
-            ChatManager.register(self.chat_id, user)
-            # Send update message
-            await self.channel_layer.group_send(
-                self.chat_group_name,
-                {"type": "users_update", "users": ChatManager.user_list(self.chat_id)},
-            )
-
-            await self.log("user_connect", user=user)
-
-
-    async def disconnect(self, close_code):
-        user = await channels.auth.get_user(self.scope)
-        if not user.is_authenticated:
-            return
-
-        return
-
-        ChatManager.deregister(self.chat_id, user)
-        await self.log("user_disconnect", user=user)
-
-        # Leave room group
-        await self.channel_layer.group_discard(self.chat_group_name, self.channel_name)
-
-        # Update room with user count
-        await self.channel_layer.group_send(
-            self.chat_group_name,
-            {"type": "users_update", "users": ChatManager.user_list(self.chat_id)},
-        )
 
     async def receive(self, text_data):
         with tracer.trace("receive", resource=f"WSS {self.chat_group_name}") as span:
