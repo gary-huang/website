@@ -158,7 +158,7 @@ var chatApp = new Vue({
             else if (this.view === 'q') {
                 body += ' #q';
             }
-            chatSocket.send(JSON.stringify({
+            socket.send(JSON.stringify({
                 'type': 'chat.message',
                 'body': body
             }));

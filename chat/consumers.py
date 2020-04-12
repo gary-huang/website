@@ -6,7 +6,7 @@ from asgiref.sync import async_to_sync
 import channels
 from channels.db import database_sync_to_async as dbstoa
 from channels.generic.websocket import AsyncWebsocketConsumer
-from ddtrace import tracer, config as ddc
+from ddtrace import tracer
 
 from chat import models
 from church.models import User
@@ -59,12 +59,11 @@ class ChatConsumer(SubConsumer):
 
     app_name = "chat"
 
-    async def receive(self, user, data):
-        print("RECEIVE %s %s" % (user, data))
-        _type = data["type"]
+    async def receive(self, user, event):
+        _type = event["type"]
 
         if _type == "chat.connect":
-            self.chat_id = data["chat_id"]
+            self.chat_id = event["chat_id"]
             self.group_name = self.chat_id
 
             self.chat, _ = await dbstoa(models.Chat.objects.get_or_create)(
@@ -92,8 +91,49 @@ class ChatConsumer(SubConsumer):
                     "users": ChatManager.user_list(self.chat_id),
                 },
             )
-
             await self.log("user_connect", user=user)
+
+        # New chat message
+        elif _type == "chat.message":
+            body = event["body"]
+
+            # Save the message
+            msg = await dbstoa(self.chat.add_message)(body=body, author=user)
+
+            # Send message to room group
+            msg_json = await dbstoa(msg.__json__)()
+            await self.group_send(self.group_name, {"type": "chat.message", **msg_json})
+
+        # React to a chat message
+        elif _type == "chat.react":
+            msg_id = event["msg_id"]
+            react = event["react"]
+            span = tracer.current_span()
+            span.set_tag("react", react)
+            # Forward the react message to the rest of the clients
+            msg = await dbstoa(models.ChatMessage.react)(user, msg_id, react)
+            msg_json = await dbstoa(msg.__json__)()
+
+            await self.group_send(
+                self.group_name,
+                dict(type="chat.message_update", msg_id=msg_id, **msg_json,),
+            )
+
+        # Toggle a prayer request
+        elif _type == "chat.toggle_pr":
+            if not await dbstoa(user.has_perm)("chat.change_chatmessage"):
+                log.info("user %r tried to toggle pr without permissions", user)
+                return
+
+            msg_id = event["msg_id"]
+            msg = await dbstoa(models.ChatMessage.toggle_tag)("#pr", msg_id)
+            msg_json = await dbstoa(msg.__json__)()
+            await self.group_send(
+                self.group_name,
+                dict(type="chat.message_update", msg_id=msg_id, **msg_json,),
+            )
+
+        # User disconnect
         elif _type == "chat.disconnect":
             ChatManager.deregister(self.chat_id, user)
             await self.log("user_disconnect", user=user)
@@ -118,72 +158,4 @@ class ChatConsumer(SubConsumer):
         # )
 
     async def handle(self, user, event):
-        print("HANDLE %s %s" % (user, event))
         await self.send_json(event)
-
-
-"""
-class ChatConsumer(AsyncWebsocketConsumer):
-
-    async def receive(self, text_data):
-        with tracer.trace("receive", resource=f"WSS {self.chat_group_name}") as span:
-            text_data_json = json.loads(text_data)
-            msgtype = text_data_json.get("type")
-            span.set_tag("msg_type", msgtype)
-
-            user = await channels.auth.get_user(self.scope)
-            span.set_tag("user", user.username)
-
-            if msgtype == "chat.message":
-                body = text_data_json["body"]
-
-                # Save the message
-                msg = await dbstoa(self.chat.add_message)(body=body, author=user)
-
-                # Send message to room group
-                msg_json = await dbstoa(msg.__json__)()
-                await self.channel_layer.group_send(
-                    self.chat_group_name, {"type": "chat.message", **msg_json}
-                )
-            elif msgtype == "chat.react":
-                msg_id = text_data_json["msg_id"]
-                react = text_data_json["react"]
-                span.set_tag("react", react)
-                # Forward the react message to the rest of the clients
-                msg = await dbstoa(models.ChatMessage.react)(user, msg_id, react)
-                msg_json = await dbstoa(msg.__json__)()
-
-                await self.channel_layer.group_send(
-                    self.chat_group_name,
-                    dict(type="chat_message_update", msg_id=msg_id, **msg_json,),
-                )
-            elif msgtype == "chat.toggle_pr":
-                if not await dbstoa(user.has_perm)("chat.change_chatmessage"):
-                    log.info("user %r tried to toggle pr without permissions", user)
-                    return
-
-                msg_id = text_data_json["msg_id"]
-                msg = await dbstoa(models.ChatMessage.toggle_tag)("#pr", msg_id)
-                msg_json = await dbstoa(msg.__json__)()
-                await self.channel_layer.group_send(
-                    self.chat_group_name,
-                    dict(type="chat.message_update", msg_id=msg_id, **msg_json,),
-                )
-
-    # Receive message from room group
-    async def chat_message_update(self, event):
-        # Forward message to WebSocket
-        await self.send(text_data=json.dumps(event))
-
-    # Receive message from room group
-    async def chat_message(self, event):
-        # Forward message to WebSocket
-        await self.send(text_data=json.dumps(event))
-
-    async def users_update(self, event):
-        await self.send(text_data=json.dumps(event))
-
-    async def user_connect(self, event):
-        await self.send(text_data=json.dumps(event))
-
-"""
