@@ -1,15 +1,10 @@
 from typing import Dict, Union, Set, Type
-from datetime import datetime
 import json
 import logging
 
-from asgiref.sync import async_to_sync
 import channels
-from channels.db import database_sync_to_async as dbstoa
 from channels.generic.websocket import AsyncWebsocketConsumer
 from ddtrace import tracer, config as ddc
-
-from church.models import User
 
 
 log = logging.getLogger(__name__)

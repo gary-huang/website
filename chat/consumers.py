@@ -1,15 +1,9 @@
-from datetime import datetime
-import json
 import logging
 
-from asgiref.sync import async_to_sync
-import channels
 from channels.db import database_sync_to_async as dbstoa
-from channels.generic.websocket import AsyncWebsocketConsumer
 from ddtrace import tracer
 
 from chat import models
-from church.models import User
 from crossroads.consumers import SubConsumer, registry
 
 
@@ -78,9 +72,7 @@ class ChatConsumer(SubConsumer):
             chat_json = await dbstoa(self.chat.__json__)()
 
             # Send initial chat data
-            await self.send(
-                text_data=json.dumps({"type": "chat.init", "chat": chat_json,})
-            )
+            await self.send_json({"type": "chat.init", "chat": chat_json,})
 
             # Send update message
             ChatManager.register(self.chat_id, user)
