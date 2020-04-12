@@ -8,6 +8,12 @@ PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 
+LOGGING = {
+    "version": 1,
+    "handlers": {"console": {"class": "logging.StreamHandler",},},
+    "loggers": {"django": {"handlers": ["console"], "level": "INFO",},},
+}
+
 INSTALLED_APPS = [
     "home",
     "search",

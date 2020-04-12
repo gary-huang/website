@@ -204,13 +204,6 @@
     });
 
     var chatId = JSON.parse(document.getElementById('chat-id').textContent);
-    var chatSocket = new ReconnectingWebSocket(
-        (SETTINGS.DEBUG ? 'ws://' : 'wss://')
-        + window.location.host
-        + '/ws/chat/'
-        + chatId
-        + '/'
-    );
 
     var chatApp = new Vue({
         el: '#chatapp',
@@ -238,7 +231,7 @@
             },
             togglePR: function(id) {
                 chatSocket.send(JSON.stringify({
-                    'type': 'chat_toggle_pr',
+                    'type': 'chat.toggle_pr',
                     'msg_id': id
                 }));
             },
@@ -261,7 +254,7 @@
             },
             react: function(id, emoji) {
                 chatSocket.send(JSON.stringify({
-                    'type': 'chat_react',
+                    'type': 'chat.react',
                     'msg_id': id,
                     'react': emoji
                 }));
@@ -278,7 +271,7 @@
                     body += ' #q';
                 }
                 chatSocket.send(JSON.stringify({
-                    'type': 'chat_message',
+                    'type': 'chat.message',
                     'body': body
                 }));
                 this.message = '';
@@ -310,7 +303,7 @@
                 return this.messages;
             },
             showNewPopup: function() {
-                if ( this.updateType !== 'chat_message' ) {
+                if ( this.updateType !== 'chat.message' ) {
                     return this.prevShowNewPopup;
                 }
                 var log = document.querySelector('#chat-log-{{chat_id}}');
@@ -325,9 +318,9 @@
         },
         updated: function() {
             var t = this.updateType;
-            if ( t === 'users_update' ) {
+            if ( t === 'chat.users_update' ) {
             }
-            else if ( t === 'chat_message' || t === 'chat_message_update' ) {
+            else if ( t === 'chat.message' || t === 'chat.message_update' ) {
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 // a message is about 50 pixels
                 if ( log ) {
@@ -338,7 +331,7 @@
                     }
                 }
             }
-            else if ( t === 'init' || t === 'change_tab' ) {
+            else if ( t === 'chat.init' || t === 'change_tab' ) {
                 var log = document.querySelector('#chat-log-{{chat_id}}');
                 log.scrollTop = log.scrollHeight;
             }
@@ -346,39 +339,32 @@
         }
     });
 
-    chatSocket.onmessage = function (e) {
-        var data = JSON.parse(e.data);
+    var socket = window.socket;
 
-        if ( SETTINGS.DEBUG ) {
-            console.log(data);
-        }
+    socket.register('chat', function (event) {
+        chatApp.updateType = event.type;
 
-        chatApp.updateType = data.type;
-        if ( data.type === 'chat_message' ) {
-            chatApp.messages.push(data);
+        if ( event.type === 'chat.message' ) {
+            chatApp.messages.push(event);
         }
-        else if ( data.type === 'init' ) {
+        else if ( event.type === 'chat.init' ) {
             chatApp.messages.splice(0, chatApp.messages.length);
-            for (var i = 0; i < data.chat.messages.length; ++i) {
-                chatApp.messages.push(data.chat.messages[i]);
+            for (var i = 0; i < event.chat.messages.length; ++i) {
+                chatApp.messages.push(event.chat.messages[i]);
             }
         }
-        else if ( data.type == 'chat_message_update' ) {
+        else if ( event.type == 'chat.message_update' ) {
             var index;
             for ( index = 0; index < chatApp.messages.length; index++ )
-                if ( chatApp.messages[index].id === data['msg_id'] )
+                if ( chatApp.messages[index].id === event['msg_id'] )
                     break;
-            Vue.set(chatApp.messages, index, data);
+            Vue.set(chatApp.messages, index, event);
         }
-        else if ( data.type == 'users_update' ) {
+        else if ( event.type == 'chat.users_update' ) {
             chatApp.users.splice(0, chatApp.users.length);
-            for ( var i = 0; i < data.users.length; ++i ) {
-                chatApp.users.push(data.users[i]);
+            for ( var i = 0; i < event.users.length; ++i ) {
+                chatApp.users.push(event.users[i]);
             }
         }
-    };
-
-    chatSocket.onclose = function (e) {
-        console.error('Chat socket closed unexpectedly');
-    };
+    });
 </script>

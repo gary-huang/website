@@ -143,9 +143,6 @@
         <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
         <script>
           new universalParallax().init();
-          // $('[data-toggle="collapse"]').on('click', function() {
-          //   // TODO: icon toggling
-          // });
 
           // https://stackoverflow.com/a/42591519
           if (location.hash) {
@@ -170,12 +167,46 @@
             $(this).tab('show');
             return false;
           });
+
           $(window).on('popstate', function () {
             var anchor = location.hash ||
               $('a[data-toggle=\'tab\']').first().attr('href');
             $('a[href=\'' + anchor + '\']').tab('show');
           });
 
+          // Init the global websocket connection
+          var socket = new ReconnectingWebSocket(
+              (SETTINGS.DEBUG ? 'ws://' : 'wss://')
+              + window.location.host + '/ws/'
+          );
+
+          socket.onclose = function (e) {
+            console.error('Chat socket closed unexpectedly');
+          };
+
+          socket.onmessage = function (e) {
+            var data;
+            try {
+              data = JSON.parse(e.data);
+            } catch ( e ) {
+              console.error(e);
+              return;
+            }
+
+            if ( SETTINGS.DEBUG ) {
+              console.debug(data);
+            }
+
+            for ( var namespace in this._handlers ) {
+              console.log(namespace, self._handlers[namespace]);
+            }
+          };
+
+          socket._handlers = {};
+          // Extend socket to 
+          socket.register = function (namespace, handler) {
+            this._handlers[namespace] = handler;
+          };
         </script>
 
         {% block extra_js %}
