@@ -195,22 +195,40 @@
 
             if ( SETTINGS.DEBUG ) {
               console.debug(data);
+              for ( var namespace in this._handlers ) {
+                console.debug(namespace, this._handlers[namespace]);
+              }
             }
 
-            for ( var namespace in this._handlers ) {
-              console.log(namespace, self._handlers[namespace]);
+            // TODO: error handling
+            var split = data.type.split('.');
+            var namespace = split[0];
+            if ( namespace in this._handlers ) {
+              this._handlers[namespace].onmessage(data);
             }
-          };
+          }.bind(socket);
 
           socket._handlers = {};
-          // Extend socket to 
+
           socket.register = function (namespace, handler) {
             this._handlers[namespace] = handler;
-          };
-        </script>
+            if ( socket.readyState === 'OPEN' ) {
+              handler.onopen();
+            }
+          }.bind(socket);
 
-        {% block extra_js %}
-            {# Override this in templates to add extra javascript #}
-        {% endblock %}
+          socket.onopen = function (event) {
+            if ( SETTINGS.DEBUG ) {
+              console.debug('ws connected');
+            }
+            // If there are registered handlers, init them
+            for ( var namespace in this._handlers ) {
+              this._handlers[namespace].onopen();
+            }
+          }.bind(socket);
+
+          {% block extra_js %}
+          {% endblock %}
+        </script>
     </body>
 </html>

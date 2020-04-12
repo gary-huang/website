@@ -68,6 +68,10 @@ class ConsumerRegistry:
         raise NotImplementedError
 
     def register(self, cls):
+        assert cls.app_name is not None, "app name must be defined"
+        assert cls.app_name not in registry, "app names must be unique"
+        assert cls.channel_layer is None, "This is to be set by Consumer"
+        assert cls.channel_name is None, "This is to be set by Consumer"
         assert cls.app_name == "chat"
         self._registry[cls.app_name] = cls
         return cls
@@ -96,16 +100,18 @@ class SubConsumer:
     channel_layer = None
     channel_name = None
 
-    def __init__(self, channel_layer, channel_name):
-        assert self.app_name is not None, "app name must be defined"
-        assert self.app_name not in registry, "app names must be unique"
+    def __init__(self, channel_layer, channel_name, send):
         assert self.channel_layer is None, "This is to be set by Consumer"
         assert self.channel_name is None, "This is to be set by Consumer"
         self.channel_layer = channel_layer
         self.channel_name = channel_name
+        self.send = send
 
     def _group_name(self, name: str):
         return f"{self.app_name}.{name}"
+
+    async def send_json(self, data: dict):
+        await self.send(text_data=json.dumps(data))
 
     async def group_join(self, group: str):
         await self.channel_layer.group_add(self._group_name(group), self.channel_name)
@@ -114,6 +120,9 @@ class SubConsumer:
         await self.channel_layer.group_discard(
             self._group_name(group), self.channel_name
         )
+
+    async def group_send(self, group: str, data: dict):
+        await self.channel_layer.group_send(self._group_name(group), data)
 
     async def receive(self, data):
         # Called when data received from websocket
@@ -148,7 +157,7 @@ class Consumer(AsyncWebsocketConsumer):
         subcons = self._sub_consumers.get(cls, None)
         if not subcons:
             # create a new SubConsumer
-            subcons = cls(self.channel_layer, self.channel_name)
+            subcons = cls(self.channel_layer, self.channel_name, self.send)
 
         return subcons
 
@@ -178,9 +187,14 @@ class Consumer(AsyncWebsocketConsumer):
         # Leave room group
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
-    async def receive(self, text_data):
+    async def receive(self, text_data: str):
         with tracer.trace("ws.receive", resource=f"WS {self.url_route}") as span:
-            event = json.loads(text_data)
+            try:
+                event = json.loads(text_data)
+            except Exception:
+                log.error("json decode failed for event %r", text_data, exc_info=True)
+                return
+
             _type = event.get("type")
             if not _type:
                 log.error("No type provided for event %r", text_data)
@@ -198,7 +212,7 @@ class Consumer(AsyncWebsocketConsumer):
                 log.error("No consumer found for event")
                 return
 
-            consumer.receive(user, event)
+            await consumer.receive(user, event)
 
     async def dispatch(self, event):
         consumer = self.subcons(event)

@@ -21,15 +21,50 @@ class ChatConsumer(SubConsumer):
 
     app_name = "chat"
 
-    async def connect(self, user):
-        # On websocket connect
-        pass
-
     async def receive(self, user, data):
-        pass
+        print("RECEIVE %s %s" % (user, data))
+        _type = data["type"]
 
-    async def handle(self, user, data):
-        pass
+        if _type == "chat.connect":
+            self.chat_id = data["chat_id"]
+            self.group_name = self.chat_id
+
+            self.chat, _ = await dbstoa(
+                models.Chat.objects.get_or_create
+            )(chat_id=self.chat_id,)
+
+            log.info("user %r connected to chat %r", user, self.chat_id)
+
+            # Join room group
+            await self.group_join(self.group_name)
+
+            chat_json = await dbstoa(self.chat.__json__)()
+
+            # Send initial chat data
+            await self.send(text_data=json.dumps({"type": "chat.init", "chat": chat_json,}))
+
+            # Send update message
+            # await self.channel_layer.group_send(
+            #     self.chat_group_name,
+            #     {"type": "users_update", "users": ChatManager.user_list(self.chat_id)},
+            # )
+            # await self.group_send(self._group_name)
+
+            await self.log("user_connect", user=user)
+            pass
+
+    async def log(self, type, user=None, body=""):
+        log = await dbstoa(self.chat.add_log)(type=type, body=body, user=user,)
+
+        # Send log to room group
+        # log_json = await database_sync_to_async(log.__json__)()
+        # await self.channel_layer.group_send(
+        #     self.chat_group_name, {"type": "log", **log_json}
+        # )
+
+    async def handle(self, user, event):
+        print("HANDLE %s %s" % (user, event))
+        await self.send_json(event)
 
 
 """
@@ -80,14 +115,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             await self.log("user_connect", user=user)
 
-    async def log(self, type, user=None, body=""):
-        log = await dbstoa(self.chat.add_log)(type=type, body=body, user=user,)
-
-        # Send log to room group
-        # log_json = await database_sync_to_async(log.__json__)()
-        # await self.channel_layer.group_send(
-        #     self.chat_group_name, {"type": "log", **log_json}
-        # )
 
     async def disconnect(self, close_code):
         user = await channels.auth.get_user(self.scope)

@@ -8,8 +8,12 @@ register = template.Library()
 
 
 @register.inclusion_tag("chat.html", takes_context=True)
-def chat(context, chat_id):
-    chat, _ = models.Chat.objects.get_or_create(chat_id=chat_id)
+def chat_html(context, chat_id):
+    context.update(dict(chat_id=chat_id))
+    return context
 
+
+@register.inclusion_tag("chat.js", takes_context=True)
+def chat_js(context, chat_id):
     context.update(dict(chat_id=chat_id))
     return context
