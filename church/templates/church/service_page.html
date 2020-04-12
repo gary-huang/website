@@ -4,7 +4,7 @@
 {% load octicons %}
 
 {% block content %}
-<div class="container" style="">
+<div class="container">
 {% if request.user.is_authenticated %}
 <div class="row">
   <div class="col-12 col-md-9" style="padding-right: 5px">
@@ -22,12 +22,17 @@
     {% endif %}
   </div>
   <div class="col-12 col-md-3" style="min-height: 400px; padding-left: 5px;">
-    {% chat chat_id=self.pk %}
+    {% chat_html chat_id=self.pk %}
   </div>
 </div>
 <div class="container">
 <h2>{{ page.title }}</h2>
 <p class="meta">{{ page.date }}</p>
+
+{% if request.user.is_pastor %}
+<button type="button" class="btn btn-primary btn-lg">Next Slide</button>
+{% endif %}
+
 <h4>Website tips and tricks</h4>
 <ul>
   <li>Use the textbox to type your message</li>
@@ -73,4 +78,8 @@
 {% endfor %}
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+  {% chat_js chat_id=self.pk %}
 {% endblock %}
