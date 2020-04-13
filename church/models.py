@@ -204,6 +204,15 @@ class DiscussionSectionBlock(IDStructBlock):
         return ctx
 
 
+class HomePage(Page):
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        page = ServicePage.current_service_page()
+        context["current_service_page"] = page
+        return context
+
+
 class ServicePage(Page):
     date = models.DateField("Service date")
     stream_link = models.URLField(default="", blank=True)

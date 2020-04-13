@@ -22,7 +22,6 @@ urlpatterns = [
     path("comments/", include("comments.urls")),
     path("prayer/", include("prayer.urls")),
     path("prayer-requests/", views.prayer_requests_page, name="prayer_requests_page"),
-    # TODO: create profile app?
     path("profile/", views.profile, name="profile"),
     url(
         r"^login/$",

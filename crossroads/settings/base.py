@@ -11,7 +11,6 @@ LOGGING = {
 }
 
 INSTALLED_APPS = [
-    "home",
     "search",
     "church",
     "comments",
