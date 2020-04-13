@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-{% load chat_tags prayer_tags %}
 {% load wagtailcore_tags %}
-{% load octicons %}
 {% load comments %}
 
 {% block content %}
@@ -9,14 +7,20 @@
 <h2>{{ page.title }}</h2>
 <p class="meta">{{ page.date }}</p>
 <div class="row" style="min-height: 500px;">
-  <div class="col-12 col-md-5" style="padding-right: 5px">
-    <div class="embed-responsive embed-responsive-1by1" style="min-height: 500px;">
+  <div class="col-12 col-md-6" style="min-height: 400px; padding-right: 5px;">
+  {{ page.content|richtext }}
+  </div>
+  <div class="col-12 col-md-6" style="padding-left: 10px">
+    {% if page.video_link %}
+    <div class="embed-responsive embed-responsive-1by1" style="min-height: 400px;">
       <iframe class="embed-responsive-item" src="{{page.video_link}}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
       </iframe>
     </div>
-  </div>
-  <div class="col-12 col-md-7" style="min-height: 400px; padding-left: 10px;">
-  {{ page.content|richtext }}
+    {% endif %}
+    {% if page.reflection %}
+      <h2>Reflection</h2>
+      {{ page.reflection|richtext }}
+    {% endif %}
   </div>
 </div>
 <div class="container mt-3">

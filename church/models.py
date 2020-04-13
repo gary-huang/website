@@ -312,14 +312,14 @@ class PersonalStoriesPage(Page):
 class DailyReadingPage(Page):
     date = models.DateField("Date")
     video_link = models.URLField(default="", blank=True)
-    chat_enabled = models.BooleanField(default=True)
     content = wtfields.RichTextField(blank=True)
+    reflection = wtfields.RichTextField(blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel("date"),
-        FieldPanel("video_link"),
-        FieldPanel("chat_enabled"),
         FieldPanel("content"),
+        FieldPanel("video_link"),
+        FieldPanel("reflection"),
     ]
 
     def get_context(self, request):
