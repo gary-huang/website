@@ -1,5 +1,3 @@
-new universalParallax().init();
-
 // https://stackoverflow.com/a/42591519
 if (location.hash) {
   $('a[href=\'' + location.hash + '\']').tab('show');
