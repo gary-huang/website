@@ -1,0 +1,28 @@
+{% load wagtailcore_tags %}
+
+<style>
+    .feed {
+        max-width: 600px;
+    }
+</style>
+
+<div class="container-sm" style="">
+    <h3>Hi {{ user.first_name }}, welcome to your Crossroads feed</h3>
+    {% for item in items %}
+    <div class="card mb-3" style="">
+        <div class="row no-gutters">
+            <div class="col-md-4">
+                <img src="..." class="card-img" alt="...">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title"><a href="{% pageurl item %}">{{ item.title }}</a></h5>
+                    <p class="card-text"><small class="text-muted">{{ item.date }}</small></p>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
+                        additional content. This content is a little bit longer.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

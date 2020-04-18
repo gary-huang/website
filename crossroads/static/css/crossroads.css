@@ -25,7 +25,7 @@ body {
 }
 
 @media (min-width: 1200px) {
-  .container, .container-lg, .container-md, .container-sm, .container-xl {
+  .container-xl {
       max-width: 1800px !important;
       padding-left: 15px;
       padding-right: 15px;

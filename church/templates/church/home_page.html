@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 {% load wagtailcore_tags %}
+{% load feed %}
 
-{% block body_class %}template-homepage{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -55,7 +55,15 @@
 </style>
 {% endblock extra_css %}
 
+{% block body_class %}template-homepage{% endblock %}
+
 {% block content %}
+{% if user.is_authenticated %}
+
+{% feed_html %}
+
+{% else %}
+
 <section style="min-height: 650px; margin-bottom: 2em;">
   <div class="banner parallax" data-parallax-image="{% static 'img/church.jpg' %}"></div>
   <div class="d-flex flex-column justify-content-sm-center" style="padding-top: 8em;">
@@ -89,8 +97,6 @@
 </div>
 </div>
     <!-- START THE FEATURETTES -->
-
-    <hr class="featurette-divider">
 
     <div class="row featurette">
       <div class="banner parallax" data-parallax-image="{% static 'img/prayer.jpg' %}"></div>
@@ -136,5 +142,7 @@
     <!-- /END THE FEATURETTES -->
 
   </div><!-- /.container -->
+
+{% endif %}
 
 {% endblock content %}
