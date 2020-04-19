@@ -72,7 +72,9 @@ class ChatConsumer(SubConsumer):
             chat_json = await dbstoa(self.chat.__json__)()
 
             # Send initial chat data
-            await self.send_json({"type": "chat.init", "chat": chat_json,})
+            await self.send_json(
+                {"type": "chat.init", "chat": chat_json,}
+            )
 
             # Send update message
             ChatManager.register(self.chat_id, user)

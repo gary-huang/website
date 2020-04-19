@@ -15,9 +15,11 @@ def feed_html(context):
         models.ServicePage,
     ]
 
-    feed_items = list(chain.from_iterable([cls.objects.filter(live=True, show_in_menus=True) for cls in feed_types]))
+    feed_items = list(
+        chain.from_iterable(
+            [cls.objects.filter(live=True, show_in_menus=True) for cls in feed_types]
+        )
+    )
     feed_items = sorted(feed_items, key=lambda x: x.date, reverse=True)
-    context.update(dict(
-        items=feed_items
-    ))
+    context.update(dict(items=feed_items))
     return context
