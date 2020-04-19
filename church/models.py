@@ -17,6 +17,7 @@ from wagtailmedia.edit_handlers import MediaChooserPanel
 import yarl
 
 from prayer import models as pr_models
+from comments import models as com_models
 
 
 class User(AbstractUser):
@@ -218,9 +219,14 @@ class ContentPageMixin:
     def pagetype(self):
         return self.__class__.__name__
 
+    @property
+    def getdescription(self):
+        return ""
+
 
 class ServicePage(Page, ContentPageMixin):
     date = models.DateField("Service date")
+    description = wtfields.RichTextField(blank=True, default="Please join us for our Sunday service as we worship and listen to God's word.")
     stream_link = models.URLField(default="", blank=True)
     chat_enabled = models.BooleanField(default=True)
     weekly_theme = models.CharField(max_length=128, default="", blank=True)
@@ -245,9 +251,15 @@ class ServicePage(Page, ContentPageMixin):
     #     # - discussion
     # ])
 
+    @property
+    def getdescription(self):
+        return self.description
+
+
     content_panels = Page.content_panels + [
         FieldPanel("date"),
         FieldPanel("stream_link"),
+        FieldPanel("description"),
         InlinePanel("documents", label="Documents"),
         FieldPanel("chat_enabled"),
         StreamFieldPanel("bulletin"),
@@ -340,3 +352,11 @@ class DailyReadingPage(Page, ContentPageMixin):
     def get_context(self, request):
         context = super().get_context(request)
         return context
+
+    @cached_property
+    def getdescription(self):
+        ncomments = com_models.Comment.objects.filter(thread_id=self.pk).count()
+        if ncomments > 0:
+            return f"{ncomments} comments"
+        else:
+            return ""
