@@ -12,4 +12,5 @@ urlpatterns = [
         views.rm_pr_from_service,
         name="rm-pr-from-service",
     ),
+    path("edit-user/", views.edit_user, name="edit-user"),
 ]

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load filters static %}
 
 {% block extra_css %}
 <style>
@@ -10,29 +10,36 @@
 
 <div class="container">
   <h1>Profile</h1>
-  <form style="border: solid #f7f7f9; padding: 1.5rem;">
+  <form style="border: solid #f7f7f9; padding: 1.5rem;" action="{% url 'edit-user' %}" method="post">
+    {% csrf_token %}
     <div class="form-group row">
       <label class="col-sm-2 col-form-label">Username</label>
       <div class="col-sm-10">
-        <input class="form-control" type="text" value="{{ request.user.username }}"></input>
+        <input class="form-control" type="text" disabled value="{{ request.user.username }}"></input>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">First name</label>
+      <div class="col-sm-10">
+        {{ form.first_name|addclass:"form-control" }}
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-2 col-form-label">Last name</label>
+      <div class="col-sm-10">
+        {{ form.last_name|addclass:"form-control" }}
       </div>
     </div>
     <div class="form-group row">
       <label class="col-sm-2 col-form-label">Email</label>
       <div class="col-sm-10">
-        <input class="form-control" type="email" value="{{ request.user.email }}"></input>
+        {{ form.email|addclass:"form-control" }}
       </div>
     </div>
     <div class="form-group row">
       <label class="col-sm-2 col-form-label">Daily prayer email digests</label>
       <div class="col-sm-10">
-        <input class="form-control" type="checkbox" checked data-size="sm" data-toggle="toggle"></input>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label class="col-sm-2 col-form-label">Daily discussion email digests</label>
-      <div class="col-sm-10">
-        <input class="form-control" type="checkbox" checked data-size="sm" data-toggle="toggle"></input>
+        <input class="form-control" type="checkbox" unchecked data-size="sm" data-toggle="toggle"></input>
       </div>
     </div>
     <button type="submit" class="btn btn-primary">Save</button>

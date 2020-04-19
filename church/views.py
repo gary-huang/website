@@ -4,7 +4,7 @@ from django import http, shortcuts
 from django.core import exceptions
 from django.urls import reverse
 
-from church import models
+from church import forms, models
 from prayer import models as pr_models
 from utils import views as viewtils
 
@@ -12,7 +12,7 @@ from utils import views as viewtils
 def profile(request):
     if not request.user.is_authenticated:
         return http.HttpResponseRedirect(reverse("login"))
-    return shortcuts.render(request, "profile.html", {})
+    return shortcuts.render(request, "profile.html", {"form": forms.UserEditForm(instance=request.user)})
 
 
 def prayer_requests_page(request):
@@ -35,3 +35,22 @@ def rm_pr_from_service(request, pr_id, sp_id):
     sp = models.ServicePage.objects.get(pk=sp_id)
     sp.prayer_requests.remove(pr)
     return http.HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+
+def edit_user(request):
+    user = request.user
+
+    if not user.is_authenticated:
+        raise exceptions.PermissionDenied("")
+
+    if request.method == "POST":
+        form = forms.UserEditForm(request.POST)
+
+        if form.is_valid():
+            user.first_name = form.cleaned_data["first_name"]
+            user.last_name = form.cleaned_data["last_name"]
+            user.email = form.cleaned_data["email"]
+            user.save()
+            return http.HttpResponseRedirect(reverse("profile"))
+        else:
+            raise NotImplementedError("Form validation failures %s" % form.errors)
