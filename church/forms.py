@@ -12,6 +12,7 @@ class UserEditForm(forms.ModelForm):
             "first_name",
             "last_name",
             "email",
+            "subscribe_daily_email",
         ]
 
     first_name = forms.CharField(label="First name", max_length=48, required=True)
@@ -26,6 +27,7 @@ class UserEditForm(forms.ModelForm):
     email.widget.attrs.update(
         {"rows": 1, "placeholder": "Email",}
     )
+    subscribe_daily_email = forms.BooleanField(label="Subscribe to daily email", required=False)
 
 
 class CustomUserCreationForm(wtforms.UserCreationForm):

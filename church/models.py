@@ -22,6 +22,7 @@ from comments import models as com_models
 
 class User(AbstractUser):
     token = models.CharField(max_length=32)
+    subscribe_daily_email = models.BooleanField(default=False)
 
     # override the username validator
     username_validator = UnicodeUsernameValidator()
@@ -206,7 +207,6 @@ class DiscussionSectionBlock(IDStructBlock):
 
 
 class HomePage(Page):
-
     def get_context(self, request):
         context = super().get_context(request)
         page = ServicePage.current_service_page()
@@ -226,7 +226,10 @@ class ContentPageMixin:
 
 class ServicePage(Page, ContentPageMixin):
     date = models.DateField("Service date")
-    description = wtfields.RichTextField(blank=True, default="Please join us for our Sunday service as we worship and listen to God's word.")
+    description = wtfields.RichTextField(
+        blank=True,
+        default="Please join us for our Sunday service as we worship and listen to God's word.",
+    )
     stream_link = models.URLField(default="", blank=True)
     chat_enabled = models.BooleanField(default=True)
     weekly_theme = models.CharField(max_length=128, default="", blank=True)
@@ -254,7 +257,6 @@ class ServicePage(Page, ContentPageMixin):
     @property
     def getdescription(self):
         return self.description
-
 
     content_panels = Page.content_panels + [
         FieldPanel("date"),

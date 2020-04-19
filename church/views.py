@@ -50,6 +50,7 @@ def edit_user(request):
             user.first_name = form.cleaned_data["first_name"]
             user.last_name = form.cleaned_data["last_name"]
             user.email = form.cleaned_data["email"]
+            user.subscribe_daily_email = form.cleaned_data["subscribe_daily_email"]
             user.save()
             return http.HttpResponseRedirect(reverse("profile"))
         else:
