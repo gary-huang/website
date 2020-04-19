@@ -213,7 +213,13 @@ class HomePage(Page):
         return context
 
 
-class ServicePage(Page):
+class ContentPageMixin:
+    @property
+    def pagetype(self):
+        return self.__class__.__name__
+
+
+class ServicePage(Page, ContentPageMixin):
     date = models.DateField("Service date")
     stream_link = models.URLField(default="", blank=True)
     chat_enabled = models.BooleanField(default=True)
@@ -318,7 +324,7 @@ class PersonalStoriesPage(Page):
     pass
 
 
-class DailyReadingPage(Page):
+class DailyReadingPage(Page, ContentPageMixin):
     date = models.DateField("Date")
     video_link = models.URLField(default="", blank=True)
     content = wtfields.RichTextField(blank=True)
