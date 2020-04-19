@@ -359,6 +359,6 @@ class DailyReadingPage(Page, ContentPageMixin):
     def getdescription(self):
         ncomments = com_models.Comment.objects.filter(thread_id=self.pk).count()
         if ncomments > 0:
-            return f"{ncomments} comments"
+            return f"{ncomments} comment{'s' if ncomments > 1 else ''}"
         else:
             return ""

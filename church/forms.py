@@ -27,7 +27,9 @@ class UserEditForm(forms.ModelForm):
     email.widget.attrs.update(
         {"rows": 1, "placeholder": "Email",}
     )
-    subscribe_daily_email = forms.BooleanField(label="Subscribe to daily email", required=False)
+    subscribe_daily_email = forms.BooleanField(
+        label="Subscribe to daily email", required=False
+    )
 
 
 class CustomUserCreationForm(wtforms.UserCreationForm):

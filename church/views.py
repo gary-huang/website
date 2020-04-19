@@ -12,7 +12,9 @@ from utils import views as viewtils
 def profile(request):
     if not request.user.is_authenticated:
         return http.HttpResponseRedirect(reverse("login"))
-    return shortcuts.render(request, "profile.html", {"form": forms.UserEditForm(instance=request.user)})
+    return shortcuts.render(
+        request, "profile.html", {"form": forms.UserEditForm(instance=request.user)}
+    )
 
 
 def prayer_requests_page(request):
