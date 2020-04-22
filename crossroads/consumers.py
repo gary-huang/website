@@ -184,7 +184,7 @@ class Consumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def receive(self, text_data: str):
-        with tracer.trace("ws.receive", resource=f"WS {self.url_route}") as span:
+        with tracer.trace("ws.receive", resource=f"WS {self.path}") as span:
             try:
                 event = json.loads(text_data)
             except Exception:
