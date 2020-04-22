@@ -231,6 +231,7 @@ class ServicePage(Page, ContentPageMixin):
         default="Please join us for our Sunday service as we worship and listen to God's word.",
     )
     stream_link = models.URLField(default="", blank=True)
+    public_stream_link = models.URLField(default="", blank=True)
     chat_enabled = models.BooleanField(default=True)
     weekly_theme = models.CharField(max_length=128, default="", blank=True)
 
@@ -261,6 +262,7 @@ class ServicePage(Page, ContentPageMixin):
     content_panels = Page.content_panels + [
         FieldPanel("date"),
         FieldPanel("stream_link"),
+        FieldPanel("public_stream_link"),
         FieldPanel("description"),
         InlinePanel("documents", label="Documents"),
         FieldPanel("chat_enabled"),
