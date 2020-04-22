@@ -160,10 +160,10 @@ class Consumer(AsyncWebsocketConsumer):
         # Occurs when a user connects to the websocket
 
         self.group_name = "global"
-        self.url_route = self.scope["url_route"]
+        self.path = self.scope["path"]
 
         with tracer.trace(
-            "ws.connect", service=ddc.service, resource=f"WS {self.url_route}"
+            "ws.connect", service=ddc.service, resource=f"WS {self.path}"
         ) as span:
 
             user = await channels.auth.get_user(self.scope)

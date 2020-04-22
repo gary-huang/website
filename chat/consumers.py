@@ -54,6 +54,9 @@ class ChatConsumer(SubConsumer):
     app_name = "chat"
 
     async def receive(self, user, event):
+        if not user.is_authenticated:
+            return
+
         _type = event["type"]
 
         if _type == "chat.connect":
