@@ -9,7 +9,7 @@
         width: 18px;
     }
     .contenticon {
-        font-size: 3em;
+        font-size: 2em;
     }
 </style>
 
@@ -52,7 +52,7 @@
                                 <small class="text-muted">{{ item.date }}</small>
                             </div>
                             {% if item.getdescription %}
-                            <p class="card-text">{{ item.getdescription | richtext }}</p>
+                            {{ item.getdescription | richtext }}
                             {% endif %}
                         </div>
                     </div>
