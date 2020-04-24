@@ -85,9 +85,11 @@ def send_service(users):
         message.dynamic_template_data = dict(
             first_name=user.first_name,
             last_name=user.last_name,
+            date=service_page.date.strftime("%A %B %d, %Y"),
             stream_link=user.get_next_service_link(),
             guest_stream_link=guest_next_service_link,
             services_link=user.get_services_link(),
+            foreword=service_page.description,  # Note that this is HTML
         )
         message.template_id = settings.EMAIL_TEMPLATE.SERVICE
         for a in attachments:
