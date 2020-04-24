@@ -130,6 +130,11 @@ class IDStructBlock(blocks.StructBlock):
         return r
 
 
+class OfferingBlock(blocks.StructBlock):
+    class Meta:
+        template = "blocks/offering.html"
+
+
 class BulletinItemBlock(blocks.StructBlock):
     title = blocks.CharBlock()
     date = blocks.DateBlock(required=False)
@@ -360,7 +365,15 @@ class DailyReadingPage(Page, ContentPageMixin):
 class BasicPage(Page):
     updated_at = models.DateTimeField(auto_now=True)
     content = wtfields.RichTextField(blank=True)
+    show_last_updated = models.BooleanField(default=True)
+
+    stream = wtfields.StreamField(
+        [("offering", OfferingBlock(name="Offering Section")),],
+        blank=True,
+    )
 
     content_panels = Page.content_panels + [
+        FieldPanel("show_last_updated"),
         FieldPanel("content"),
+        StreamFieldPanel("stream"),
     ]

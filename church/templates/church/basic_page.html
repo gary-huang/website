@@ -2,9 +2,14 @@
 {% load wagtailcore_tags filters %}
 {% load comments %}
 {% block content %}
-<div class="container">
+<div class="container mt-2" style="background-color: white;">
   <h2>{{ page.title }}</h2>
-  <h4>Last updated at {{ page.updated_at|humandate }}</h4>
+  {% if page.show_last_updated %}
+    <p class="text-muted">Last updated at {{ page.updated_at|humandate }}</p>
+  {% endif %}
   {{ page.content|richtext }}
+  {% for item in page.stream %}
+    {% include_block item %}
+  {% endfor %}
 </div>
 {% endblock %}
