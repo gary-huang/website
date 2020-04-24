@@ -5,7 +5,7 @@
 <div class="container-sm mt-2" style="background-color: white;">
   <h2>{{ page.title }}</h2>
   {% if page.show_last_updated %}
-    <p class="text-muted">Last updated at {{ page.updated_at|humandate }}</p>
+    <p class="text-muted">Last updated {{ page.updated_at|humandate }}</p>
   {% endif %}
   {{ page.content|richtext }}
   {% for item in page.stream %}
