@@ -7,26 +7,31 @@
     .navicon {
         font-size: 1em;
         width: 18px;
+        color: black;
     }
     .contenticon {
         font-size: 2em;
     }
 </style>
 
-<div class="container-sm" style="">
+<div class="container-sm mt-2" style="">
     <h4>Hi {{ user.first_name }}, welcome to your Crossroads feed</h4>
     <div class="row">
         <div id="sidebar" class="col-md-3">
             <div>
                 <span>
-                    <i class="navicon fas fa-pray"></i>
-                    Prayer (coming soon)
+                    <a href="/">
+                        <i class="navicon fas fa-pray"></i>
+                        Prayer
+                    </a>
                 </span>
             </div>
             <div>
                 <span>
-                    <i class="navicon fas fa-hand-holding-usd"></i>
-                    Offering (coming soon)
+                    <a href="/offering">
+                        <i class="navicon fas fa-hand-holding-usd"></i>
+                        Offering
+                    </a>
                 </span>
             </div>
         </div>
@@ -34,7 +39,7 @@
             {% for item in items %}
             <div class="card mb-3" style="">
                 <div class="row no-gutters">
-                    <div class="col-md-1 mt-4 ml-3 h-100 d-flex justify-content-center align-items-center">
+                    <div class="col-md-1 mt-3 ml-3 h-100 d-flex justify-content-center align-items-center">
                         <div>
                             <a href="{% pageurl item %}" style="color: black;">
                             {% if item.pagetype == "ServicePage" %}
@@ -46,7 +51,7 @@
                         </div>
                     </div>
                     <div class="col-md-10">
-                        <div class="card-body">
+                        <div class="card-body" style="padding-bottom: 0.25em; padding-top: 0.5em">
                             <div class="card-title">
                                 <h5 style="margin-bottom: 0px;"><a href="{% pageurl item %}">{{ item.title }}</a></h5>
                                 <small class="text-muted">{{ item.date }}</small>

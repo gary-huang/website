@@ -2,7 +2,7 @@
 {% load wagtailcore_tags filters %}
 {% load comments %}
 {% block content %}
-<div class="container mt-2" style="background-color: white;">
+<div class="container-sm mt-2" style="background-color: white;">
   <h2>{{ page.title }}</h2>
   {% if page.show_last_updated %}
     <p class="text-muted">Last updated at {{ page.updated_at|humandate }}</p>

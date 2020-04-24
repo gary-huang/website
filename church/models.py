@@ -368,8 +368,7 @@ class BasicPage(Page):
     show_last_updated = models.BooleanField(default=True)
 
     stream = wtfields.StreamField(
-        [("offering", OfferingBlock(name="Offering Section")),],
-        blank=True,
+        [("offering", OfferingBlock(name="Offering Section")),], blank=True,
     )
 
     content_panels = Page.content_panels + [
