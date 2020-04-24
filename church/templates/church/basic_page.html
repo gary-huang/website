@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags filters %}
+{% load comments %}
+{% block content %}
+<div class="container">
+  <h2>{{ page.title }}</h2>
+  <h4>Last updated at {{ page.updated_at|humandate }}</h4>
+  {{ page.content|richtext }}
+</div>
+{% endblock %}

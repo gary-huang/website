@@ -173,9 +173,6 @@ class SermonSectionBlock(blocks.StructBlock):
     title = blocks.CharBlock()
     speaker = blocks.CharBlock()
     slides_url = blocks.CharBlock()
-    # should be a stream of
-    # - polls
-    # - discussion
 
     class Meta:
         template = "blocks/sermon_section.html"
@@ -235,10 +232,6 @@ class ServicePage(Page, ContentPageMixin):
     chat_enabled = models.BooleanField(default=True)
     weekly_theme = models.CharField(max_length=128, default="", blank=True)
 
-    # mediasec = wtfields.StreamField([
-    #     ('media', ServiceMediaBlock(icon="media", required=False)),
-    # ])
-
     bulletin = wtfields.StreamField(
         [("bulletin_section", BulletinSectionBlock(name="Bulletin Section")),],
         blank=True,
@@ -268,8 +261,6 @@ class ServicePage(Page, ContentPageMixin):
         FieldPanel("chat_enabled"),
         StreamFieldPanel("bulletin"),
         FieldPanel("weekly_theme"),
-        # StreamFieldPanel("mediasec"),
-        # StreamFieldPanel("service"),
     ]
 
     prayer_requests = models.ManyToManyField(
@@ -364,3 +355,12 @@ class DailyReadingPage(Page, ContentPageMixin):
             return f"{ncomments} comment{'s' if ncomments > 1 else ''}"
         else:
             return ""
+
+
+class BasicPage(Page):
+    updated_at = models.DateTimeField(auto_now=True)
+    content = wtfields.RichTextField(blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("content"),
+    ]
