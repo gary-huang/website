@@ -148,7 +148,7 @@ socket.register('slides', {
 {% endblock %}
 
 {% block extra_js %}
-  {% if request.user.is_streamer %}
-  {% endif %}
+  {% if request.user.is_authenticated %}
   {% chat_js chat_id=self.pk %}
+  {% endif %}
 {% endblock %}
