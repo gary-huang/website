@@ -18,7 +18,6 @@ def send_bulletin(users):
 
     for user in users:
         # Skip sending to users without emails
-        bulletin_link = f"https://crossroadsajax.church/offering?mem={user.token}"
         if not user.email:
             continue
         message = mail.Mail(
@@ -32,7 +31,7 @@ def send_bulletin(users):
             stream_link=user.get_next_service_link(),
             guest_stream_link=guest_next_service_link,
             services_link=user.get_services_link(),
-            bulletin_link=bulletin_link,
+            offering_link=f"https://crossroadsajax.church/offering?mem={user.token}",
         )
         message.template_id = settings.EMAIL_TEMPLATE.BULLETIN
         sendgrid_client.send(message)
