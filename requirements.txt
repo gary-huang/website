@@ -32,6 +32,7 @@ isort==4.3.21
 jedi==0.16.0
 l18n==2018.5
 lazy-object-proxy==1.4.3
+mandrill==1.0.59
 mccabe==0.6.1
 msgpack==1.0.0
 multidict==4.7.5
