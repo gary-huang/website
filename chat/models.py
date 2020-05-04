@@ -71,7 +71,7 @@ class ChatMessage(models.Model):
         if tag.startswith("#"):
             tag = tag[1:]
 
-        if tag in ["prayerrequest", "pr", "prayer", "pray", "pryr", "pry", "pyr"]:
+        if tag in ["prayerrequest", "pr", "prayer", "pray", "pryr", "pry", "pyr", "p"]:
             return "pr"
         if tag in ["q", "qna", "qa", "question", "q&a", "question"]:
             return "q"
