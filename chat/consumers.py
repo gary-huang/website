@@ -123,7 +123,15 @@ class ChatConsumer(SubConsumer):
                 return
 
             msg_id = event["msg_id"]
-            msg = await dbstoa(models.ChatMessage.toggle_tag)("#pr", msg_id)
+            tag = event["tag"]
+            if tag == "pr":
+                msg = await dbstoa(models.ChatMessage.toggle_tag)("#pr", msg_id)
+            elif tag == "q":
+                msg = await dbstoa(models.ChatMessage.toggle_tag)("#q", msg_id)
+            else:
+                log.error("user %r tried to toggle pr without permissions", user)
+                return
+
             msg_json = await dbstoa(msg.__json__)()
             await self.group_send(
                 self.group_name,

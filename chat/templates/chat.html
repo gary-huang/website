@@ -11,9 +11,13 @@
         <div class="dropdown-toggle" id="pr{{forloop.counter}}dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         </div>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="pr{{forloop.counter}}dropdown">
-            <a class="dropdown-item" v-on:click="$emit('toggle-pr', $props.id)">
+            <a class="dropdown-item" v-on:click="$emit('toggle-tag', $props.id, 'pr')">
                 <template v-if="type === 'pr'">Remove #prayerrequest tag</template>
                 <template v-else>Tag as #prayerrequest</template>
+            </a>
+            <a class="dropdown-item" v-on:click="$emit('toggle-tag', $props.id, 'q')">
+                <template v-if="type === 'q'">Remove #question tag</template>
+                <template v-else>Tag as #question</template>
             </a>
         </div>
         </div>
@@ -97,7 +101,7 @@
         v-bind:date="msg.created_at"
         v-bind:reacts="getReacts(msg)"
         @react="react"
-        @toggle-pr="togglePR"
+        @toggle-tag="toggleTag"
     ></chat-message>
   </div>
   <div class="row">

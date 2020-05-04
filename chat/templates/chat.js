@@ -117,10 +117,11 @@ var chatApp = new Vue({
             var log = document.querySelector('#chat-log-{{chat_id}}');
             log.scrollTop = log.scrollHeight;
         },
-        togglePR: function (id) {
+        toggleTag: function (id, tag) {
             socket.send(JSON.stringify({
                 'type': 'chat.toggle_pr',
-                'msg_id': id
+                'msg_id': id,
+                'tag': tag
             }));
         },
         getType: function (msg) {
