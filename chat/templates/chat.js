@@ -64,6 +64,9 @@ Vue.component('chat-message', {
             else if (type === 'q') {
                 return '#d2f8d2';
             }
+            else if (type === 'help') {
+                return '#ecc9c9';
+            }
             return '';
         }
     },
@@ -131,6 +134,9 @@ var chatApp = new Vue({
             else if (msg.tags.includes('q')) {
                 return 'q';
             }
+            else if (msg.tags.includes('help')) {
+                return 'help';
+            }
             else {
                 return 'chat';
             }
@@ -159,6 +165,9 @@ var chatApp = new Vue({
             else if (this.view === 'q') {
                 body += ' #q';
             }
+            else if (this.view === 'help') {
+                body += ' #help';
+            }
             socket.send(JSON.stringify({
                 'type': 'chat.message',
                 'body': body
@@ -174,7 +183,9 @@ var chatApp = new Vue({
         },
         displaymessages: function () {
             if (this.view === 'chat') {
-                return this.messages;
+                return this.messages.filter(function (x) {
+                  return !x.tags.includes('help');
+                });
             }
             else if (this.view === 'pr') {
                 return this.messages.filter(function (x) {
@@ -184,6 +195,11 @@ var chatApp = new Vue({
             else if (this.view === 'q') {
                 return this.messages.filter(function (x) {
                     return x.tags.includes('q');
+                });
+            }
+            else if (this.view === 'help') {
+                return this.messages.filter(function (x) {
+                    return x.tags.includes('help');
                 });
             }
             else if (this.view === 'viewers') {
