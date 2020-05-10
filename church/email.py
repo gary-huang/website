@@ -5,10 +5,13 @@ import os
 from django.conf import settings
 from django.contrib.staticfiles import finders
 import mandrill
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers import mail
 
 from church.models import ServicePage, User
 
 
+sendgrid_client = SendGridAPIClient(settings.SENDGRID_API_KEY)
 mandrill_client = mandrill.Mandrill(settings.MAILCHIMP_API_KEY)
 
 

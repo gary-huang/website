@@ -65,7 +65,7 @@ socket.onmessage = function (e) {
 socket._handlers = {};
 
 socket.register = function (namespace, handler) {
-  if (namespace in this._handlers) {
+  if ( namespace in this._handlers ) {
     this._handlers[namespace].push(handler);
   } else {
     this._handlers[namespace] = [handler];
