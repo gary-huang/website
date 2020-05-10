@@ -56,6 +56,14 @@ class User(AbstractUser):
     def is_streamer(self):
         return "streamer" in self.group_names
 
+    @cached_property
+    def is_member(self):
+        return "member" in self.group_names
+
+    @cached_property
+    def is_mod(self):
+        return "chat_mod" in self.group_names
+
     def get_next_service_link(self):
         service_page = ServicePage.current_service_page()
 

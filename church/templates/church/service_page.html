@@ -108,6 +108,93 @@ socket.register('slides', {
 </script>
 {% endif %}
 
+
+{% if request.user.is_member %}
+<div id="poll">
+  {% if request.user.is_mod %}
+  <div id="pollcontrols">
+    <button type="button" class="btn btn-lg" v-bind:class="{
+      'btn-success': !enabled,
+      'btn-danger': enabled
+    }" v-on:click="togglePoll">
+      <span v-if="!enabled">Start poll</span>
+      <span v-if="enabled">Stop poll</span>
+    </button>
+  </div>
+  {% endif %}
+  <form v-bind:class="{
+    'd-none': !enabled
+    }" v-on:submit.prevent="submit">
+    <div class="form-group">
+      <label for="yeas">Number of Yea votes</label>
+      <select required class="form-control" id="yeas" v-model="nyea">
+        <option value=""></option>
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <label for="nays">Number of Nay votes</label>
+      <select required class="form-control" id="nays" v-model="nnay">
+        <option value=""></option>
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg" v-bind:class="{
+    }">Submit</button>
+  </form>
+</div>
+<script>
+var pollApp = new Vue({
+  el: '#poll',
+  delimiters: ['[[', ']]'],
+  data: {
+    // enabled: false,
+    enabled: true,
+    numResponses: 0,
+    nyea: '',
+    nnay: ''
+  },
+  methods: {
+    togglePoll: function() {
+      socket.send(JSON.stringify({
+        type: 'polls.toggle'
+      }));
+    },
+    submit: function () {
+      console.log("test");
+      socket.send(JSON.stringify({
+        type: 'polls.submit',
+        nyea: 0,
+        nnay: 0
+      }));
+    }
+  }
+});
+
+socket.register('polls', {
+  onmessage: function (event) {
+    if (event.type === 'poll.update') {
+      pollApp.enabled = event.enabled;
+      pollApp.numResponses = event.num_reponses;
+    }
+  },
+  onopen: function () {
+    socket.send(JSON.stringify({
+      type: 'slides.connect'
+    }));
+  }
+});
+</script>
+{% endif %}
+
 <p>{{ page.description | richtext }}</p>
 
 <h4>Website tips and tricks</h4>

@@ -56,14 +56,20 @@ socket.onmessage = function (e) {
   var split = data.type.split('.');
   var namespace = split[0];
   if ( namespace in this._handlers ) {
-    this._handlers[namespace].onmessage(data);
+    this._handlers[namespace].forEach(function(handler) {
+      handler.onmessage(data);
+    });
   }
 }.bind(socket);
 
 socket._handlers = {};
 
 socket.register = function (namespace, handler) {
-  this._handlers[namespace] = handler;
+  if (namespace in this._handlers) {
+    this._handlers[namespace].push(handler);
+  } else {
+    this._handlers[namespace] = [handler];
+  }
   if ( socket.readyState === 'OPEN' ) {
     handler.onopen();
   }
@@ -75,6 +81,8 @@ socket.onopen = function (event) {
   }
   // If there are registered handlers, init them
   for ( var namespace in this._handlers ) {
-    this._handlers[namespace].onopen();
+    this._handlers[namespace].forEach(function(handler) {
+      handler.onopen();
+    });
   }
 }.bind(socket);
