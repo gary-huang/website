@@ -123,9 +123,14 @@ class ChatMessage(models.Model):
         return [tag.value for tag in self.tags.all()]
 
     def __json__(self):
+        if self.author.last_name:
+            display_name = f"{self.author.first_name} {self.author.last_name[0]}"
+        else:
+            display_name = f"{self.author.first_name}"
+
         return dict(
             id=self.pk,
-            author=f"{self.author.first_name} {self.author.last_name[0]}",
+            author=display_name,
             body=self.body,
             created_at=self.created_at.strftime("%s"),
             reacts=self.aggreacts,

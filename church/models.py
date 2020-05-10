@@ -294,8 +294,6 @@ class ServicePage(Page, ContentPageMixin):
     def get_context(self, request):
         context = super().get_context(request)
         context["self"] = self
-        context["prs"] = self.prayer_requests.all()
-        context["guest_link"] = User.get_guest_next_service_link()
         return context
 
 

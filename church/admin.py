@@ -6,7 +6,7 @@ from .models import User
 from . import email
 
 
-def email_bulletin(modeladmin, request, queryset):
+def bulletin_email(modeladmin, request, queryset):
     try:
         email.send_bulletin(queryset)
     except Exception as e:
@@ -42,7 +42,7 @@ class UserAdmin(DjangoUserAdmin):
     fieldsets = DjangoUserAdmin.fieldsets + (
         ("Authentication", dict(fields=("token",),)),
     )
-    actions = [email_bulletin, service_email]
+    actions = [bulletin_email, service_email]
 
 
 admin.site.register(User, UserAdmin)
