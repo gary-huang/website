@@ -120,14 +120,21 @@ socket.register('slides', {
       <span v-if="!enabled">Start poll</span>
       <span v-if="enabled">Stop poll</span>
     </button>
+    <button type="button" class="btn btn-warning btn-lg" v-bind:class="{
+    }" v-on:click="toggleResults">
+      <span v-if="!showResults">Show results (everyone will see)</span>
+      <span v-if="showResults">Stop showing results</span>
+    </button>
   </div>
   {% endif %}
+  <h3 v-if="showResults">Yea votes: [[ numYeaVotes ]]</h3>
+  <h3 v-if="showResults">Nay votes: [[ numNayVotes ]]</h3>
   <form style="" v-bind:class="{
-    'd-none': !enabled
+    'd-none': !enabled || showResults
     }" v-on:submit.prevent="submit">
     <div class="form-group">
       <h3>Number of votes collected: [[ numVotes ]]</h3>
-      <label>Please only submit on behalf of yourself and those viewing with you</label><br/>
+      <label>Please only submit on behalf of yourself and those viewing with you (with their consent).</label><br/>
       <label for="yeas">Number of Yea votes</label>
       <select required class="form-control" id="yeas" v-model="nyea" :disabled="disabled">
         <option disabled value="">Please select an option</option>
@@ -161,7 +168,10 @@ var pollsApp = new Vue({
   data: {
     disabled: false,
     enabled: false,
+    showResults: false,
     numVotes: 0,
+    numYeaVotes: 0,
+    numNayVotes: 0,
     nyea: '',
     nnay: ''
   },
@@ -169,6 +179,11 @@ var pollsApp = new Vue({
     togglePoll: function() {
       socket.send(JSON.stringify({
         type: 'polls.toggle'
+      }));
+    },
+    toggleResults: function() {
+      socket.send(JSON.stringify({
+        type: 'polls.toggleResults'
       }));
     },
     submit: function () {
@@ -186,10 +201,12 @@ socket.register('polls', {
     if (event.type === 'polls.update') {
       pollsApp.enabled = event.enabled;
       var nvotes = event.responses.reduce(function(x, y) {
-        return x + y.nyea + y.nnay;
-      }, 0);
-      pollsApp.numVotes = nvotes;
-
+        return [x[0] + y.nyea, x[1] + y.nnay];
+      }, [0, 0]);
+      pollsApp.numVotes = nvotes[0] + nvotes[1];
+      pollsApp.numYeaVotes = nvotes[0];
+      pollsApp.numNayVotes = nvotes[1];
+      pollsApp.showResults = event.show_results;
     }
     else if (event.type == 'polls.disable') {
       pollsApp.disabled = true;

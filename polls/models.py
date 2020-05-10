@@ -25,6 +25,7 @@ class PollResponse(models.Model):
 class Poll(models.Model):
     poll_id = models.CharField(max_length=1024)
     enabled = models.BooleanField(default=False)
+    show_results = models.BooleanField(default=False)
 
     def add_response(self, user, response):
         resp = PollResponse.objects.create(
@@ -34,5 +35,7 @@ class Poll(models.Model):
 
     def __json__(self):
         return dict(
-            enabled=self.enabled, responses=[r.__json__ for r in self.responses.all()],
+            enabled=self.enabled,
+            show_results=self.show_results,
+            responses=[r.__json__ for r in self.responses.all()],
         )

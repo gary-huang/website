@@ -35,7 +35,6 @@ class PollConsumer(SubConsumer):
             await self.group_join(self.group_name)
 
             poll_json = await dbstoa(self.poll.__json__)()
-
             await self.send_json(
                 {"type": "polls.update", **poll_json,}
             )
@@ -52,6 +51,15 @@ class PollConsumer(SubConsumer):
         elif _type == "polls.toggle":
             # TODO: permissions
             self.poll.enabled = not self.poll.enabled
+            await dbstoa(self.poll.save)()
+
+            poll_json = await dbstoa(self.poll.__json__)()
+            await self.group_send(
+                self.group_name, dict(type="polls.update", **poll_json,),
+            )
+
+        elif _type == "polls.toggleResults":
+            self.poll.show_results = not self.poll.show_results
             await dbstoa(self.poll.save)()
 
             poll_json = await dbstoa(self.poll.__json__)()
