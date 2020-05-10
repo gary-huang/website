@@ -125,7 +125,7 @@ class ChatMessage(models.Model):
     def __json__(self):
         return dict(
             id=self.pk,
-            author=self.author.username,
+            author=f"{self.author.first_name} {self.author.last_name[0]}",
             body=self.body,
             created_at=self.created_at.strftime("%s"),
             reacts=self.aggreacts,
