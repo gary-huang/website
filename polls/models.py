@@ -9,11 +9,11 @@ from church.models import User
 
 class PollResponse(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
-    poll = models.ForeignKey(
-        "Poll", related_name="responses", on_delete=models.CASCADE
-    )
+    poll = models.ForeignKey("Poll", related_name="responses", on_delete=models.CASCADE)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name="poll_responses", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        related_name="poll_responses",
+        on_delete=models.CASCADE,
     )
     response = models.CharField(max_length=16384)
 
@@ -27,11 +27,12 @@ class Poll(models.Model):
     enabled = models.BooleanField(default=False)
 
     def add_response(self, user, response):
-        resp = PollResponse.objects.create(poll=self, user=user, response=json.dumps(response))
+        resp = PollResponse.objects.create(
+            poll=self, user=user, response=json.dumps(response)
+        )
         return resp
 
     def __json__(self):
         return dict(
-            enabled=self.enabled,
-            responses=[r.__json__ for r in self.responses.all()],
+            enabled=self.enabled, responses=[r.__json__ for r in self.responses.all()],
         )

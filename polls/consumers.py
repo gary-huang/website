@@ -40,11 +40,14 @@ class PollConsumer(SubConsumer):
                 {"type": "polls.update", **poll_json,}
             )
 
-            responses = await dbstoa(models.PollResponse.objects.filter)(poll=self.poll, user=user)
+            responses = await dbstoa(models.PollResponse.objects.filter)(
+                poll=self.poll, user=user
+            )
             nresponses = await dbstoa(responses.count)()
             if nresponses > 0:
-                await self.send_json({"type": "polls.disable",})
-
+                await self.send_json(
+                    {"type": "polls.disable",}
+                )
 
         elif _type == "polls.toggle":
             # TODO: permissions
@@ -53,8 +56,7 @@ class PollConsumer(SubConsumer):
 
             poll_json = await dbstoa(self.poll.__json__)()
             await self.group_send(
-                self.group_name,
-                dict(type="polls.update", **poll_json,),
+                self.group_name, dict(type="polls.update", **poll_json,),
             )
 
         elif _type == "polls.submit":
@@ -62,12 +64,13 @@ class PollConsumer(SubConsumer):
             del cpy["type"]
             await dbstoa(self.poll.add_response)(user, cpy)
 
-            await self.send_json({"type": "polls.disable",})
+            await self.send_json(
+                {"type": "polls.disable",}
+            )
 
             poll_json = await dbstoa(self.poll.__json__)()
             await self.group_send(
-                self.group_name,
-                dict(type="polls.update", **poll_json,),
+                self.group_name, dict(type="polls.update", **poll_json,),
             )
 
     async def handle(self, user, event):
