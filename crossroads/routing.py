@@ -4,6 +4,7 @@ from django.urls import re_path
 
 import chat.consumers  # noqa this import is required to register the chat consumer
 import church.consumers  # noqa this import is required to register the chat consumer
+import polls.consumers  # noqa this import is required to register the poll consumer
 from . import consumers
 
 

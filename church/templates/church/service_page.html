@@ -110,7 +110,7 @@ socket.register('slides', {
 
 
 {% if request.user.is_member %}
-<div id="poll">
+<div id="polls">
   {% if request.user.is_mod %}
   <div id="pollcontrols">
     <button type="button" class="btn btn-lg" v-bind:class="{
@@ -122,43 +122,46 @@ socket.register('slides', {
     </button>
   </div>
   {% endif %}
-  <form v-bind:class="{
+  <form style="" v-bind:class="{
     'd-none': !enabled
     }" v-on:submit.prevent="submit">
     <div class="form-group">
+      <h3>Number of votes collected: [[ numVotes ]]</h3>
+      <label>Please only submit on behalf of yourself and those viewing with you</label><br/>
       <label for="yeas">Number of Yea votes</label>
-      <select required class="form-control" id="yeas" v-model="nyea">
-        <option value=""></option>
-        <option value="0">0</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
+      <select required class="form-control" id="yeas" v-model="nyea" :disabled="disabled">
+        <option disabled value="">Please select an option</option>
+        <option>0</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
       </select>
       <label for="nays">Number of Nay votes</label>
-      <select required class="form-control" id="nays" v-model="nnay">
-        <option value=""></option>
-        <option value="0">0</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
+      <select required class="form-control" id="nays" v-model="nnay" :disabled="disabled">
+        <option disabled value="">Please select an option</option>
+        <option>0</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
       </select>
     </div>
-    <button type="submit" class="btn btn-primary btn-lg" v-bind:class="{
+    <button type="submit" class="btn btn-primary btn-lg" :disabled="disabled" v-bind:class="{
     }">Submit</button>
   </form>
 </div>
 <script>
-var pollApp = new Vue({
-  el: '#poll',
+var pollId = "{{self.pk}}";
+var pollsApp = new Vue({
+  el: '#polls',
   delimiters: ['[[', ']]'],
   data: {
-    // enabled: false,
-    enabled: true,
-    numResponses: 0,
+    disabled: false,
+    enabled: false,
+    numVotes: 0,
     nyea: '',
     nnay: ''
   },
@@ -169,11 +172,10 @@ var pollApp = new Vue({
       }));
     },
     submit: function () {
-      console.log("test");
       socket.send(JSON.stringify({
         type: 'polls.submit',
-        nyea: 0,
-        nnay: 0
+        nyea: parseInt(this.nyea),
+        nnay: parseInt(this.nnay)
       }));
     }
   }
@@ -181,14 +183,22 @@ var pollApp = new Vue({
 
 socket.register('polls', {
   onmessage: function (event) {
-    if (event.type === 'poll.update') {
-      pollApp.enabled = event.enabled;
-      pollApp.numResponses = event.num_reponses;
+    if (event.type === 'polls.update') {
+      pollsApp.enabled = event.enabled;
+      var nvotes = event.responses.reduce(function(x, y) {
+        return x + y.nyea + y.nnay;
+      }, 0);
+      pollsApp.numVotes = nvotes;
+
+    }
+    else if (event.type == 'polls.disable') {
+      pollsApp.disabled = true;
     }
   },
   onopen: function () {
     socket.send(JSON.stringify({
-      type: 'slides.connect'
+      type: 'polls.connect',
+      poll_id: pollId
     }));
   }
 });

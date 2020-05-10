@@ -12,11 +12,12 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 INSTALLED_APPS = [
     "search",
+    "chat",
     "church",
     "comments",
     "crossroads",
     "prayer",
-    "chat",
+    "polls",
     "channels",
     "octicons",
     "wagtail.contrib.forms",
