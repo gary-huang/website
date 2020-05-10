@@ -27,7 +27,6 @@
 <div class="container-xl">
 <h2>{{ page.title }}</h2>
 <p class="meta">{{ page.date }}</p>
-<p>{{ page.description | richtext }}</p>
 
 {% if request.user.is_pastor %}
 <div id="pastorcontrols">
@@ -108,6 +107,8 @@ socket.register('slides', {
 });
 </script>
 {% endif %}
+
+<p>{{ page.description | richtext }}</p>
 
 <h4>Website tips and tricks</h4>
 <ul>
