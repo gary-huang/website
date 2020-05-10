@@ -40,7 +40,7 @@ class ChatMessage(models.Model):
                 aggr[react.type] = dict(count=0, reactors=[],)
             count = aggr[react.type]["count"]
             aggr[react.type]["count"] = count + 1
-            aggr[react.type]["reactors"].append(react.user.username)
+            aggr[react.type]["reactors"].append(react.user.display_name)
 
         return aggr
 
@@ -123,14 +123,9 @@ class ChatMessage(models.Model):
         return [tag.value for tag in self.tags.all()]
 
     def __json__(self):
-        if self.author.last_name:
-            display_name = f"{self.author.first_name} {self.author.last_name[0]}"
-        else:
-            display_name = f"{self.author.first_name}"
-
         return dict(
             id=self.pk,
-            author=display_name,
+            author=self.author.display_name,
             body=self.body,
             created_at=self.created_at.strftime("%s"),
             reacts=self.aggreacts,

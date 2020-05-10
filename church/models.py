@@ -41,6 +41,15 @@ class User(AbstractUser):
         return ""
 
     @cached_property
+    def display_name(self):
+        if self.last_name:
+            display_name = f"{self.first_name} {self.last_name[0]}"
+        else:
+            display_name = f"{self.first_name}"
+
+        return display_name
+
+    @cached_property
     def group_names(self):
         return [g.name for g in self.groups.all()]
 
