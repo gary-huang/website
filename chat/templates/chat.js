@@ -284,9 +284,11 @@ socket.register('chat', {
                     break;
                 }
             }
-            var msg = chatApp.messages[index];
-            msg.body = 'Deleted';
-            Vue.set(chatApp.messages, index, msg);
+            if (index < chatApp.messages.length) {
+                var msg = chatApp.messages[index];
+                msg.body = 'Deleted';
+                Vue.set(chatApp.messages, index, msg);
+            }
         }
         else {
             console.error('UNHANDLED MESSAGE TYPE ' + event.type);
