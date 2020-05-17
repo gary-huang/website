@@ -12,7 +12,7 @@ from church.models import ServicePage, User
 
 
 sendgrid_client = SendGridAPIClient(settings.SENDGRID_API_KEY)
-mandrill_client = mandrill.Mandrill(settings.MAILCHIMP_API_KEY)
+# mandrill_client = mandrill.Mandrill(settings.MAILCHIMP_API_KEY)
 
 
 def send_bulletin(users):
