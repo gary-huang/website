@@ -110,5 +110,13 @@
       "name": "streamer",
       "permissions": []
     }
+  },
+  {
+    "model": "auth.group",
+    "pk": 18,
+    "fields": {
+      "name": "guest",
+      "permissions": []
+    }
   }
 ]

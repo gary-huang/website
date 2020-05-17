@@ -162,7 +162,7 @@ class Chat(models.Model):
     chat_id = models.CharField(max_length=1024)
 
     def add_message(self, user, body=None):
-        if not user.is_member:
+        if not user.is_member and not user.is_guest:
             raise exc.PermissionDenied("%r" % user)
 
         cm = ChatMessage.objects.create(author=user, body=body, chat=self,)

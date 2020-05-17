@@ -79,6 +79,10 @@ class User(AbstractUser):
         return "member" in self.group_names
 
     @cached_property
+    def is_guest(self):
+        return "guest" in self.group_names
+
+    @cached_property
     def is_mod(self):
         return "chat_mod" in self.group_names
 
