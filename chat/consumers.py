@@ -116,6 +116,22 @@ class ChatConsumer(SubConsumer):
             else:
                 await self.group_send(self.group_name, {"type": "chat.message_delete", "msg_id": msg_id })
 
+        elif _type == "chat.message_clear_all":
+            msg_id = event["msg_id"]
+
+            def clear_all():
+                if not user.is_chatmod:
+                    log.warning("%r tried to clear all messages", user)
+                    return
+
+                msg =  models.ChatMessage.objects.get(pk=msg_id)
+                msgs = models.ChatMessage.objects.filter(author=msg.author)
+                return [m.id for m in msgs]
+
+            msgs = await dbstoa(clear_all)()
+            for mid in msgs:
+                await self.group_send(self.group_name, {"type": "chat.message_delete", "msg_id": mid })
+
         # React to a chat message
         elif _type == "chat.react":
             msg_id = event["msg_id"]

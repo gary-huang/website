@@ -133,6 +133,12 @@ var chatApp = new Vue({
                 'msg_id': id
             }));
         },
+        clearMsgs: function (id) {
+            socket.send(JSON.stringify({
+                'type': 'chat.message_clear_all',
+                'msg_id': id
+            }));
+        },
         getType: function (msg) {
             if (msg.tags.includes('pr')) {
                 return 'pr';
