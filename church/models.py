@@ -27,6 +27,15 @@ class User(AbstractUser):
     # override the username validator
     username_validator = UnicodeUsernameValidator()
 
+    # def refresh_from_db(self, *args, **kwargs):
+    #     self.invalidate_cached_properties()
+    #     return super().refresh_from_db(*args, **kwargs)
+
+    # def invalidate_cached_properties(self):
+    #     for key, value in self.__class__.__dict__.items():
+    #         if isinstance(value, cached_property):
+    #             self.__dict__.pop(key, None)
+
     @cached_property
     def role_emoji(self):
         if self.is_superuser:
@@ -98,6 +107,13 @@ class User(AbstractUser):
 def add_token(sender, instance, *args, **kwargs):
     if not instance.token:
         instance.token = secrets.token_hex(8)
+
+
+@receiver(models.signals.post_save, sender=User)
+def invalidate_cached_properties(sender, instance, *args, **kwargs):
+    for key, value in instance.__class__.__dict__.items():
+        if isinstance(value, cached_property):
+            instance.__dict__.pop(key, None)
 
 
 class ServiceMediaBlock(AbstractMediaChooserBlock):
