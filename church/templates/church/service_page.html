@@ -108,7 +108,7 @@ socket.register('slides', {
 </script>
 {% endif %}
 
-
+{% comment %}
 {% if request.user.is_member %}
 <div id="polls">
   {% if request.user.is_mod %}
@@ -221,6 +221,7 @@ socket.register('polls', {
 });
 </script>
 {% endif %}
+{% endcomment %}
 
 <p>{{ page.description | richtext }}</p>
 
