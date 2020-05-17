@@ -1,8 +1,14 @@
+import logging
+
 from django.conf import settings
+from django.core import exceptions as exc
 from django.db import models
 from django.utils.functional import cached_property
 
 from church.models import User
+
+
+log = logging.getLogger(__name__)
 
 
 class ChatMessageReact(models.Model):
@@ -155,14 +161,25 @@ class ChatLog(models.Model):
 class Chat(models.Model):
     chat_id = models.CharField(max_length=1024)
 
-    def add_message(self, author, body=None):
-        cm = ChatMessage.objects.create(author=author, body=body, chat=self,)
+    def add_message(self, user, body=None):
+        if not user.is_member:
+            raise exc.PermissionDenied("%r" % user)
+
+        cm = ChatMessage.objects.create(author=user, body=body, chat=self,)
         cm.add_tags(body)
         try:
             del self.messages_json
         except AttributeError:
             pass
         return cm
+
+    def delete_message(self, user, msg_id):
+        if not user.is_chatmod:
+            raise exc.PermissionDenied("%r" % user)
+
+        msg = ChatMessage.objects.get(pk=msg_id)
+        msg.delete()
+        return msg
 
     def add_log(self, type, user, body):
         log = ChatLog.objects.create(chat=self, user=user, body=body)

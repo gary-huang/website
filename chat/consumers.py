@@ -2,6 +2,7 @@ import logging
 
 from channels.db import database_sync_to_async as dbstoa
 from ddtrace import tracer
+from django.core import exceptions as exc
 
 from chat import models
 from crossroads.consumers import SubConsumer, registry
@@ -95,11 +96,25 @@ class ChatConsumer(SubConsumer):
             body = event["body"]
 
             # Save the message
-            msg = await dbstoa(self.chat.add_message)(body=body, author=user)
+            try:
+                msg = await dbstoa(self.chat.add_message)(body=body, user=user)
+            except exc.PermissionDenied:
+                log.warning("", exc_info=True)
+            else:
+                # Send message to room group
+                msg_json = await dbstoa(msg.__json__)()
+                await self.group_send(self.group_name, {"type": "chat.message", **msg_json})
 
-            # Send message to room group
-            msg_json = await dbstoa(msg.__json__)()
-            await self.group_send(self.group_name, {"type": "chat.message", **msg_json})
+        # Delete chat message
+        elif _type == "chat.message_delete":
+            msg_id = event["msg_id"]
+
+            try:
+                await dbstoa(self.chat.delete_message)(user=user, msg_id=msg_id)
+            except exc.PermissionDenied:
+                log.warning("", exc_info=True)
+            else:
+                await self.group_send(self.group_name, {"type": "chat.message_delete", "msg_id": msg_id })
 
         # React to a chat message
         elif _type == "chat.react":

@@ -19,6 +19,9 @@
                 <template v-if="type === 'q'">Remove #question tag</template>
                 <template v-else>Tag as #question</template>
             </a>
+            <a class="dropdown-item" v-on:click="$emit('delete-message', $props.id)" style="color: red">
+                Delete
+            </a>
         </div>
         </div>
         {% endif %}
@@ -105,6 +108,7 @@
         v-bind:reacts="getReacts(msg)"
         @react="react"
         @toggle-tag="toggleTag"
+        @delete-message="deleteMsg"
     ></chat-message>
   </div>
   <div class="row">

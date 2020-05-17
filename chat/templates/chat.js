@@ -127,6 +127,12 @@ var chatApp = new Vue({
                 'tag': tag
             }));
         },
+        deleteMsg: function (id) {
+            socket.send(JSON.stringify({
+                'type': 'chat.message_delete',
+                'msg_id': id
+            }));
+        },
         getType: function (msg) {
             if (msg.tags.includes('pr')) {
                 return 'pr';
@@ -270,6 +276,20 @@ socket.register('chat', {
             for (var i = 0; i < event.users.length; ++i) {
                 chatApp.users.push(event.users[i]);
             }
+        }
+        else if (event.type == 'chat.message_delete') {
+            var index;
+            for (index = 0; index < chatApp.messages.length; index++) {
+                if (chatApp.messages[index].id === event['msg_id']) {
+                    break;
+                }
+            }
+            var msg = chatApp.messages[index];
+            msg.body = 'Deleted';
+            Vue.set(chatApp.messages, index, msg);
+        }
+        else {
+            console.error('UNHANDLED MESSAGE TYPE ' + event.type);
         }
     },
     onopen: function () {
