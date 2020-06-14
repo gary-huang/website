@@ -26,7 +26,6 @@ def send_bulletin(users):
             to_emails=[(user.email, f"{user.first_name} {user.last_name}")],
         )
         message.from_email = mail.From("lynn@crossroadsajax.church", "Lynn Jackson")
-        message.reply_to = mail.ReplyTo("lynn@crossroadsinajax.org", "Lynn Jackson")
         message.dynamic_template_data = dict(
             first_name=user.first_name,
             last_name=user.last_name,
@@ -84,7 +83,6 @@ def send_service(users):
         message.from_email = mail.From(
             "martin@crossroadsajax.church", "Martin Vellekoop"
         )
-        message.reply_to = mail.ReplyTo("martinvellekoop@gmail.com", "Martin Vellekoop")
         message.dynamic_template_data = dict(
             first_name=user.first_name,
             last_name=user.last_name,
