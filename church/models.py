@@ -331,6 +331,7 @@ class ServicePage(Page, ContentPageMixin):
     def get_context(self, request):
         context = super().get_context(request)
         context["self"] = self
+        context["docs"] = self.documents.all()
         return context
 
 

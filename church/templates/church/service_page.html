@@ -224,6 +224,10 @@ socket.register('polls', {
 {% endcomment %}
 
 <p>{{ page.description | richtext }}</p>
+{% for doc in docs  %}
+  <a href="{{doc.document.url}}">Click here to download the fill-in-the-blank document</a>
+{% endfor %}
+
 
 <h4>Website tips and tricks</h4>
 <ul>
