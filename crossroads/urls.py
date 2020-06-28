@@ -1,3 +1,4 @@
+from django import shortcuts
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
@@ -10,6 +11,10 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from church import views
 from search import views as search_views
+
+
+def spa_view(request):
+    return shortcuts.render(request, "index.html", {})
 
 
 urlpatterns = [
@@ -29,6 +34,7 @@ urlpatterns = [
         name="login",
     ),
     url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+    url(r"", spa_view, name="spa_view"),
 ]
 
 

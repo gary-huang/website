@@ -10,3 +10,7 @@ __pycache__/
 .env
 crossroads/settings/local.py
 db.sqlite3
+
+
+web/node_modules
+web/dist
