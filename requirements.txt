@@ -1,3 +1,4 @@
+aniso8601==7.0.0
 appdirs==1.4.3
 arrow==0.15.5
 asgiref==3.2.5
@@ -23,7 +24,12 @@ django-octicons==1.0.2
 django-taggit==1.2.0
 django-treebeard==4.3.1
 djangorestframework==3.11.0
+docopt==0.4.0
 draftjs-exporter==2.1.7
+graphene==2.1.8
+graphene-django==2.11.0
+graphql-core==2.3.2
+graphql-relay==2.0.1
 html5lib==1.0.1
 hyperlink==19.0.0
 idna==2.9
@@ -39,6 +45,7 @@ multidict==4.7.5
 parso==0.6.2
 pathspec==0.7.0
 Pillow==6.2.2
+promise==2.3
 prompt-toolkit==3.0.5
 ptpython==3.0.1
 pyasn1==0.4.8
@@ -54,8 +61,10 @@ python-json-logger==0.1.11
 pytz==2019.3
 regex==2020.2.20
 requests==2.23.0
+Rx==1.6.1
 sendgrid==6.2.0
 service-identity==18.1.0
+singledispatch==3.4.0.3
 six==1.14.0
 sqlparse==0.3.1
 toml==0.10.0

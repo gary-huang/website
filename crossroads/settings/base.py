@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "graphene_django",
 ]
 
 MIDDLEWARE = [
@@ -170,3 +171,5 @@ class EMAIL_TEMPLATE:
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 MAILCHIMP_API_KEY = os.getenv("MAILCHIMP_API_KEY")
+
+GRAPHENE = dict(SCHEMA="crossroads.schema.schema")

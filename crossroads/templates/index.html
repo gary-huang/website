@@ -1,7 +1,15 @@
 {% load static %}
 <html>
-    <body>
-        <div id="react-app"></div>
-        <script src="{% static 'app.js' %}"></script>
-    </body>
+
+<head>
+    <script>
+        var CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+</head>
+
+<body>
+    <div id="react-app"></div>
+    <script src="{% static 'app.js' %}"></script>
+</body>
+
 </html>
