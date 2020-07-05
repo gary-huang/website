@@ -1,3 +1,4 @@
+import 'react-hot-loader';  // Has to be imported before react + react-dom
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloLink } from 'apollo-link';
@@ -6,8 +7,10 @@ import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import { App } from './App';
 import { ApolloProvider } from '@apollo/react-hooks';
+
+import '../index.html';
 
 declare global {
     interface Window {
@@ -37,7 +40,7 @@ const client = new ApolloClient({
             if (networkError) console.log(`[Network error]: ${networkError}`);
         }),
         new HttpLink({
-            uri: 'http://localhost:8000/gql/',
+            uri: 'http://localhost:8080/gql/',
         })
     ])),
     cache: new InMemoryCache()
@@ -47,4 +50,4 @@ const client = new ApolloClient({
 ReactDOM.render(
     <ApolloProvider client={client}>
         <App />
-    </ApolloProvider>, document.getElementById('react-app'));
+    </ApolloProvider >, document.getElementById('react-app'));
