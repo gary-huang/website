@@ -11,6 +11,7 @@ import { App } from './App';
 import { ApolloProvider } from '@apollo/react-hooks';
 
 import '../index.html';
+import { ThemeProvider, CssBaseline, createMuiTheme } from '@material-ui/core';
 
 declare global {
     interface Window {
@@ -47,7 +48,17 @@ const client = new ApolloClient({
 });
 
 
+const theme = createMuiTheme({
+    palette: {
+        type: "dark"
+    },
+});
+
 ReactDOM.render(
     <ApolloProvider client={client}>
-        <App />
+        <ThemeProvider theme={theme}>
+            <CssBaseline>
+                <App />
+            </CssBaseline>
+        </ThemeProvider>
     </ApolloProvider >, document.getElementById('react-app'));
