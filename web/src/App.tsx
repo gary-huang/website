@@ -17,7 +17,7 @@ type AppProps = {}
 const AppBase: React.FC<AppProps> = props => {
     const { data, loading } = useQuery(GET_USER_DATA)
     return (
-        <h1>{data?.currentUser?.firstName ?? 'kyle'} is a 🍑</h1>
+        <h1>{data?.currentUser?.firstName ?? 'kyle'} is a 🍑 dalskjfal</h1>
     );
 }
 
