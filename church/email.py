@@ -81,7 +81,7 @@ def send_service(users):
             to_emails=[(user.email, f"{user.first_name} {user.last_name}")],
         )
         message.from_email = mail.From(
-            "martin@crossroadsajax.church", "Martin Vellekoop"
+            "kyle@crossroadsajax.church", "Kyle Verhoog"
         )
         message.dynamic_template_data = dict(
             first_name=user.first_name,

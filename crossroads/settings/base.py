@@ -163,8 +163,9 @@ CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
 
 
 class EMAIL_TEMPLATE:
-    BULLETIN = "d-8922bc7108f440ac870da8d87b88eb86"
-    SERVICE = "d-93ce2ee9a14b4ed7aa2248bb33a3767f"
+    # BULLETIN = "d-8922bc7108f440ac870da8d87b88eb86"
+    # SERVICE = "d-93ce2ee9a14b4ed7aa2248bb33a3767f"
+    SERVICE = "d-aef4ade01e09489fab526c9f7a8b091a"
 
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
