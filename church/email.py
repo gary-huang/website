@@ -63,15 +63,15 @@ def send_service(users):
         with f.file as file:
             data = file.read()
 
-    encoded_file = base64.b64encode(data).decode()
-    attachments.append(
-        mail.Attachment(
-            mail.FileContent(encoded_file),
-            mail.FileName(os.path.basename(f.name)),
-            mail.FileType(mimetypes.guess_type(f.name)[0]),
-            mail.Disposition("attachment"),
+        encoded_file = base64.b64encode(data).decode()
+        attachments.append(
+            mail.Attachment(
+                mail.FileContent(encoded_file),
+                mail.FileName(os.path.basename(f.name)),
+                mail.FileType(mimetypes.guess_type(f.name)[0]),
+                mail.Disposition("attachment"),
+            )
         )
-    )
 
     for user in users:
         # Skip sending to users without emails
