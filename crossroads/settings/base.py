@@ -161,6 +161,8 @@ LOGOUT_REDIRECT_URL = "/"
 ASGI_APPLICATION = "crossroads.routing.application"
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
+EMAIL_BACKEND = "postmark.django_backend.EmailBackend"
+
 
 class EMAIL_TEMPLATE:
     BULLETIN = "d-8922bc7108f440ac870da8d87b88eb86"
@@ -170,3 +172,8 @@ class EMAIL_TEMPLATE:
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 MAILCHIMP_API_KEY = os.getenv("MAILCHIMP_API_KEY")
+
+POSTMARK_API_KEY = os.getenv("POSTMARK_API_KEY")
+POSTMARK_SENDER = "lynn@crossroadsajax.church"
+POSTMARK_TEST_MODE = False
+POSTMARK_TRACK_OPENS = False

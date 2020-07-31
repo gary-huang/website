@@ -1,3 +1,4 @@
+git+https://github.com/themartorana/python-postmark.git@0.5.3#egg=postmark
 appdirs==1.4.3
 arrow==0.15.5
 asgiref==3.2.5

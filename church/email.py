@@ -5,6 +5,7 @@ import os
 from django.conf import settings
 from django.contrib.staticfiles import finders
 import mandrill
+from postmark.core import PMMail
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers import mail
 
@@ -64,6 +65,44 @@ def send_service(users):
             data = file.read()
 
         encoded_file = base64.b64encode(data).decode()
+        attachments.append(encoded_file)
+
+    for user in users:
+        # Skip sending to users without emails
+        if not user.email:
+            continue
+
+        m = PMMail(
+            to=f"{user.first_name} {user.last_name} <{user.email}>",
+            sender="Kyle Verhoog <kyle@crossroadsajax.church>",
+            template_id="19602506",
+            template_model=dict(
+                company_name="Crossroads Church",
+                company_address="520 Westney Rd S, Ajax, ON L1S 6W6",
+                first_name=user.first_name,
+                last_name=user.last_name,
+                date=service_page.date.strftime("%A %B %d, %Y"),
+                stream_link=user.get_next_service_link(),
+                guest_stream_link=guest_next_service_link,
+                services_link=user.get_services_link(),
+                foreword=service_page.description,  # Note that this is HTML
+            ),
+        )
+        # TODO: add attachments again
+        # message.add_attachment(a)
+        m.send()
+
+
+def send_service_sendgrid(users):
+    service_page = ServicePage.current_service_page()
+    guest_next_service_link = User.get_guest_next_service_link()
+
+    attachments = []
+    for f in service_page.email_attachments:
+        with f.file as file:
+            data = file.read()
+
+        encoded_file = base64.b64encode(data).decode()
         attachments.append(
             mail.Attachment(
                 mail.FileContent(encoded_file),
@@ -80,9 +119,7 @@ def send_service(users):
         message = mail.Mail(
             to_emails=[(user.email, f"{user.first_name} {user.last_name}")],
         )
-        message.from_email = mail.From(
-            "lynn@crossroadsajax.church", "Lynn Jackson"
-        )
+        message.from_email = mail.From("lynn@crossroadsajax.church", "Lynn Jackson")
         message.dynamic_template_data = dict(
             first_name=user.first_name,
             last_name=user.last_name,
