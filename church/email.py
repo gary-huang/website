@@ -74,7 +74,7 @@ def send_service(users):
 
         m = PMMail(
             to=f"{user.first_name} {user.last_name} <{user.email}>",
-            sender="Lynn Jackson <lynn@crossroadsajax.church>",
+            sender="Lynn Jackson lynn@crossroadsajax.church",
             template_id="19602506",
             template_model=dict(
                 company_name="Crossroads Church",
