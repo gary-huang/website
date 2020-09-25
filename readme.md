@@ -11,6 +11,9 @@ $ cp .env.dev.template .env  # customize
 $ # format code
 $ black --exclude migrations .
 
+# run the frontend
+$ cd web && yarn run webpack-dev-server --hot
+# run the backend
 $ docker-compose up -d --build dev
 ```
 
