@@ -26,9 +26,9 @@ module.exports = {
           protocol: 'http:',
           port: 8000
         },
-        pathRewrite: {
-          '^/gql': ''
-        }
+        // pathRewrite: {
+        //   '^/gql': ''
+        // }
       }
     },
   },
