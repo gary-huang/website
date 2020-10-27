@@ -1,14 +1,19 @@
 import os
 
+import ddtrace
+import git
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
-# LOGGING = {
-#     "version": 1,
-#     "handlers": {"console": {"class": "logging.StreamHandler",},},
-#     "loggers": {"django": {"handlers": ["console"], "level": "INFO",},},
-# }
+LOGGING = {
+    "version": 1,
+    "handlers": {"console": {"class": "logging.StreamHandler",},},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "WARN",},
+        "ddtrace": {"handlers": ["console"], "level": "WARN"},
+    },
+}
 
 INSTALLED_APPS = [
     "search",
@@ -167,7 +172,6 @@ EMAIL_BACKEND = "postmark.django_backend.EmailBackend"
 class EMAIL_TEMPLATE:
     BULLETIN = "d-8922bc7108f440ac870da8d87b88eb86"
     SERVICE = "d-93ce2ee9a14b4ed7aa2248bb33a3767f"
-    # SERVICE = "d-aef4ade01e09489fab526c9f7a8b091a"
 
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
@@ -177,3 +181,6 @@ POSTMARK_API_KEY = os.getenv("POSTMARK_API_KEY")
 POSTMARK_SENDER = "lynn@crossroadsajax.church"
 POSTMARK_TEST_MODE = False
 POSTMARK_TRACK_OPENS = False
+
+repo = git.Repo(search_parent_directories=True)
+ddtrace.config.version = repo.head.object.hexsha

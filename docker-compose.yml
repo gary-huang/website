@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  dev:
+  dev_server:
     build:
       context: ./
       dockerfile: ./docker/server/Dockerfile
@@ -13,6 +13,21 @@ services:
       - .:/code
     ports:
       - "${PORT}:${PORT}"
+
+  dev_datadog:
+    env_file:
+      - .env
+    links:
+      - dev_server
+    image: datadog/agent:latest
+    environment:
+      - DD_CONTAINER_EXCLUDE="name:dev_datadog"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+    ports:
+      - 8126:8126
 
   prod_server:
     build:
@@ -26,14 +41,14 @@ services:
              ddtrace-run daphne -b 0.0.0.0 -p 8000 crossroads.asgi:application"
     restart: always
     env_file:
-      - ".env"
+      - .env
     volumes:
       - .:/code
       - staticfiles:/code/static
     expose:
       - 8000
 
-  prod:
+  prod_nginx:
     build:
       context: ./docker/nginx
       dockerfile: ./Dockerfile
@@ -44,12 +59,14 @@ services:
     depends_on:
       - prod_server
 
-  datadog:
+  prod_datadog:
+    env_file:
+      - .env
+    environment:
+      - DD_CONTAINER_EXCLUDE="name:prod_datadog"
     links:
       - prod_server
     image: datadog/agent:latest
-    environment:
-      - DD_API_KEY=${DD_API_KEY}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro

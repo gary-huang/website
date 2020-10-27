@@ -1,5 +1,6 @@
 git+https://github.com/themartorana/python-postmark.git@0.5.3#egg=python-postmark
-git+https://github.com/datadog/dd-trace-py.git@master#egg=ddtrace
+# git+https://github.com/crossroadsinajax/dd-trace-py.git@crossroads#egg=ddtrace
+git+https://github.com/DataDog/dd-trace-py.git@cbe67cb5c314c71f436766af88b3ebe42abdab00
 appdirs==1.4.3
 arrow==0.15.5
 asgiref==3.2.5
@@ -28,6 +29,7 @@ djangorestframework==3.11.1
 docopt==0.4.0
 draftjs-exporter==2.1.7
 et-xmlfile==1.0.1
+gitpython==3.1.8
 html5lib==1.0.1
 hyperlink==19.0.0
 idna==2.9
@@ -38,9 +40,7 @@ jdcal==1.4.1
 jedi==0.16.0
 l18n==2018.5
 lazy-object-proxy==1.4.3
-mandrill==1.0.59
 mccabe==0.6.1
-msgpack==1.0.0
 multidict==4.7.5
 openpyxl==3.0.5
 parso==0.6.2
