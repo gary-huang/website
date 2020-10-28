@@ -10,6 +10,5 @@ jobs:
       - name: Deploy to registry
         run: |
           docker login -u publisher -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
-          docker build -t crossroads-server -f ./docker/server/Dockerfile ./
-          docker push crossroads-server
-
+          docker build -t docker.pkg.github.com/crossroadsinajax/website/crossroads-server -f ./docker/server/Dockerfile ./
+          docker push docker.pkg.github.com/crossroadsinajax/website/crossroads-server
