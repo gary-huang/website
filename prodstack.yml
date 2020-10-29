@@ -30,7 +30,7 @@ services:
     restart: always
     volumes:
       - staticfiles:/app/static
-      - /home/kyle/app:/app  # need to mount for the database
+      - /home/kyle/app/db.sqlite3:/app/db.sqlite3  # need to mount for the database
     expose:
       - 8000
 
