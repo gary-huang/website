@@ -52,11 +52,15 @@ services:
       - DD_LOGS_ENABLED=true
       - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
       - DD_LOG_LEVEL=WARNING
+      - DD_API_KEY_FILE=/run/secrets/datadog_api_key
     secrets:
       - datadog_api_key
     links:
       - app
-    image: datadog/agent:latest
+    image: docker.pkg.github.com/crossroadsinajax/website/datadog-agent
+    build:
+      context: ./docker/datadog
+      dockerfile: ./Dockerfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
