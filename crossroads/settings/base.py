@@ -174,9 +174,6 @@ class EMAIL_TEMPLATE:
     SERVICE = "d-93ce2ee9a14b4ed7aa2248bb33a3767f"
 
 
-SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-MAILCHIMP_API_KEY = os.getenv("MAILCHIMP_API_KEY")
-
 POSTMARK_API_KEY = os.getenv("POSTMARK_API_KEY")
 POSTMARK_SENDER = "lynn@crossroadsajax.church"
 POSTMARK_TEST_MODE = False

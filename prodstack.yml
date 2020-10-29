@@ -1,0 +1,76 @@
+version: '3.7'
+
+services:
+  app:
+    image: docker.pkg.github.com/crossroadsinajax/website/app
+    build:
+      context: ./
+      dockerfile: ./docker/server/Dockerfile
+    environment:
+      - DATADOG_TRACE_AGENT_HOSTNAME=datadog
+      - DD_ENV=prod
+      - DD_SERVICE=crossroads-web
+      - DD_LOGS_INJECTION=true
+      - DD_TRACE_ANALYTICS_ENABLED=true
+      - DD_TRACE_ASYNCIO_ENABLED=true
+      - DD_DJANGO_CACHE_SERVICE_NAME=crossroads-cache
+      - DD_DJANGO_DATABASE_SERVICE=crossroads-web
+      - DD_DJANGO_INSTRUMENT_DATABASES=false
+      - DD_DJANGO_USE_HANDLER_RESOURCE_FORMAT=true
+      - DD_SQLITE_SERVICE=crossroads-db
+    secrets:
+      - datadog_api_key
+      - django_secret
+      - postmark_api_key
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py loaddata groups &&
+             python manage.py loaddata users &&
+             ddtrace-run daphne -b 0.0.0.0 -p 8000 crossroads.asgi:application"
+    restart: always
+    volumes:
+      - staticfiles:/app/static
+    expose:
+      - 8000
+
+  nginx:
+    image: docker.pkg.github.com/crossroadsinajax/website/nginx
+    build:
+      context: ./docker/nginx
+      dockerfile: ./Dockerfile
+    volumes:
+      - staticfiles:/static
+    ports:
+      - 8000:80
+    depends_on:
+      - app
+
+  datadog:
+    environment:
+      - DD_CONTAINER_EXCLUDE="name:datadog"
+      - DD_APM_ENABLED=true
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_LOG_LEVEL=WARNING
+    secrets:
+      - datadog_api_key
+    links:
+      - app
+    image: datadog/agent:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+    ports:
+      - 8126:8126
+
+volumes:
+  staticfiles:
+
+secrets:
+  datadog_api_key:
+    external: true
+  django_secret:
+    external: true
+  postmark_api_key:
+    external: true

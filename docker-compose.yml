@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/code
+      - .:/app
     ports:
       - "${PORT}:${PORT}"
 
@@ -43,8 +43,8 @@ services:
     env_file:
       - .env
     volumes:
-      - .:/code
-      - staticfiles:/code/static
+      - .:/app
+      - staticfiles:/app/static
     expose:
       - 8000
 

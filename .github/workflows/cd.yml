@@ -1,0 +1,28 @@
+name: continuous delivery
+on: [push]
+jobs:
+  deploy_prod:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: log in to github registry
+        run: |
+          docker login -u publisher -p ${{ secrets.GITHUB_TOKEN }} docker.pkg.github.com
+
+      - name: build images
+        run: |
+          docker-compose -f prodstack.yml build
+
+      - name: publish to registry
+        run: |
+          docker-compose -f prodstack.yml push
+
+      - name: deploy to swarm
+        uses: sagebind/docker-swarm-deploy-action@v2
+        with:
+          remote_host: ssh://kyle@crossroadsajax.church
+          ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+          ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
+          args: stack deploy --compose-file prodstack.yml prod

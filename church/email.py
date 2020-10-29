@@ -11,7 +11,7 @@ from sendgrid.helpers import mail
 from church.models import ServicePage, User
 
 
-sendgrid_client = SendGridAPIClient(settings.SENDGRID_API_KEY)
+# sendgrid_client = SendGridAPIClient(settings.SENDGRID_API_KEY)
 
 
 def send_bulletin(users):

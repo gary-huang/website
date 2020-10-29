@@ -4,7 +4,12 @@ RUN apt-get update && apt-get install -y git libjpeg-turbo-progs zlib1g-dev gcc 
 
 ENV PYTHONUNBUFFERED 1
 
-WORKDIR /code
-COPY ./requirements.txt /code
+WORKDIR /app
+
+# Can be overridden by a volume mount.
+COPY . /app
 
 RUN pip install -r requirements.txt --src /usr/local/src
+
+# Will output the static files to /app/static.
+RUN python manage.py collectstatic --no-input
