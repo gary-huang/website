@@ -25,4 +25,4 @@ jobs:
           remote_host: ssh://kyle@crossroadsajax.church
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-          args: stack deploy --compose-file prodstack.yml prod
+          args: stack deploy --with-registry-auth --compose-file prodstack.yml prod
