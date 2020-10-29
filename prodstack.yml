@@ -14,7 +14,7 @@ services:
       - DD_TRACE_ANALYTICS_ENABLED=true
       - DD_TRACE_ASYNCIO_ENABLED=true
       - DD_DJANGO_CACHE_SERVICE_NAME=crossroads-cache
-      - DD_DJANGO_DATABASE_SERVICE=crossroads-web
+      - DD_DJANGO_DATABASE_SERVICE_NAME=crossroads-web
       - DD_DJANGO_INSTRUMENT_DATABASES=false
       - DD_DJANGO_USE_HANDLER_RESOURCE_FORMAT=true
       - DD_SQLITE_SERVICE=crossroads-db
@@ -30,9 +30,8 @@ services:
     restart: always
     volumes:
       - staticfiles:/app/static
-      - /home/kyle/app/db.sqlite3:/app/db.sqlite3  # need to mount for the database
-    expose:
-      - 8000
+      - /home/kyle/prod/db.sqlite3:/app/db.sqlite3  # need to mount for the database
+      - /home/kyle/prod/media:/app/media
 
   nginx:
     image: ghcr.io/crossroadsinajax/nginx
@@ -56,8 +55,6 @@ services:
       - DD_API_KEY_FILE=/run/secrets/datadog_api_key
     secrets:
       - datadog_api_key
-    links:
-      - app
     image: ghcr.io/crossroadsinajax/datadog-agent
     build:
       context: ./docker/datadog
@@ -66,8 +63,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-    ports:
-      - 8126:8126
 
 volumes:
   staticfiles:
