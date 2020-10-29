@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   app:
-    image: docker.pkg.github.com/crossroadsinajax/website/app
+    image: ghcr.io/crossroadsinajax/app
     build:
       context: ./
       dockerfile: ./docker/server/Dockerfile
@@ -30,11 +30,12 @@ services:
     restart: always
     volumes:
       - staticfiles:/app/static
+      - .:/app  # need to mount for the database
     expose:
       - 8000
 
   nginx:
-    image: docker.pkg.github.com/crossroadsinajax/website/nginx
+    image: ghcr.io/crossroadsinajax/nginx
     build:
       context: ./docker/nginx
       dockerfile: ./Dockerfile
@@ -57,7 +58,7 @@ services:
       - datadog_api_key
     links:
       - app
-    image: docker.pkg.github.com/crossroadsinajax/website/datadog-agent
+    image: ghcr.io/crossroadsinajax/datadog-agent
     build:
       context: ./docker/datadog
       dockerfile: ./Dockerfile
