@@ -19,7 +19,7 @@ LOGGING = {
 
 
 # These are mounted by docker secrets.
-# They are defined in docker-compose.prod.yml
+# They are defined in prod.yml.
 def read_secret(secret):
     with open(f"/run/secrets/{secret}") as f:
         return f.read()

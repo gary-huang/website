@@ -1,0 +1,15 @@
+version: '3.7'
+
+# Extends prod.yml changing only the essentials.
+# This should mimic prod as closely as possible.
+services:
+  app:
+    environment:
+      - DD_ENV=staging
+    volumes:
+      - /home/kyle/staging/db.sqlite3:/app/db.sqlite3
+      - /home/kyle/staging/media:/app/media
+
+  nginx:
+    ports:
+      - 8001:80
