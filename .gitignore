@@ -8,5 +8,6 @@ __pycache__/
 /media/
 
 .env
+docker-compose.override.yml
 crossroads/settings/local.py
 db.sqlite3

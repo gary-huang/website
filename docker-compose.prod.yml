@@ -3,17 +3,16 @@ version: '3.7'
 services:
   app:
     image: ghcr.io/crossroadsinajax/app
-    # Note: a .env file is inherited here
     environment:
       - DD_ENV=prod
-    secrets:
-      - django_secret
-      - postmark_api_key
     command: >
       sh -c "python manage.py migrate &&
              python manage.py loaddata groups &&
              ddtrace-run daphne -b 0.0.0.0 -p 8000 crossroads.asgi:application"
     restart: always
+    secrets:
+      - django_secret
+      - postmark_api_key
     volumes:
       - staticfiles:/app/static
       - /home/kyle/prod/db.sqlite3:/app/db.sqlite3
@@ -34,6 +33,16 @@ services:
     environment:
       - DD_LOG_LEVEL=WARNING
       - DD_API_KEY_FILE=/run/secrets/datadog_api_key
+    secrets:
+      - datadog_api_key
 
 volumes:
   staticfiles:
+
+secrets:
+  datadog_api_key:
+    external: true
+  django_secret:
+    external: true
+  postmark_api_key:
+    external: true
