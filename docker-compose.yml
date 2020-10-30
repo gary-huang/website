@@ -23,8 +23,6 @@ services:
       - postmark_api_key
     command: ddtrace-run python manage.py runserver 0.0.0.0:8000
     restart: always
-    volumes:
-      - .:/app
 
   nginx:
     build:
