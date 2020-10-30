@@ -10,8 +10,8 @@ LOGGING = {
     "version": 1,
     "handlers": {"console": {"class": "logging.StreamHandler",},},
     "loggers": {
-        "django": {"handlers": ["console"], "level": "WARN",},
-        "ddtrace": {"handlers": ["console"], "level": "WARN"},
+        "django": {"handlers": ["console"], "level": "INFO",},
+        "ddtrace": {"handlers": ["console"], "level": "INFO"},
     },
 }
 
@@ -180,4 +180,4 @@ POSTMARK_TEST_MODE = False
 POSTMARK_TRACK_OPENS = False
 
 repo = git.Repo(search_parent_directories=True)
-ddtrace.config.version = repo.head.object.hexsha
+ddtrace.config.version = repo.head.object.hexsha[0:6]

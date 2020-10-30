@@ -8,10 +8,14 @@ ALLOWED_HOSTS = [
     "crossroadsinajax.xyz",
 ]
 
-try:
-    from .local import *
-except ImportError:
-    pass
+LOGGING = {
+    "version": 1,
+    "handlers": {"console": {"class": "logging.StreamHandler",},},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "WARN",},
+        "ddtrace": {"handlers": ["console"], "level": "WARN"},
+    },
+}
 
 
 # These are mounted by docker secrets.
