@@ -1,6 +1,5 @@
 git+https://github.com/themartorana/python-postmark.git@0.5.3#egg=python-postmark
-# git+https://github.com/crossroadsinajax/dd-trace-py.git@crossroads#egg=ddtrace
-git+https://github.com/DataDog/dd-trace-py.git@master
+git+https://github.com/crossroadsinajax/dd-trace-py.git@crossroads#egg=ddtrace
 appdirs==1.4.3
 arrow==0.15.5
 asgiref==3.2.5
