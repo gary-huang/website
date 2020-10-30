@@ -16,6 +16,7 @@ services:
       - DD_DJANGO_DATABASE_SERVICE_NAME=crossroads-web
       - DD_DJANGO_USE_HANDLER_RESOURCE_FORMAT=true
       - DD_SQLITE_SERVICE=crossroads-db
+      - DD_PROFILING_ENABLED=true
     restart: always
 
   nginx:
