@@ -39,3 +39,14 @@ services:
       - DD_API_KEY_FILE=/run/secrets/datadog_api_key
     secrets:
       - datadog_api_key
+
+volumes:
+  staticfiles:
+
+secrets:
+  datadog_api_key:
+    external: true
+  django_secret:
+    external: true
+  postmark_api_key:
+    external: true
