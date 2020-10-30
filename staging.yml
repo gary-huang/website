@@ -6,7 +6,7 @@ version: '3.7'
 
 services:
   app:
-    image: ghcr.io/crossroadsinajax/app
+    image: ghcr.io/crossroadsinajax/app:latest
     environment:
       - DD_ENV=staging
     command: >
@@ -23,7 +23,7 @@ services:
       - /home/kyle/staging/media:/app/media
 
   nginx:
-    image: ghcr.io/crossroadsinajax/nginx
+    image: ghcr.io/crossroadsinajax/nginx:latest
     build:
       context: ./docker/nginx_prod
       dockerfile: ./Dockerfile
@@ -33,7 +33,7 @@ services:
       - staticfiles:/static
 
   datadog:
-    image: ghcr.io/crossroadsinajax/datadog-agent
+    image: ghcr.io/crossroadsinajax/datadog-agent:latest
     environment:
       - DD_LOG_LEVEL=WARNING
       - DD_API_KEY_FILE=/run/secrets/datadog_api_key
