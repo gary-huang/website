@@ -180,4 +180,5 @@ POSTMARK_TEST_MODE = False
 POSTMARK_TRACK_OPENS = False
 
 repo = git.Repo(search_parent_directories=True)
-ddtrace.config.version = repo.head.object.hexsha[0:6]
+VERSION = repo.head.object.hexsha[0:6]
+ddtrace.config.version = VERSION
