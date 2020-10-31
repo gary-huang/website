@@ -4,33 +4,26 @@
 
 # dev
 
+## running the app
+
 ```bash
-# set-up local environment
-$ cp .env.dev.template .env  # customize
+cp docker-compose.override.yml.example docker-compose.override.yml
 
-$ # format code
-$ black --exclude migrations .
-
-# run the frontend
-$ cd web && yarn run webpack-dev-server --hot
-# run the backend
-$ docker-compose up -d --build dev
+docker-compose up -d --build
 ```
 
+The app will run by default on port 8000. This can be configured in
+`docker-compose.override.yml`.
 
-# prod
-
-```bash
-$ cp .env.prod.template .env  # fill in with prod secrets
-$ docker-compose up -d --build prod
-```
-
-
-# dev
-
-Useful commands
+## useful commands
 
 ```bash
-$ docker-compose exec dev bash
-$ docker-compose logs -f dev
+# format code
+black --exclude migrations .
+
+# execute a shell in the container
+docker-compose exec app fish
+
+# get the logs from the app
+docker-compose logs -f app
 ```

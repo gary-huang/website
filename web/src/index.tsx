@@ -14,52 +14,52 @@ import '../index.html'
 import { ThemeProvider, CssBaseline, createMuiTheme } from '@material-ui/core'
 
 declare global {
-	interface Window {
-		CSRF_TOKEN: string
-	}
+  interface Window {
+    CSRF_TOKEN: string
+  }
 }
 
 const authLink = setContext((_, { headers }) => {
-	// return the headers to the context so httpLink can read them
-	return {
-		headers: {
-			...headers,
-			authorization: window.CSRF_TOKEN ? `Bearer ${window.CSRF_TOKEN}` : '',
-		},
-	}
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: window.CSRF_TOKEN ? `Bearer ${window.CSRF_TOKEN}` : '',
+    },
+  }
 })
 
 const client = new ApolloClient({
-	link: authLink.concat(
-		ApolloLink.from([
-			onError(({ graphQLErrors, networkError }) => {
-				if (graphQLErrors)
-					graphQLErrors.forEach(({ message, locations, path }) =>
-						console.log(
-							`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-						)
-					)
-				if (networkError) console.log(`[Network error]: ${networkError}`)
-			}),
-			new HttpLink({ uri: 'http://localhost:8080/gql/' }),
-		])
-	),
-	cache: new InMemoryCache(),
+  link: authLink.concat(
+    ApolloLink.from([
+      onError(({ graphQLErrors, networkError }) => {
+        if (graphQLErrors)
+          graphQLErrors.forEach(({ message, locations, path }) =>
+            console.log(
+              `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+            )
+          )
+        if (networkError) console.log(`[Network error]: ${networkError}`)
+      }),
+      new HttpLink({ uri: '/gql/' }),
+    ])
+  ),
+  cache: new InMemoryCache(),
 })
 
 const theme = createMuiTheme({
-	palette: {
-		type: 'light',
-	},
+  palette: {
+    type: 'light',
+  },
 })
 
 ReactDOM.render(
-	<ApolloProvider client={client}>
-		<ThemeProvider theme={theme}>
-			<CssBaseline>
-				<App />
-			</CssBaseline>
-		</ThemeProvider>
-	</ApolloProvider>,
-	document.getElementById('react-app')
+  <ApolloProvider client={client}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline>
+        <App />
+      </CssBaseline>
+    </ThemeProvider>
+  </ApolloProvider>,
+  document.getElementById('react-app')
 )

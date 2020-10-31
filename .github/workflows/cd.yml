@@ -1,0 +1,54 @@
+name: continuous delivery
+on: [push]
+jobs:
+  deploy_prod:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/prod'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: log in to github registry
+        run: docker login -u publisher -p ${{ secrets.GHCR_TOKEN }} ghcr.io
+
+      - name: build images
+        run: docker-compose -f docker-compose.yml -f prod.yml build
+
+      - name: publish to registry
+        run: docker-compose -f docker-compose.yml -f prod.yml push
+
+      - name: wait a bit
+        run: sleep 10
+
+      - name: deploy to swarm
+        uses: sagebind/docker-swarm-deploy-action@v2
+        with:
+          remote_host: ssh://kyle@crossroadsajax.church
+          ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+          ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
+          args: stack deploy -c docker-compose.yml -c prod.yml --with-registry-auth prod
+
+  deploy_staging:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: log in to github registry
+        run: docker login -u publisher -p ${{ secrets.GHCR_TOKEN }} ghcr.io
+
+      - name: build images
+        run: docker-compose -f docker-compose.yml -f staging.yml build
+
+      - name: publish to registry
+        run: docker-compose -f docker-compose.yml -f staging.yml push
+
+      - name: wait a bit
+        run: sleep 15
+
+      - name: deploy to swarm
+        uses: sagebind/docker-swarm-deploy-action@v2
+        with:
+          remote_host: ssh://kyle@crossroadsajax.church
+          ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+          ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
+          args: stack deploy -c docker-compose.yml -c staging.yml --with-registry-auth staging

@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "crossroads"
+version = "0.1.0"
+description = ""
+authors = ["kyle-verhoog <kyle@verhoog.ca>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "3"
+ddtrace = {git = "https://github.com/crossroadsinajax/dd-trace-py", rev = "crossroads"}
+wagtail = "2.10"
+wagtailmedia = "0.5"
+yarl = "1.4"
+daphne = "2.4"
+GitPython = "3.1"
+django-extensions = "2.2.9"
+channels = "^2.4.0"
+django-octicons = "^1.0.2"
+arrow = "^0.17.0"
+python-postmark = {git = "https://github.com/crossroadsinajax/python-postmark.git", rev = "0.5.3"}
+graphene = "^2.1.8"
+graphene-django = "^2.13.0"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+riot = "^0.2.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
