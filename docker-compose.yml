@@ -2,40 +2,27 @@ version: '3.7'
 
 services:
   app:
-    build:
-      context: ./
-      dockerfile: ./docker/server/Dockerfile
+    extends:
+      file: common.yml
+      service: app
     environment:
-      - DATADOG_TRACE_AGENT_HOSTNAME=datadog
       - DD_ENV=dev
-      - DD_SERVICE=crossroads-web
-      - DD_LOGS_INJECTION=true
-      - DD_TRACE_ANALYTICS_ENABLED=true
-      - DD_TRACE_ASYNCIO_ENABLED=true
-      - DD_DJANGO_CACHE_SERVICE_NAME=crossroads-cache
-      - DD_DJANGO_DATABASE_SERVICE_NAME=crossroads-web
-      - DD_DJANGO_USE_HANDLER_RESOURCE_FORMAT=true
-      - DD_SQLITE_SERVICE=crossroads-db
-      - DD_PROFILING_ENABLED=true
-    restart: always
+    command: ddtrace-run python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
 
   nginx:
+    extends:
+      file: common.yml
+      service: nginx
+    build:
+      context: ./docker/nginx_dev
+      dockerfile: ./Dockerfile
     restart: always
-    depends_on:
-      - app
 
   datadog:
+    extends:
+      file: common.yml
+      service: datadog
     environment:
-      - DD_CONTAINER_EXCLUDE="name:datadog"
-      - DD_APM_ENABLED=true
-      - DD_LOGS_ENABLED=true
-      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
       - DD_LOG_LEVEL=INFO
-    image: ghcr.io/crossroadsinajax/datadog-agent:prod
-    build:
-      context: ./docker/datadog
-      dockerfile: ./Dockerfile
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /proc/:/host/proc/:ro
-      - /sys/fs/cgroup:/host/sys/fs/cgroup:ro

@@ -4,6 +4,9 @@ version: '3.7'
 
 services:
   app:
+    extends:
+      file: common.yml
+      service: app
     image: ghcr.io/crossroadsinajax/app:${GIT_TAG}
     environment:
       - DD_ENV=prod
@@ -11,7 +14,6 @@ services:
       sh -c "python manage.py migrate &&
              python manage.py loaddata groups &&
              ddtrace-run daphne -b 0.0.0.0 -p 8000 crossroads.asgi:application"
-    restart: always
     secrets:
       - django_secret
       - postmark_api_key
@@ -21,6 +23,9 @@ services:
       - /home/kyle/prod/media:/app/media
 
   nginx:
+    extends:
+      file: common.yml
+      service: nginx
     image: ghcr.io/crossroadsinajax/nginx:${GIT_TAG}
     build:
       context: ./docker/nginx_prod
@@ -31,6 +36,9 @@ services:
       - staticfiles:/static
 
   datadog:
+    extends:
+      file: common.yml
+      service: datadog
     image: ghcr.io/crossroadsinajax/datadog-agent:${GIT_TAG}
     environment:
       - DD_LOG_LEVEL=WARNING
