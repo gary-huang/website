@@ -18,19 +18,8 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   devServer: {
+    historyApiFallback: true,
     contentBase: './dist',
-    proxy: {
-      '/gql': {
-        target: {
-          host: '0.0.0.0',
-          protocol: 'http:',
-          port: 8000
-        },
-        // pathRewrite: {
-        //   '^/gql': ''
-        // }
-      }
-    },
   },
   module: {
     rules: [

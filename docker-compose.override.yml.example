@@ -10,6 +10,19 @@ services:
     volumes:
       - .:/app
 
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile
+    # Note that we want to match this port with the
+    # port used by nginx so that the JS that the
+    # webpack dev server sends to the browser will
+    # be proxied through nginx.
+    # Else we get a CORS error.
+    command: yarn run webpack-dev-server --host 0.0.0.0 --port 8000 --hot
+    volumes:
+      - ./web:/app
+
   nginx:
     build:
       context: ./docker/nginx_dev

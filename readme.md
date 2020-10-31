@@ -8,12 +8,12 @@
 
 ```bash
 cp docker-compose.override.yml.example docker-compose.override.yml
-# (optionally) edit app configuration in docker-compose.override.yml
 
-# run the frontend
-cd web && yarn run webpack-dev-server --hot
 docker-compose up -d --build
 ```
+
+The app will run by default on port 8000. This can be configured in
+`docker-compose.override.yml`.
 
 ## useful commands
 
