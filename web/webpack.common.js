@@ -4,22 +4,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
   entry: ['./src/index'],
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'app.js',
-  },
   resolve: {
     modules: ['node_modules'],
     alias: {
       'react-dom': '@hot-loader/react-dom',
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
-  },
-  devServer: {
-    historyApiFallback: true,
-    contentBase: './dist',
   },
   module: {
     rules: [
@@ -52,6 +43,11 @@ module.exports = {
       },
     ],
   },
-  devtool: 'eval-source-map',
-  plugins: [new ForkTsCheckerWebpackPlugin(), new webpack.NamedModulesPlugin(), new HtmlWebpackPlugin({ template: 'index.html' })],
+  plugins: [
+    new ForkTsCheckerWebpackPlugin(),
+    new webpack.NamedModulesPlugin(),
+    new HtmlWebpackPlugin({
+      template: 'index.html'
+    })
+  ],
 };

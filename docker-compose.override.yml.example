@@ -19,7 +19,7 @@ services:
     # webpack dev server sends to the browser will
     # be proxied through nginx.
     # Else we get a CORS error.
-    command: yarn run webpack-dev-server --host 0.0.0.0 --port 8000 --hot
+    command: yarn run dev --host 0.0.0.0 --port 8000
     volumes:
       - ./web:/app
 
