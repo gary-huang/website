@@ -14,10 +14,10 @@ jobs:
         run: docker login -u publisher -p ${{ secrets.GHCR_TOKEN }} ghcr.io
 
       - name: build images
-        run: docker-compose -f docker-compose.yml -f prod.yml build
+        run: docker-compose -f prod.yml build
 
       - name: publish to registry
-        run: docker-compose -f docker-compose.yml -f prod.yml push
+        run: docker-compose -f prod.yml push
 
       - name: deploy to swarm
         run: |
@@ -27,21 +27,7 @@ jobs:
           eval $(ssh-agent)
           ssh-add "$HOME/.ssh/docker"
           echo "crossroadsajax.church $SSH_KNOWN_HOST" >> ~/.ssh/known_hosts
-          docker --log-level debug --host "ssh://kyle@crossroadsajax.church" stack deploy -c docker-compose.yml -c prod.yml --with-registry-auth prod
-        shell: bash
-        env:
-          SSH_PRIV_KEY: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOST: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
-
-      - name: deploy to swarm
-        run: |
-          mkdir -p "$HOME/.ssh"
-          echo "$SSH_PRIV_KEY" > "$HOME/.ssh/docker"
-          chmod 600 "$HOME/.ssh/docker"
-          eval $(ssh-agent)
-          ssh-add "$HOME/.ssh/docker"
-          echo "crossroadsajax.church $SSH_KNOWN_HOST" >> ~/.ssh/known_hosts
-          docker --log-level debug --host "ssh://kyle@crossroadsajax.church" stack deploy -c docker-compose.yml -c prod.yml --with-registry-auth prod
+          docker --host "ssh://kyle@crossroadsajax.church" stack deploy -c prod.yml --with-registry-auth prod
         shell: bash
         env:
           SSH_PRIV_KEY: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
@@ -58,10 +44,10 @@ jobs:
         run: docker login -u publisher -p ${{ secrets.GHCR_TOKEN }} ghcr.io
 
       - name: build images
-        run: docker-compose -f docker-compose.yml -f staging.yml build
+        run: docker-compose -f staging.yml build
 
       - name: publish to registry
-        run: docker-compose -f docker-compose.yml -f staging.yml push
+        run: docker-compose -f staging.yml push
 
       - name: deploy to swarm
         run: |
@@ -71,7 +57,7 @@ jobs:
           eval $(ssh-agent)
           ssh-add "$HOME/.ssh/docker"
           echo "crossroadsajax.church $SSH_KNOWN_HOST" >> ~/.ssh/known_hosts
-          docker --log-level debug --host "ssh://kyle@crossroadsajax.church" stack deploy -c docker-compose.yml -c staging.yml --with-registry-auth staging
+          docker --host "ssh://kyle@crossroadsajax.church" stack deploy -c staging.yml --with-registry-auth staging
         shell: bash
         env:
           SSH_PRIV_KEY: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
