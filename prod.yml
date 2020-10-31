@@ -18,6 +18,15 @@ services:
       - /home/kyle/prod/db.sqlite3:/app/db.sqlite3
       - /home/kyle/prod/media:/app/media
 
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/Dockerfile.prod
+    command: yarn run build
+    volumes:
+      - staticfiles:/static
+      - ./web:/app
+
   nginx:
     image: ghcr.io/crossroadsinajax/nginx
     build:
