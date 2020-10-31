@@ -214,7 +214,7 @@ tests = ["hypothesis (4.23)", "pytest (>=3.10,<4.0)", "pytest-asyncio (>=0.8,<1.
 
 [[package]]
 name = "ddtrace"
-version = "0.43.0.dev108+g88ff8f6d"
+version = "0.43.0.dev110+g9a4f41b0"
 description = "Datadog tracing code"
 category = "main"
 optional = false
@@ -232,7 +232,7 @@ opentracing = ["opentracing (>=2.0.0)"]
 type = "git"
 url = "https://github.com/crossroadsinajax/dd-trace-py"
 reference = "crossroads"
-resolved_reference = "88ff8f6d77423d0e926ee9a4766fce549599601c"
+resolved_reference = "9a4f41b041a958c15f019c10538d5e89a93b1fc8"
 
 [[package]]
 name = "distlib"
