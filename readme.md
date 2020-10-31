@@ -19,14 +19,14 @@ The app will run by default on port 8000. This can be configured in
 
 ```bash
 # format python code
-black --exclude migrations .
+docker-compose run app black --exclude migrations .
 
 # format ts/js code
-yarn fmt
+docker-compose run web yarn fmt
 
-# execute a shell in the container
+# execute a shell in the server container
 docker-compose exec app fish
 
 # get the logs from the app
-docker-compose logs -f app
+docker-compose logs -f app web
 ```

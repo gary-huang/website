@@ -10,7 +10,7 @@ import ReactDOM from "react-dom";
 import { App } from "./App";
 import { ApolloProvider } from "@apollo/react-hooks";
 
-import "../index.html";
+import "./index.html";
 import { ThemeProvider, CssBaseline, createMuiTheme } from "@material-ui/core";
 
 declare global {
