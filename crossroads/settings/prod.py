@@ -10,9 +10,16 @@ ALLOWED_HOSTS = [
 
 LOGGING = {
     "version": 1,
-    "handlers": {"console": {"class": "logging.StreamHandler",},},
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
     "loggers": {
-        "django": {"handlers": ["console"], "level": "WARN",},
+        "django": {
+            "handlers": ["console"],
+            "level": "WARN",
+        },
         "ddtrace": {"handlers": ["console"], "level": "WARN"},
     },
 }
@@ -22,8 +29,8 @@ LOGGING = {
 # They are defined in prod.yml.
 def read_secret(secret):
     with open(f"/run/secrets/{secret}") as f:
-        return f.read()
+        return f.read().strip()
+
 
 SECRET_KEY = read_secret("django_secret")
-
 POSTMARK_API_KEY = read_secret("postmark_api_key")
