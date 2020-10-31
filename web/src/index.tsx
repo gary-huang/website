@@ -41,7 +41,7 @@ const client = new ApolloClient({
             if (networkError) console.log(`[Network error]: ${networkError}`);
         }),
         new HttpLink({
-            uri: 'http://localhost:8080/gql/',
+            uri: '/gql/',
         })
     ])),
     cache: new InMemoryCache()
