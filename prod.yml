@@ -1,8 +1,10 @@
 version: '3.7'
 
+# GIT_TAG must be defined in .env
+
 services:
   app:
-    image: ghcr.io/crossroadsinajax/app
+    image: ghcr.io/crossroadsinajax/app:${GIT_TAG}
     environment:
       - DD_ENV=prod
     command: >
@@ -19,7 +21,7 @@ services:
       - /home/kyle/prod/media:/app/media
 
   nginx:
-    image: ghcr.io/crossroadsinajax/nginx
+    image: ghcr.io/crossroadsinajax/nginx:${GIT_TAG}
     build:
       context: ./docker/nginx_prod
       dockerfile: ./Dockerfile
@@ -29,7 +31,7 @@ services:
       - staticfiles:/static
 
   datadog:
-    image: ghcr.io/crossroadsinajax/datadog-agent
+    image: ghcr.io/crossroadsinajax/datadog-agent:${GIT_TAG}
     environment:
       - DD_LOG_LEVEL=WARNING
       - DD_API_KEY_FILE=/run/secrets/datadog_api_key

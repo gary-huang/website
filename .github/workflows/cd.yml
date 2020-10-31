@@ -7,6 +7,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: store commit hash
+        run: echo "GIT_TAG=$(git describe --always --abbrev)" >> .env
+
       - name: log in to github registry
         run: docker login -u publisher -p ${{ secrets.GHCR_TOKEN }} ghcr.io
 
@@ -15,6 +18,20 @@ jobs:
 
       - name: publish to registry
         run: docker-compose -f docker-compose.yml -f prod.yml push
+
+      - name: deploy to swarm
+        run: |
+          mkdir -p "$HOME/.ssh"
+          echo "$SSH_PRIV_KEY" > "$HOME/.ssh/docker"
+          chmod 600 "$HOME/.ssh/docker"
+          eval $(ssh-agent)
+          ssh-add "$HOME/.ssh/docker"
+          echo "crossroadsajax.church $SSH_KNOWN_HOST" >> ~/.ssh/known_hosts
+          docker --log-level debug --host "ssh://kyle@crossroadsajax.church" stack deploy -c docker-compose.yml -c prod.yml --with-registry-auth prod
+        shell: bash
+        env:
+          SSH_PRIV_KEY: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOST: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
 
       - name: deploy to swarm
         run: |
