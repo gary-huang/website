@@ -1,15 +1,19 @@
 version: '3.7'
 
+# GIT_TAG must be defined in .env
+
 services:
   app:
-    image: ghcr.io/crossroadsinajax/app
+    extends:
+      file: common.yml
+      service: app
+    image: ghcr.io/crossroadsinajax/app:${GIT_TAG}
     environment:
       - DD_ENV=prod
     command: >
       sh -c "python manage.py migrate &&
              python manage.py loaddata groups &&
              ddtrace-run daphne -b 0.0.0.0 -p 8000 crossroads.asgi:application"
-    restart: always
     secrets:
       - django_secret
       - postmark_api_key
@@ -28,7 +32,10 @@ services:
       - ./web:/app
 
   nginx:
-    image: ghcr.io/crossroadsinajax/nginx
+    extends:
+      file: common.yml
+      service: nginx
+    image: ghcr.io/crossroadsinajax/nginx:${GIT_TAG}
     build:
       context: ./docker/nginx_prod
       dockerfile: ./Dockerfile
@@ -38,7 +45,10 @@ services:
       - staticfiles:/static
 
   datadog:
-    image: ghcr.io/crossroadsinajax/datadog-agent
+    extends:
+      file: common.yml
+      service: datadog
+    image: ghcr.io/crossroadsinajax/datadog-agent:${GIT_TAG}
     environment:
       - DD_LOG_LEVEL=WARNING
       - DD_API_KEY_FILE=/run/secrets/datadog_api_key
