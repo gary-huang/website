@@ -1,0 +1,23 @@
+version: '3.7'
+
+# Override the default docker-compose.yml with dev settings
+services:
+  app:
+    command: ddtrace-run python manage.py runserver 0.0.0.0:8000
+    environment:
+      - DD_ENV=dev
+      - POSTMARK_API_KEY=
+    volumes:
+      - .:/app
+
+  nginx:
+    build:
+      context: ./docker/nginx_dev
+      dockerfile: ./Dockerfile
+    # Edit 8000 to your desired port
+    ports:
+      - 8000:80
+
+  datadog:
+    environment:
+      - DD_API_KEY=

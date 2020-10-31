@@ -58,6 +58,8 @@ class ChatConsumer(SubConsumer):
         if not user.is_authenticated:
             return
 
+        span = tracer.current_span()
+
         _type = event["type"]
 
         if _type == "chat.connect":
@@ -136,7 +138,6 @@ class ChatConsumer(SubConsumer):
         elif _type == "chat.react":
             msg_id = event["msg_id"]
             react = event["react"]
-            span = tracer.current_span()
             span.set_tag("react", react)
             # Forward the react message to the rest of the clients
             msg = await dbstoa(models.ChatMessage.react)(user, msg_id, react)

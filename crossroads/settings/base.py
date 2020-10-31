@@ -1,14 +1,19 @@
 import os
 
+import ddtrace
+import git
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
-# LOGGING = {
-#     "version": 1,
-#     "handlers": {"console": {"class": "logging.StreamHandler",},},
-#     "loggers": {"django": {"handlers": ["console"], "level": "INFO",},},
-# }
+LOGGING = {
+    "version": 1,
+    "handlers": {"console": {"class": "logging.StreamHandler",},},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "INFO",},
+        "ddtrace": {"handlers": ["console"], "level": "INFO"},
+    },
+}
 
 INSTALLED_APPS = [
     "search",
@@ -163,13 +168,21 @@ LOGOUT_REDIRECT_URL = "/"
 ASGI_APPLICATION = "crossroads.routing.application"
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
+EMAIL_BACKEND = "postmark.django_backend.EmailBackend"
+
 
 class EMAIL_TEMPLATE:
     BULLETIN = "d-8922bc7108f440ac870da8d87b88eb86"
     SERVICE = "d-93ce2ee9a14b4ed7aa2248bb33a3767f"
 
 
-SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-MAILCHIMP_API_KEY = os.getenv("MAILCHIMP_API_KEY")
-
 GRAPHENE = dict(SCHEMA="crossroads.schema.schema")
+
+POSTMARK_API_KEY = os.getenv("POSTMARK_API_KEY")
+POSTMARK_SENDER = "lynn@crossroadsajax.church"
+POSTMARK_TEST_MODE = False
+POSTMARK_TRACK_OPENS = False
+
+repo = git.Repo(search_parent_directories=True)
+VERSION = repo.head.object.hexsha[0:6]
+ddtrace.config.version = VERSION

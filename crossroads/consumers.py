@@ -4,7 +4,7 @@ import logging
 
 import channels
 from channels.generic.websocket import AsyncWebsocketConsumer
-from ddtrace import tracer, config as ddc
+from ddtrace import tracer
 
 
 log = logging.getLogger(__name__)
@@ -162,9 +162,7 @@ class Consumer(AsyncWebsocketConsumer):
         self.group_name = "global"
         self.path = self.scope["path"]
 
-        with tracer.trace(
-            "ws.connect", service=ddc.service, resource=f"WS {self.path}"
-        ) as span:
+        with tracer.trace("ws.connect") as span:
 
             user = await channels.auth.get_user(self.scope)
             span.set_tag("user", user.username)
@@ -175,16 +173,18 @@ class Consumer(AsyncWebsocketConsumer):
             await self.accept()
 
     async def disconnect(self, close_code):
-        user = await channels.auth.get_user(self.scope)
+        with tracer.trace("ws.disconnect") as span:
+            user = await channels.auth.get_user(self.scope)
+            span.set_tag("user", user.username)
 
-        for sub in self._sub_consumers.values():
-            await sub.receive(user, dict(type=f"{sub.app_name}.disconnect"))
+            for sub in self._sub_consumers.values():
+                await sub.receive(user, dict(type=f"{sub.app_name}.disconnect"))
 
-        # Leave room group
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+            # Leave room group
+            await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def receive(self, text_data: str):
-        with tracer.trace("ws.receive", resource=f"WS {self.path}") as span:
+        with tracer.trace("ws.receive") as span:
             try:
                 event = json.loads(text_data)
             except Exception:
@@ -207,6 +207,8 @@ class Consumer(AsyncWebsocketConsumer):
             if not consumer:
                 log.error("No consumer found for event %r", text_data)
                 return
+
+            span.resource = consumer.app_name
 
             await consumer.receive(user, event)
 

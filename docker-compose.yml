@@ -1,59 +1,41 @@
 version: '3.7'
 
 services:
-  dev:
+  app:
     build:
       context: ./
       dockerfile: ./docker/server/Dockerfile
-    command: ddtrace-run python manage.py runserver 0.0.0.0:${PORT}
+    environment:
+      - DATADOG_TRACE_AGENT_HOSTNAME=datadog
+      - DD_ENV=dev
+      - DD_SERVICE=crossroads-web
+      - DD_LOGS_INJECTION=true
+      - DD_TRACE_ANALYTICS_ENABLED=true
+      - DD_TRACE_ASYNCIO_ENABLED=true
+      - DD_DJANGO_CACHE_SERVICE_NAME=crossroads-cache
+      - DD_DJANGO_DATABASE_SERVICE_NAME=crossroads-web
+      - DD_DJANGO_USE_HANDLER_RESOURCE_FORMAT=true
+      - DD_SQLITE_SERVICE=crossroads-db
+      - DD_PROFILING_ENABLED=true
     restart: always
-    env_file:
-      - .env
-    volumes:
-      - .:/code
-    ports:
-      - "${PORT}:${PORT}"
 
-  prod_server:
-    build:
-      context: ./
-      dockerfile: ./docker/server/Dockerfile
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py collectstatic --no-input &&
-             python manage.py loaddata groups &&
-             python manage.py loaddata users &&
-             ddtrace-run daphne -b 0.0.0.0 -p 8000 crossroads.asgi:application"
+  nginx:
     restart: always
-    env_file:
-      - ".env"
-    volumes:
-      - .:/code
-      - staticfiles:/code/static
-    expose:
-      - 8000
-
-  prod:
-    build:
-      context: ./docker/nginx
-      dockerfile: ./Dockerfile
-    volumes:
-      - staticfiles:/static
-    ports:
-      - ${PORT}:80
     depends_on:
-      - prod_server
+      - app
 
   datadog:
-    links:
-      - prod_server
-    image: datadog/agent:latest
     environment:
-      - DD_API_KEY=${DD_API_KEY}
+      - DD_CONTAINER_EXCLUDE="name:datadog"
+      - DD_APM_ENABLED=true
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_LOG_LEVEL=INFO
+    image: ghcr.io/crossroadsinajax/datadog-agent:prod
+    build:
+      context: ./docker/datadog
+      dockerfile: ./Dockerfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /proc/:/host/proc/:ro
       - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
-
-volumes:
-  staticfiles:
