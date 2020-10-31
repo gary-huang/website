@@ -16,8 +16,6 @@ services:
     # be proxied through nginx.
     # Else we get a CORS error.
     command: yarn run dev --host 0.0.0.0 --port 8000
-    volumes:
-      - ./web:/app
 
   nginx:
     # Edit 8000 to your desired port

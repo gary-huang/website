@@ -23,13 +23,18 @@ services:
       - /home/kyle/prod/media:/app/media
 
   web:
+    extends:
+      file: common.yml
+      service: web
+    image: ghcr.io/crossroadsinajax/web:${GIT_TAG}
     build:
       context: .
       dockerfile: ./docker/web/Dockerfile.prod
+    # Outputs app.js to /static/
+    # Defined in web/webpack.prod.js.
     command: yarn run build
     volumes:
       - staticfiles:/static
-      - ./web:/app
 
   nginx:
     extends:
