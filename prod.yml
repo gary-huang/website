@@ -35,6 +35,9 @@ services:
     command: yarn run build
     volumes:
       - staticfiles:/static
+    deploy:
+      restart_policy:
+        condition: none
 
   nginx:
     extends:
