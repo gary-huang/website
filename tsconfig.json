@@ -11,7 +11,7 @@
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
-      "~*": ["src/*"]
+      "~*": ["web/*"]
     }
   },
   "exclude": ["node_modules"]

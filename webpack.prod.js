@@ -1,8 +1,8 @@
-const common = require("./webpack.common.js");
-const { merge } = require("webpack-merge");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-module.exports = merge(common, {
+module.exports = {
   mode: "production",
+  entry: ["./web/index.tsx"],
   output: {
     path: "/static/",
     filename: "app.js",
@@ -42,11 +42,15 @@ module.exports = merge(common, {
             ],
             plugins: [
               ["@babel/plugin-proposal-class-properties", { loose: true }],
-              "react-hot-loader/babel",
             ],
           },
         },
       },
     ],
   },
-});
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./web/index.html",
+    }),
+  ],
+};

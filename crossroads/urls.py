@@ -39,7 +39,6 @@ urlpatterns = [
     ),
     url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
     path("gql/", csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
-    path("jenny/", spa_view, name="spa_view"),
 ]
 
 
@@ -53,8 +52,5 @@ if settings.DEBUG:
 
 
 urlpatterns = urlpatterns + [
-    # For anything not caught by a more specific rule above, hand over to
-    # Wagtail's page serving mechanism. This should be the last pattern in
-    # the list:
-    url(r"", include(wagtail_urls)),
+    url(r"", spa_view, name="spa_view"),
 ]

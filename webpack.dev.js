@@ -1,9 +1,11 @@
-const common = require("./webpack.common.js");
 const path = require("path");
-const { merge } = require("webpack-merge");
+const webpack = require("webpack");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-module.exports = merge(common, {
+module.exports = {
   mode: "development",
+  entry: ["./web/index.tsx"],
   output: {
     path: path.join(__dirname, "dist"),
     filename: "app.js",
@@ -19,5 +21,43 @@ module.exports = merge(common, {
     historyApiFallback: true,
     contentBase: "./dist",
   },
+  module: {
+    rules: [
+      {
+        test: /\.html$/i,
+        loader: ["html-loader"],
+      },
+      {
+        test: /\.(j|t)s(x)?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            cacheDirectory: true,
+            babelrc: false,
+            presets: [
+              [
+                "@babel/preset-env",
+                { targets: { browsers: "last 2 versions" } }, // or whatever your project requires
+              ],
+              "@babel/preset-typescript",
+              "@babel/preset-react",
+            ],
+            plugins: [
+              ["@babel/plugin-proposal-class-properties", { loose: true }],
+              "react-hot-loader/babel",
+            ],
+          },
+        },
+      },
+    ],
+  },
   devtool: "eval-source-map",
-});
+  plugins: [
+    new ForkTsCheckerWebpackPlugin(),
+    new webpack.NamedModulesPlugin(),
+    new HtmlWebpackPlugin({
+      template: "./web/index.html",
+    }),
+  ],
+};

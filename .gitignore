@@ -13,5 +13,5 @@ crossroads/settings/local.py
 db.sqlite3
 
 
-node_modules
-dist
+node_modules/
+dist/

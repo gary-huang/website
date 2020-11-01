@@ -6,6 +6,7 @@ DEBUG = False
 ALLOWED_HOSTS = [
     "crossroadsajax.church",
     "crossroadsinajax.xyz",
+    "192.168.2.125",
 ]
 
 LOGGING = {
@@ -32,5 +33,8 @@ def read_secret(secret):
         return f.read().strip()
 
 
-SECRET_KEY = read_secret("django_secret")
-POSTMARK_API_KEY = read_secret("postmark_api_key")
+# SECRET_KEY = read_secret("django_secret")
+SECRET_KEY = "adfasflkdasdflkaj"
+
+# POSTMARK_API_KEY = read_secret("postmark_api_key")
+POSTMARK_API_KEY = "lasdkjas"

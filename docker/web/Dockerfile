@@ -5,4 +5,4 @@ WORKDIR /app
 COPY yarn.lock package.json tsconfig.json /app/
 RUN yarn install
 
-COPY webpack.common.js webpack.dev.js /app/
+COPY webpack.dev.js /app/
