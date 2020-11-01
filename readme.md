@@ -15,6 +15,13 @@ docker-compose up -d --build
 The app will run by default on port 8000. This can be configured in
 `docker-compose.override.yml`.
 
+## adding a dependency
+
+```bash
+docker-compose run web yarn add <dep>
+docker-compose up -d --build
+```
+
 ## useful commands
 
 ```bash
