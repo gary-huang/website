@@ -1,7 +1,5 @@
 import React from "react";
-import { useQuery } from "react-apollo";
-import gql from "graphql-tag";
-import { Box, makeStyles } from "@material-ui/core";
+import { Box, Container, makeStyles } from "@material-ui/core";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 
@@ -12,28 +10,17 @@ const useStyles = makeStyles({
   },
 });
 
-export const GET_USER_DATA = gql`
-  query {
-    currentUser {
-      username
-      firstName
-      lastName
-    }
-  }
-`;
-
 type HomeProps = {};
 
 const Home: React.FC<HomeProps> = (props) => {
-  const { data, loading } = useQuery(GET_USER_DATA);
   const classes = useStyles();
   return (
-    <Box className={classes.root}>
-      <h1>
-        {data?.currentUser?.firstName ?? "kyle"}
-        is a 🍑 dalskjfal
-      </h1>
-    </Box>
+    <Container>
+      <Box className={classes.root}>
+        <h1>Hello</h1>
+        <h1>Hello</h1>
+      </Box>
+    </Container>
   );
 };
 
