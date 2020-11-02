@@ -1,7 +1,5 @@
 import React from "react";
 import { Box, Container, makeStyles } from "@material-ui/core";
-import { Navbar } from "./components/Navbar";
-import { Footer } from "./components/Footer";
 
 const useStyles = makeStyles({
   root: {
@@ -12,7 +10,7 @@ const useStyles = makeStyles({
 
 type HomeProps = {};
 
-const Home: React.FC<HomeProps> = (props) => {
+const Home: React.FC<HomeProps> = () => {
   const classes = useStyles();
   return (
     <Container>

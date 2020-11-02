@@ -16,6 +16,7 @@ import "./index.html";
 import { ThemeProvider, CssBaseline, createMuiTheme } from "@material-ui/core";
 
 declare global {
+  /* eslint-disable no-unused-vars  */
   interface Window {
     CSRF_TOKEN: string;
   }

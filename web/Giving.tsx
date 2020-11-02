@@ -1,24 +1,13 @@
 import React from "react";
-import { Container, Box, makeStyles } from "@material-ui/core";
-
-const useStyles = makeStyles({
-  root: {
-    minHeight: "100vh",
-    position: "relative",
-  },
-});
+import { Container } from "@material-ui/core";
 
 type GivingProps = {};
 
-const Giving: React.FC<GivingProps> = (props) => {
+const Giving: React.FC<GivingProps> = () => {
   return (
-  <Container>
-    <h1>hi</h1>
-    <h1>hi</h1>
-    <h1>hi</h1>
-    <h1>hi</h1>
-    <h1>hi</h1>
-  </Container>
+    <Container>
+      <h1>Giving</h1>
+    </Container>
   );
 };
 
