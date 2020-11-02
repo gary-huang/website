@@ -2,14 +2,12 @@ import {
   Box,
   Button,
   Grow,
-  Menu,
   MenuItem,
   MenuList,
   Popper,
   Paper,
   ClickAwayListener,
   makeStyles,
-  Divider,
 } from "@material-ui/core";
 import React from "react";
 
@@ -95,8 +93,9 @@ export const MenuTab: React.FC<MenuTabProps> = ({ name, pages }) => {
                   id="menu-list-grow"
                   onKeyDown={handleListKeyDown}
                 >
-                  {pages.map((page) => (
+                  {pages.map((page, i) => (
                     <MenuItem
+                      key={i}
                       className={classes.menuItem}
                       onClick={handleClose}
                     >

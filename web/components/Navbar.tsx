@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Box, Button, makeStyles, Menu, MenuItem } from "@material-ui/core";
+import { Box, makeStyles } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import { common } from "@material-ui/core/colors";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -41,10 +41,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
           ></MenuTab>
           <MenuTab name="Contact Us" pages={["Office", "Directions"]}></MenuTab>
           <Link to="/give">
-          <MenuTab
-            name="Giving"
-            pages={[]}
-          ></MenuTab>
+            <MenuTab name="Giving" pages={[]}></MenuTab>
           </Link>
         </Box>
       </Toolbar>

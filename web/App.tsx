@@ -1,8 +1,8 @@
-import { hot } from "react-hot-loader";
+import { hot } from "react-hot-loader/root"; // has to be imported before react and react-dom
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Helmet } from "react-helmet";
-import { BrowserRouter as Router, Link, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import Home from "./Home";
@@ -20,8 +20,9 @@ export const GET_USER_DATA = gql`
   }
 `;
 
-const AppBase: React.FC<AppProps> = (props) => {
+const AppBase: React.FC<AppProps> = () => {
   const { data, loading } = useQuery(GET_USER_DATA);
+  console.log(loading, data);
 
   return (
     <React.Fragment>
@@ -45,4 +46,4 @@ const AppBase: React.FC<AppProps> = (props) => {
   );
 };
 
-export const App = hot(module)(AppBase);
+export const App = hot(AppBase);
