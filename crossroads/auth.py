@@ -27,8 +27,7 @@ class TokenBackend:
 
 
 class AuthenticationMiddleware:
-    """Authenticate a user via a token provided in the URL.
-    """
+    """Authenticate a user via a token provided in the URL."""
 
     TOKEN = "mem"  # Query param to use to authenticate with
 

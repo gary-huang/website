@@ -151,8 +151,7 @@ class IDListBlock(blocks.ListBlock):
 
 
 class IDStructBlock(blocks.StructBlock):
-    """
-    """
+    """"""
 
     def to_python(self, value):
         self.child_blocks["id"] = blocks.CharBlock(required=False)
@@ -275,7 +274,9 @@ class ServicePage(Page, ContentPageMixin):
     weekly_theme = models.CharField(max_length=128, default="", blank=True)
 
     bulletin = wtfields.StreamField(
-        [("bulletin_section", BulletinSectionBlock(name="Bulletin Section")),],
+        [
+            ("bulletin_section", BulletinSectionBlock(name="Bulletin Section")),
+        ],
         blank=True,
     )
 
@@ -404,7 +405,10 @@ class BasicPage(Page):
     show_last_updated = models.BooleanField(default=True)
 
     stream = wtfields.StreamField(
-        [("offering", OfferingBlock(name="Offering Section")),], blank=True,
+        [
+            ("offering", OfferingBlock(name="Offering Section")),
+        ],
+        blank=True,
     )
 
     content_panels = Page.content_panels + [
