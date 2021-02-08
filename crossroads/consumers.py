@@ -4,6 +4,7 @@ import logging
 
 import channels
 from channels.generic.websocket import AsyncWebsocketConsumer
+import ddtrace
 from ddtrace import tracer
 from ddtrace.constants import SPAN_MEASURED_KEY
 
