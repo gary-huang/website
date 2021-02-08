@@ -20,6 +20,10 @@ LOGGING = {
         },
         "ddtrace": {"handlers": ["console"], "level": "INFO"},
     },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
 }
 
 INSTALLED_APPS = [
@@ -178,8 +182,9 @@ BASE_URL = "https://crossroadsajax.church"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
-ASGI_APPLICATION = "crossroads.routing.application"
+ASGI_APPLICATION = "crossroads.asgi.application"
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+
 
 EMAIL_BACKEND = "postmark.django_backend.EmailBackend"
 
