@@ -5,6 +5,7 @@ import logging
 import channels
 from channels.generic.websocket import AsyncWebsocketConsumer
 from ddtrace import tracer
+from ddtrace.constants import SPAN_MEASURED_KEY
 
 
 log = logging.getLogger(__name__)
@@ -219,6 +220,8 @@ class Consumer(AsyncWebsocketConsumer):
 
     async def dispatch(self, event):
         with tracer.trace("websocket.dispatch", service="crossroads-ws") as span:
+            span.set_tag(SPAN_MEASURED_KEY)
+            span.set_tag("version", ddtrace.config.version)
             consumer = self.subcons(event)
             if not consumer:
                 span._ignore_exception(channels.exceptions.StopConsumer)
