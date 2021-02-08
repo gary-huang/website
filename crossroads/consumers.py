@@ -105,18 +105,27 @@ class SubConsumer:
         return f"{self.app_name}.{name}"
 
     async def send_json(self, data: dict):
-        await self.send(text_data=json.dumps(data))
+        with tracer.trace("send_json"):
+            await self.send(text_data=json.dumps(data))
 
     async def group_join(self, group: str):
-        await self.channel_layer.group_add(self._group_name(group), self.channel_name)
+        with tracer.trace("group.join") as span:
+            span.set_tag("group", group)
+            await self.channel_layer.group_add(
+                self._group_name(group), self.channel_name
+            )
 
     async def group_leave(self, group: str):
-        await self.channel_layer.group_discard(
-            self._group_name(group), self.channel_name
-        )
+        with tracer.trace("group.leave") as span:
+            span.set_tag("group", group)
+            await self.channel_layer.group_discard(
+                self._group_name(group), self.channel_name
+            )
 
     async def group_send(self, group: str, data: dict):
-        await self.channel_layer.group_send(self._group_name(group), data)
+        with tracer.trace("group.send") as span:
+            span.set_tag("group", group)
+            await self.channel_layer.group_send(self._group_name(group), data)
 
     async def receive(self, data):
         # Called when data received from websocket
@@ -158,12 +167,10 @@ class Consumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         # Occurs when a user connects to the websocket
-
         self.group_name = "global"
         self.path = self.scope["path"]
 
         with tracer.trace("ws.connect") as span:
-
             user = await channels.auth.get_user(self.scope)
             span.set_tag("user", user.username)
 
@@ -173,7 +180,7 @@ class Consumer(AsyncWebsocketConsumer):
             await self.accept()
 
     async def disconnect(self, close_code):
-        with tracer.trace("ws.disconnect") as span:
+        with tracer.trace("websocket.disconnect") as span:
             user = await channels.auth.get_user(self.scope)
             span.set_tag("user", user.username)
 
@@ -184,40 +191,41 @@ class Consumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def receive(self, text_data: str):
-        with tracer.trace("ws.receive") as span:
-            try:
-                event = json.loads(text_data)
-            except Exception:
-                log.error("json decode failed for event %r", text_data, exc_info=True)
-                return
+        span = tracer.current_span()
+        try:
+            event = json.loads(text_data)
+        except Exception:
+            log.error("json decode failed for event %r", text_data, exc_info=True)
+            return
 
-            _type = event.get("type")
-            if not _type:
-                log.error("No type provided for event %r", text_data)
-                return
+        _type = event.get("type", None)
+        if not _type:
+            log.error("No type provided for event %r", text_data)
+            return
+        span.resource = _type
+        span.set_tag("type", _type)
 
-            span.set_tag("type", _type)
+        user = await channels.auth.get_user(self.scope)
+        span.set_tag("user", user.username)
 
-            user = await channels.auth.get_user(self.scope)
-            span.set_tag("user", user.username)
-
-            # TODO: Custom consumer middleware?
-            consumer = self.subcons(event)
-
-            if not consumer:
-                log.error("No consumer found for event %r", text_data)
-                return
-
-            span.resource = consumer.app_name
-
-            await consumer.receive(user, event)
-
-    async def dispatch(self, event):
+        # TODO: Custom consumer middleware?
         consumer = self.subcons(event)
 
         if not consumer:
-            await super().dispatch(event)
+            log.error("No consumer found for event %r", text_data)
             return
 
-        user = await channels.auth.get_user(self.scope)
-        await consumer.handle(user, event)
+        await consumer.receive(user, event)
+
+    async def dispatch(self, event):
+        with tracer.trace("websocket.dispatch", service="crossroads-ws") as span:
+            consumer = self.subcons(event)
+            if not consumer:
+                return await super().dispatch(event)
+
+            span.set_tag("consumer.app_name", consumer.app_name)
+            span.set_tag("consumer.channel_name", consumer.channel_name)
+            span.resource = event.get("type", "")
+            with tracer.trace("get_user"):
+                user = await channels.auth.get_user(self.scope)
+            await consumer.handle(user, event)
