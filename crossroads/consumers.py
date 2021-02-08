@@ -221,6 +221,7 @@ class Consumer(AsyncWebsocketConsumer):
         with tracer.trace("websocket.dispatch", service="crossroads-ws") as span:
             consumer = self.subcons(event)
             if not consumer:
+                span._ignore_exception(channels.exceptions.StopConsumer)
                 return await super().dispatch(event)
 
             span.set_tag("consumer.app_name", consumer.app_name)
