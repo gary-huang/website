@@ -216,7 +216,7 @@ opentracing = ["opentracing (>=2.0.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/crossroadsinajax/dd-trace-py"
-reference = "crossroads"
+reference = "1261b2c9afba8ac2a3c9ad11908e1718fe421d7a"
 resolved_reference = "1261b2c9afba8ac2a3c9ad11908e1718fe421d7a"
 
 [[package]]
@@ -590,7 +590,7 @@ python-versions = "*"
 [package.source]
 type = "git"
 url = "https://github.com/crossroadsinajax/python-postmark.git"
-reference = "0.5.3"
+reference = "91b53f36f737dea7e4290dec1fc9f94f40a32321"
 resolved_reference = "91b53f36f737dea7e4290dec1fc9f94f40a32321"
 
 [[package]]
@@ -977,7 +977,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "facfbf824bc0fe32a47ae0958932b5a112e02d973c3697116e0d2a29d5de34bb"
+content-hash = "ec50f0129b73304058601650a23db860c267ea704a831d79e98e5ae80606c8be"
 
 [metadata.files]
 appdirs = [

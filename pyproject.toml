@@ -22,7 +22,7 @@ authors = ["kyle-verhoog <kyle@verhoog.ca>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 Django = "3"
-ddtrace = {git = "https://github.com/crossroadsinajax/dd-trace-py", rev = "crossroads"}
+ddtrace = {git = "https://github.com/crossroadsinajax/dd-trace-py", rev = "1261b2c9afba8ac2a3c9ad11908e1718fe421d7a"}
 wagtail = "2.10"
 wagtailmedia = "0.5"
 yarl = "1.4"
@@ -31,7 +31,7 @@ django-extensions = "2.2.9"
 channels = "^3.0"
 django-octicons = "^1.0.2"
 arrow = "0.17.0"
-python-postmark = {git = "https://github.com/crossroadsinajax/python-postmark.git", rev = "0.5.3"}
+python-postmark = {git = "https://github.com/crossroadsinajax/python-postmark.git", rev = "91b53f36f737dea7e4290dec1fc9f94f40a32321"}
 uvicorn = "0.13.3"
 daphne = "3.0.1"
 
