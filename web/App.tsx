@@ -7,6 +7,7 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import Home from "./Home";
 import Giving from "./Giving";
+import { Service, Services } from "./Service";
 
 type AppProps = {};
 
@@ -33,6 +34,12 @@ const AppBase: React.FC<AppProps> = () => {
       <Router>
         <Navbar></Navbar>
         <Switch>
+          <Route path="/services">
+            <Services />
+          </Route>
+          <Route path="/service/:slug">
+            <Service />
+          </Route>
           <Route path="/give">
             <Giving />
           </Route>

@@ -24,6 +24,7 @@ const useStyles = makeStyles({
 });
 
 type NavbarProps = {};
+
 export const Navbar: React.FC<NavbarProps> = () => {
   const classes = useStyles();
   return (
@@ -35,6 +36,9 @@ export const Navbar: React.FC<NavbarProps> = () => {
           </Box>
         </Link>
         <Box className={classes.tabs}>
+          <Link to="/services">
+            <MenuTab name="Streams" pages={[]}></MenuTab>
+          </Link>
           <MenuTab
             name="Connecting"
             pages={["Example 1", "Example 2"]}
